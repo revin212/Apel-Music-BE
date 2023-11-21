@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\fs-12-team-1-BE.props" />
-</Project>
