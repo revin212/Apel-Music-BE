@@ -7,8 +7,7 @@
         public string Description { get; set; } = string.Empty;
         public string Image { get; set; } = string.Empty;
         public double Price { get; set; }
-        
-        //TODO: add category id foreign key
+        public Guid CategoryId { get; set; }
 
     }
 }
