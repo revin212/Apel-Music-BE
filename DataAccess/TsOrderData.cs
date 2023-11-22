@@ -9,37 +9,45 @@ namespace fs_12_team_1_BE.DataAccess
 
         public List<TsOrder> GetAll()
         {
-            List<TsOrder> tsOrder = new List<TsOrder>();
-
-            string query = "SELECT * FROM TsOrder";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                List<TsOrder> tsOrder = new List<TsOrder>();
+
+                string query = "SELECT * FROM TsOrder";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            tsOrder.Add(new TsOrder
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
-                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
-                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString()?? string.Empty),
-                                IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
-                            });
+                                tsOrder.Add(new TsOrder
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                    PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
+                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
-            return tsOrder;
+                return tsOrder;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public TsOrder? GetById(Guid id)

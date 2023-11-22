@@ -12,8 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
-builder.Services.AddScoped<TsOrder>();
-builder.Services.AddScoped<TsOrderDetail>();
+builder.Services.AddScoped<TsOrderData>();
+builder.Services.AddScoped<TsOrderDetailData>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
