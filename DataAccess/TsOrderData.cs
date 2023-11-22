@@ -90,6 +90,51 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
+        public List<TsOrder> GetAllIsPaidfalse(Guid id)
+        {
+            try
+            {
+                List<TsOrder> tsOrder = new List<TsOrder>();
+                string query = "SELECT * FROM TsOrder WHERE IsPaid = 0 AND UserId = @id";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Connection = connection;
+                        command.CommandText = query;
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                tsOrder.Add(new TsOrder
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                    PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
+                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                                });
+                            }
+                        }
+
+                        connection.Close();
+                    }
+                }
+                return tsOrder;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public bool Insert(TsOrder tsorder)
         {
             bool result = false;

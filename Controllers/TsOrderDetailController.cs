@@ -10,8 +10,10 @@ namespace fs_12_team_1_BE.Controllers
     public class TsOrderDetailController : ControllerBase
     {
         private readonly TsOrderDetailData _tsOrderDetailData;
-        public TsOrderDetailController(TsOrderDetailData tsOrderDetailData)
+        private readonly TsOrderData _tsOrderData;
+        public TsOrderDetailController(TsOrderDetailData tsOrderDetailData, TsOrderData tsOrderData)
         {
+            _tsOrderData = tsOrderData;
             _tsOrderDetailData = tsOrderDetailData;
         }
 
@@ -60,6 +62,7 @@ namespace fs_12_team_1_BE.Controllers
             //tapi ubah TsOrderDetail.OrderId masing2 dengan TsOrder.Id yang memiliki isPaid = false
 
             //else insert new
+
             try
             {
                 if (tsorderdetailDto == null)
@@ -72,6 +75,10 @@ namespace fs_12_team_1_BE.Controllers
                     CourseId = tsorderdetailDto.CourseId,
                     IsActive = tsorderdetailDto.IsActive
                 };
+
+                List<TsOrder> tsOrder = _tsOrderData.GetAllIsPaidfalse(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false, mudah2an dapetnya satu
+
+                //TODO: jika tsOrder count > 0 maka ubah tsorderdetailDto.OrderId dengan tsOrder.Id
 
                 bool result = _tsOrderDetailData.Insert(tsorder);
 
