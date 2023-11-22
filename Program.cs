@@ -1,4 +1,5 @@
 using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +12,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
-
+builder.Services.AddScoped<TsOrder>();
+builder.Services.AddScoped<TsOrderDetail>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

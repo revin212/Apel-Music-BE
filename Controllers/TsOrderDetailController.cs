@@ -19,25 +19,25 @@ namespace fs_12_team_1_BE.Controllers
         [HttpGet("GetAll")]
         public IActionResult GetAll()
         {
-            List<TsOrderDetail> tsOrder = _tsOrderDetailData.GetAll();
-            return Ok(tsOrder);
+            List<TsOrderDetail> tsOrderDetail = _tsOrderDetailData.GetAll();
+            return Ok(tsOrderDetail);
         }
 
         [HttpGet("GetById")]
         public IActionResult Get(Guid id)
         {
-            TsOrderDetail? tsOrder = _tsOrderDetailData.GetById(id);
+            TsOrderDetail? tsOrderDetail = _tsOrderDetailData.GetById(id);
 
-            if (tsOrder == null)
+            if (tsOrderDetail == null)
             {
                 return NotFound("Data not found");
             }
 
-            return Ok(tsOrder); //200
+            return Ok(tsOrderDetail); //200
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] TsOrderDTO tsorderDto)
+        public IActionResult Post([FromBody] TsOrderDetailDTO tsorderDto)
         {
             if (tsorderDto == null)
                 return BadRequest("Data should be inputed");
@@ -45,11 +45,9 @@ namespace fs_12_team_1_BE.Controllers
             TsOrderDetail tsorder = new TsOrderDetail
             {
                 //Id = Guid.NewGuid(),
-                UserId = tsorderDto.UserId,
-                PaymentId = tsorderDto.PaymentId,
-                InvoiceNo = tsorderDto.InvoiceNo,
-                OrderDate = tsorderDto.OrderDate,
-                IsPaid = tsorderDto.IsPaid
+                OrderId = tsorderDto.OrderId,
+                CourseId = tsorderDto.CourseId,
+                IsActive = tsorderDto.IsActive
             };
 
             bool result = _tsOrderDetailData.Insert(tsorder);
@@ -65,20 +63,16 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] TsOrderDTO tsorderDto)
+        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderDto)
         {
             if (tsorderDto == null)
                 return BadRequest("Data should be inputed");
 
             TsOrderDetail tsorder = new TsOrderDetail
             {
-                UserId = tsorderDto.UserId,
-                PaymentId = tsorderDto.PaymentId,
-                InvoiceNo = tsorderDto.InvoiceNo,
-                OrderDate = tsorderDto.OrderDate,
-                IsPaid = tsorderDto.IsPaid
-
-
+                OrderId = tsorderDto.OrderId,
+                CourseId = tsorderDto.CourseId,
+                IsActive = tsorderDto.IsActive
             };
 
             bool result = _tsOrderDetailData.Update(id, tsorder);
