@@ -30,7 +30,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
-                                //CategoryId
+                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty)
                             });
                         }
                     }

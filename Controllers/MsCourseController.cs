@@ -45,7 +45,7 @@ namespace fs_12_team_1_BE.Controllers
 
             MsCourse mscourse = new MsCourse
             {
-                Id = Guid.NewGuid(),
+                //Id = Guid.NewGuid(),
                 Name = mscourseDto.Name,
                 Description = mscourseDto.Description,
                 Image = mscourseDto.Image,
