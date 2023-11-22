@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
+builder.Services.AddScoped<MsUserData>();
 
 var app = builder.Build();
 
