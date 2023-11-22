@@ -19,86 +19,126 @@ namespace fs_12_team_1_BE.Controllers
         [HttpGet("GetAll")]
         public IActionResult GetAll()
         {
-            List<TsOrderDetail> tsOrderDetail = _tsOrderDetailData.GetAll();
-            return Ok(tsOrderDetail);
+            try
+            {
+                List<TsOrderDetail> tsOrderDetail = _tsOrderDetailData.GetAll();
+                return Ok(tsOrderDetail);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpGet("GetById")]
         public IActionResult Get(Guid id)
         {
-            TsOrderDetail? tsOrderDetail = _tsOrderDetailData.GetById(id);
-
-            if (tsOrderDetail == null)
+            try
             {
-                return NotFound("Data not found");
-            }
+                TsOrderDetail? tsOrderDetail = _tsOrderDetailData.GetById(id);
 
-            return Ok(tsOrderDetail); //200
+                if (tsOrderDetail == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(tsOrderDetail); //200
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] TsOrderDetailDTO tsorderDto)
         {
-            if (tsorderDto == null)
-                return BadRequest("Data should be inputed");
-
-            TsOrderDetail tsorder = new TsOrderDetail
+            try
             {
-                //Id = Guid.NewGuid(),
-                OrderId = tsorderDto.OrderId,
-                CourseId = tsorderDto.CourseId,
-                IsActive = tsorderDto.IsActive
-            };
+                if (tsorderDto == null)
+                    return BadRequest("Data should be inputed");
 
-            bool result = _tsOrderDetailData.Insert(tsorder);
+                TsOrderDetail tsorder = new TsOrderDetail
+                {
+                    //Id = Guid.NewGuid(),
+                    OrderId = tsorderDto.OrderId,
+                    CourseId = tsorderDto.CourseId,
+                    IsActive = tsorderDto.IsActive
+                };
 
-            if (result)
-            {
-                return StatusCode(201, tsorder.Id);
+                bool result = _tsOrderDetailData.Insert(tsorder);
+
+                if (result)
+                {
+                    return StatusCode(201, tsorder.Id);
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
 
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderDto)
         {
-            if (tsorderDto == null)
-                return BadRequest("Data should be inputed");
-
-            TsOrderDetail tsorder = new TsOrderDetail
+            try
             {
-                OrderId = tsorderDto.OrderId,
-                CourseId = tsorderDto.CourseId,
-                IsActive = tsorderDto.IsActive
-            };
+                if (tsorderDto == null)
+                    return BadRequest("Data should be inputed");
 
-            bool result = _tsOrderDetailData.Update(id, tsorder);
+                TsOrderDetail tsorder = new TsOrderDetail
+                {
+                    OrderId = tsorderDto.OrderId,
+                    CourseId = tsorderDto.CourseId,
+                    IsActive = tsorderDto.IsActive
+                };
 
-            if (result)
-            {
-                return NoContent();//204
+                bool result = _tsOrderDetailData.Update(id, tsorder);
+
+                if (result)
+                {
+                    return NoContent();//204
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid id)
         {
-            bool result = _tsOrderDetailData.Delete(id);
+            try
+            {
+                bool result = _tsOrderDetailData.Delete(id);
 
-            if (result)
-            {
-                return NoContent();
+                if (result)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
     }
