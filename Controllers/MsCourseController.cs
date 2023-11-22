@@ -20,92 +20,131 @@ namespace fs_12_team_1_BE.Controllers
         [HttpGet("GetAll")]
         public IActionResult GetAll()
         {
-            List<MsCourse> msCourse = _msCourseData.GetAll();
-            return Ok(msCourse);
+            try
+            {
+                List<MsCourse> msCourse = _msCourseData.GetAll();
+                return Ok(msCourse);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpGet("GetById")]
         public IActionResult Get(Guid id)
         {
-            MsCourse? msCourse = _msCourseData.GetById(id);
-
-            if (msCourse == null)
+            try
             {
-                return NotFound("Data not found");
-            }
+                MsCourse? msCourse = _msCourseData.GetById(id);
 
-            return Ok(msCourse); //200
+                if (msCourse == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(msCourse); //200
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
         {
-            if (mscourseDto == null)
-                return BadRequest("Data should be inputed");
-
-            MsCourse mscourse = new MsCourse
+            try
             {
-                //Id = Guid.NewGuid(),
-                Name = mscourseDto.Name,
-                Description = mscourseDto.Description,
-                Image = mscourseDto.Image,
-                Price = mscourseDto.Price,
-                CategoryId = mscourseDto.CategoryId
-            };
+                if (mscourseDto == null)
+                    return BadRequest("Data should be inputed");
 
-            bool result = _msCourseData.Insert(mscourse);
+                MsCourse mscourse = new MsCourse
+                {
+                    //Id = Guid.NewGuid(),
+                    Name = mscourseDto.Name,
+                    Description = mscourseDto.Description,
+                    Image = mscourseDto.Image,
+                    Price = mscourseDto.Price,
+                    CategoryId = mscourseDto.CategoryId
+                };
 
-            if (result)
-            {
-                return StatusCode(201, mscourse.Id);
+                bool result = _msCourseData.Insert(mscourse);
+
+                if (result)
+                {
+                    return StatusCode(201, mscourse.Id);
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
 
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] MsCourseDTO mscourseDto)
         {
-            if (mscourseDto == null)
-                return BadRequest("Data should be inputed");
-
-            MsCourse mscourse = new MsCourse
-            { 
-                Name = mscourseDto.Name,
-                Description = mscourseDto.Description,
-                Image = mscourseDto.Image,
-                Price = mscourseDto.Price,
-                CategoryId = mscourseDto.CategoryId
-
-                
-            };
-
-            bool result = _msCourseData.Update(id, mscourse);
-
-            if (result)
+            try
             {
-                return NoContent();//204
+                if (mscourseDto == null)
+                    return BadRequest("Data should be inputed");
+
+                MsCourse mscourse = new MsCourse
+                {
+                    Name = mscourseDto.Name,
+                    Description = mscourseDto.Description,
+                    Image = mscourseDto.Image,
+                    Price = mscourseDto.Price,
+                    CategoryId = mscourseDto.CategoryId
+
+
+                };
+
+                bool result = _msCourseData.Update(id, mscourse);
+
+                if (result)
+                {
+                    return NoContent();//204
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid id)
         {
-            bool result = _msCourseData.Delete(id);
+            try
+            {
+                bool result = _msCourseData.Delete(id);
 
-            if (result)
-            {
-                return NoContent();
+                if (result)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
             }
-            else
+            catch (Exception)
             {
-                return StatusCode(500, "Error occured");
+
+                throw;
             }
         }
 
