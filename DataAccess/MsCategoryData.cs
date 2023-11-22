@@ -46,12 +46,15 @@ namespace fs_12_team_1_BE.DataAccess
         {
             MsCategory? msCategory = null;
 
-            string query = $"SELECT * FROM MsCategory WHERE Id = '{id}'";
+            string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -81,12 +84,15 @@ namespace fs_12_team_1_BE.DataAccess
         {
             MsCategory? msCategory = null;
 
-            string query = $"SELECT * FROM MsCategory WHERE Name = '{Name}'";
+            string query = $"SELECT * FROM MsCategory WHERE Name = @Name";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Name", Name);
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -117,12 +123,20 @@ namespace fs_12_team_1_BE.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO MsCategory(Id, Name, Title, Description, Image, HeaderImage) " +
-                $"VALUES (DEFAULT,'{msCategory.Name}','{msCategory.Title}', '{msCategory.Description}', '{msCategory.Image}', '{msCategory.HeaderImage}')";
+                $"VALUES (DEFAULT, @Name, @Title, @Description, @Image, @HeaderImage)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", msCategory.Name);
+                    command.Parameters.AddWithValue("@Title", msCategory.Title);
+                    command.Parameters.AddWithValue("@Description", msCategory.Description);
+                    command.Parameters.AddWithValue("@Image", msCategory.Image);
+                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -141,13 +155,22 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"UPDATE MsCategory SET Name = '{msCategory.Name}', Title = '{msCategory.Title}', Description = '{msCategory.Description}', Image = '{msCategory.Image}', HeaderImage = '{msCategory.HeaderImage}' " +
-                $"WHERE Id = '{id}'";
+            string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage " +
+                $"WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", msCategory.Name);
+                    command.Parameters.AddWithValue("@Title", msCategory.Title);
+                    command.Parameters.AddWithValue("@Description", msCategory.Description);
+                    command.Parameters.AddWithValue("@Image", msCategory.Image);
+                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+                    command.Parameters.AddWithValue("@Id", id);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -166,12 +189,15 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM MsCategory WHERE Id = '{id}'";
+            string query = $"DELETE FROM MsCategory WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
