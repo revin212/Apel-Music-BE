@@ -46,12 +46,15 @@ namespace fs_12_team_1_BE.DataAccess
         {
             MsCourse? msCourse = null;
 
-            string query = $"SELECT * FROM MsCourse WHERE Id = '{id}'";
+            string query = $"SELECT * FROM MsCourse WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -82,12 +85,20 @@ namespace fs_12_team_1_BE.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO MsCourse(Id, Name, Description, Image, Price, CategoryId) " +
-                $"VALUES (DEFAULT,'{mscourse.Name}', '{mscourse.Description}', '{mscourse.Image}', {mscourse.Price}, '{mscourse.CategoryId}')";
+                $"VALUES (DEFAULT, @Name, @Description, @Image, @Price, @CategoryId)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", mscourse.Name);
+                    command.Parameters.AddWithValue("@Description", mscourse.Description);
+                    command.Parameters.AddWithValue("@Image", mscourse.Image);
+                    command.Parameters.AddWithValue("@Price", mscourse.Price);
+                    command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -106,13 +117,22 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"UPDATE MsCourse SET Name = '{mscourse.Name}', Description = '{mscourse.Description}', Image = '{mscourse.Image}', Price = '{mscourse.Price}', CategoryId = '{mscourse.CategoryId}' " +
-                $"WHERE Id = '{id}'";
+            string query = $"UPDATE MsCourse SET Name = @Name, Description = @Description, Image = @Image, Price = @Price, CategoryId = @CategoryId " +
+                $"WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", mscourse.Name);
+                    command.Parameters.AddWithValue("@Description", mscourse.Description);
+                    command.Parameters.AddWithValue("@Image", mscourse.Image);
+                    command.Parameters.AddWithValue("@Price", mscourse.Price);
+                    command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
+                    command.Parameters.AddWithValue("@Id", id);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -131,12 +151,15 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM MsCourse WHERE Id = '{id}'";
+            string query = $"DELETE FROM MsCourse WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
