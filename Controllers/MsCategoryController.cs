@@ -1,4 +1,5 @@
 ﻿using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.DTO.MsCategory;
 using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,76 +37,88 @@ namespace fs_12_team_1_BE.Controllers
             return Ok(msCategory); //200
         }
 
-        //[HttpPost]
-        //public IActionResult Post([FromBody] BookDTO bookDto)
-        //{
-        //    if (bookDto == null)
-        //        return BadRequest("Data should be inputed");
+        [HttpGet("GetByName")]
+        public IActionResult GetByName(string Name)
+        {
+            MsCategory? msCategory = _msCategoryData.GetByName(Name);
 
-        //    Book book = new Book
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Title = bookDto.Title,
-        //        Description = bookDto.Description,
-        //        Author = bookDto.Author,
-        //        Stock = bookDto.Stock,
-        //        Created = DateTime.Now,
-        //        Updated = DateTime.Now,
-        //    };
+            if (msCategory == null)
+            {
+                return NotFound("Data not found");
+            }
 
-        //    bool result = _bookData.Insert(book);
+            return Ok(msCategory); //200
+        }
 
-        //    if (result)
-        //    {
-        //        return StatusCode(201, book.Id);
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+        [HttpPost]
+        public IActionResult Post([FromBody] MsCategoryDTO msCategoryDto)
+        {
+            if (msCategoryDto == null)
+                return BadRequest("Data should be inputed");
 
-        //[HttpPut]
-        //public IActionResult Put(Guid id, [FromBody] BookDTO bookDto)
-        //{
-        //    if (bookDto == null)
-        //        return BadRequest("Data should be inputed");
+            MsCategory msCategory = new MsCategory
+            {
+                //Id = Guid.NewGuid(),
+                Name = msCategoryDto.Name,
+                Title = msCategoryDto.Title,
+                Description = msCategoryDto.Description,
+                Image = msCategoryDto.Image,
+                HeaderImage = msCategoryDto.HeaderImage,
+            };
 
-        //    Book book = new Book
-        //    {
-        //        Title = bookDto.Title,
-        //        Description = bookDto.Description,
-        //        Author = bookDto.Author,
-        //        Stock = bookDto.Stock,
-        //        Updated = DateTime.Now
-        //    };
+            bool result = _msCategoryData.Insert(msCategory);
 
-        //    bool result = _bookData.Update(id, book);
+            if (result)
+            {
+                return StatusCode(201, "Category created");
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
 
-        //    if (result)
-        //    {
-        //        return NoContent();//204
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+        [HttpPut]
+        public IActionResult Put(Guid id, [FromBody] MsCategoryDTO msCategoryDto)
+        {
+            if (msCategoryDto == null)
+                return BadRequest("Data should be inputed");
 
-        //[HttpDelete]
-        //public IActionResult Delete(Guid id)
-        //{
-        //    bool result = _bookData.Delete(id);
+            MsCategory msCategory = new MsCategory
+            {
+                Name = msCategoryDto.Name,
+                Title = msCategoryDto.Title,
+                Description = msCategoryDto.Description,
+                Image = msCategoryDto.Image,
+                HeaderImage = msCategoryDto.HeaderImage,
+            };
 
-        //    if (result)
-        //    {
-        //        return NoContent();
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+            bool result = _msCategoryData.Update(id, msCategory);
+
+            if (result)
+            {
+                return NoContent();//204
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
+
+        [HttpDelete]
+        public IActionResult Delete(Guid id)
+        {
+            bool result = _msCategoryData.Delete(id);
+
+            if (result)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
 
     }
 }
