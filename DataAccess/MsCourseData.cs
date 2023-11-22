@@ -30,7 +30,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
-                                //CategoryId
+                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty)
                             });
                         }
                     }
@@ -64,8 +64,8 @@ namespace fs_12_team_1_BE.DataAccess
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"])
-                                //CategoryId
+                                Price = Convert.ToDouble(reader["Price"]),
+                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty)
                             };
                         }
                     }
@@ -77,90 +77,79 @@ namespace fs_12_team_1_BE.DataAccess
             return msCourse;
         }
 
-        //public bool Insert(Book book)
-        //{
-        //    bool result = false;
+        public bool Insert(MsCourse mscourse)
+        {
+            bool result = false;
 
-        //    string created = book.Created.Date.ToString("yyyy-MM-dd HH:mm:ss");
-        //    string updated = book.Updated.Date.ToString("yyyy-MM-dd HH:mm:ss");
+            string query = $"INSERT INTO MsCourse(Id, Name, Description, Image, Price, CategoryId) " +
+                $"VALUES (DEFAULT,'{mscourse.Name}', '{mscourse.Description}', '{mscourse.Image}', {mscourse.Price}, '{mscourse.CategoryId}')";
 
-        //    //string query = $"INSERT INTO Books(Id, Title, Description, Author, Stock, Created, Updated) " +
-        //    //    $"VALUES ('{book.Id}','{book.Title}', '{book.Description}', '{book.Author}', {book.Stock}, '{book.Created}', '{book.Updated}')";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //    string query = $"INSERT INTO Books(Id, Title, Description, Author, Stock, Created, Updated) " +
-        //        $"VALUES ('{book.Id}','{book.Title}', '{book.Description}', '{book.Author}', {book.Stock}, '{created}', '{updated}')";
+                    connection.Open();
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.CommandText = query;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //            connection.Open();
+                    connection.Close();
+                }
+            }
 
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+            return result;
+        }
 
-        //            connection.Close();
-        //        }
-        //    }
+        public bool Update(Guid id, MsCourse mscourse)
+        {
+            bool result = false;
 
-        //    return result;
-        //}
+            string query = $"UPDATE MsCourse SET Name = '{mscourse.Name}', Description = '{mscourse.Description}', Image = '{mscourse.Image}', Price = '{mscourse.Price}', CategoryId = '{mscourse.CategoryId}' " +
+                $"WHERE Id = '{id}'";
 
-        //public bool Update(Guid id, Book book)
-        //{
-        //    bool result = false;
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //    string updated = book.Updated.Date.ToString("yyyy-MM-dd HH:mm:ss");
+                    connection.Open();
 
-        //    //string query = $"UPDATE Books SET Title = '{book.Title}', Description = '{book.Description}', Author = '{book.Author}', Stock = '{book.Stock}', Updated = '{book.Updated}' " +
-        //    //    $"WHERE Id = '{id}'";
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //    string query = $"UPDATE Books SET Title = '{book.Title}', Description = '{book.Description}', Author = '{book.Author}', Stock = '{book.Stock}', Updated = '{updated}' " +
-        //        $"WHERE Id = '{id}'";
+                    connection.Close();
+                }
+            }
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.CommandText = query;
+            return result;
+        }
 
-        //            connection.Open();
+        public bool Delete(Guid id)
+        {
+            bool result = false;
 
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+            string query = $"DELETE FROM MsCourse WHERE Id = '{id}'";
 
-        //            connection.Close();
-        //        }
-        //    }
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //    return result;
-        //}
+                    connection.Open();
 
-        //public bool Delete(Guid id)
-        //{
-        //    bool result = false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //    string query = $"DELETE FROM Books WHERE Id = '{id}'";
+                    connection.Close();
+                }
+            }
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.CommandText = query;
-
-        //            connection.Open();
-
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return result;
-        //}
+            return result;
+        }
 
     }
 }

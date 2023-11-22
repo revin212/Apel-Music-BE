@@ -1,4 +1,5 @@
 ﻿using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.DTO.MsCourse;
 using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,76 +37,77 @@ namespace fs_12_team_1_BE.Controllers
             return Ok(msCourse); //200
         }
 
-        //[HttpPost]
-        //public IActionResult Post([FromBody] BookDTO bookDto)
-        //{
-        //    if (bookDto == null)
-        //        return BadRequest("Data should be inputed");
+        [HttpPost]
+        public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
+        {
+            if (mscourseDto == null)
+                return BadRequest("Data should be inputed");
 
-        //    Book book = new Book
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Title = bookDto.Title,
-        //        Description = bookDto.Description,
-        //        Author = bookDto.Author,
-        //        Stock = bookDto.Stock,
-        //        Created = DateTime.Now,
-        //        Updated = DateTime.Now,
-        //    };
+            MsCourse mscourse = new MsCourse
+            {
+                //Id = Guid.NewGuid(),
+                Name = mscourseDto.Name,
+                Description = mscourseDto.Description,
+                Image = mscourseDto.Image,
+                Price = mscourseDto.Price,
+                CategoryId = mscourseDto.CategoryId
+            };
 
-        //    bool result = _bookData.Insert(book);
+            bool result = _msCourseData.Insert(mscourse);
 
-        //    if (result)
-        //    {
-        //        return StatusCode(201, book.Id);
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+            if (result)
+            {
+                return StatusCode(201, mscourse.Id);
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
 
-        //[HttpPut]
-        //public IActionResult Put(Guid id, [FromBody] BookDTO bookDto)
-        //{
-        //    if (bookDto == null)
-        //        return BadRequest("Data should be inputed");
+        [HttpPut]
+        public IActionResult Put(Guid id, [FromBody] MsCourseDTO mscourseDto)
+        {
+            if (mscourseDto == null)
+                return BadRequest("Data should be inputed");
 
-        //    Book book = new Book
-        //    {
-        //        Title = bookDto.Title,
-        //        Description = bookDto.Description,
-        //        Author = bookDto.Author,
-        //        Stock = bookDto.Stock,
-        //        Updated = DateTime.Now
-        //    };
+            MsCourse mscourse = new MsCourse
+            { 
+                Name = mscourseDto.Name,
+                Description = mscourseDto.Description,
+                Image = mscourseDto.Image,
+                Price = mscourseDto.Price,
+                CategoryId = mscourseDto.CategoryId
 
-        //    bool result = _bookData.Update(id, book);
+                
+            };
 
-        //    if (result)
-        //    {
-        //        return NoContent();//204
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+            bool result = _msCourseData.Update(id, mscourse);
 
-        //[HttpDelete]
-        //public IActionResult Delete(Guid id)
-        //{
-        //    bool result = _bookData.Delete(id);
+            if (result)
+            {
+                return NoContent();//204
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
 
-        //    if (result)
-        //    {
-        //        return NoContent();
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(500, "Error occur");
-        //    }
-        //}
+        [HttpDelete]
+        public IActionResult Delete(Guid id)
+        {
+            bool result = _msCourseData.Delete(id);
+
+            if (result)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return StatusCode(500, "Error occured");
+            }
+        }
 
     }
 }
