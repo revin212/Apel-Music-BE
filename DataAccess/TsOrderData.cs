@@ -46,12 +46,17 @@ namespace fs_12_team_1_BE.DataAccess
         {
             TsOrder? tsOrder = null;
 
-            string query = $"SELECT * FROM TsOrder WHERE Id = '{id}'";
+            string query = $"SELECT * FROM TsOrder WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+                    command.Connection = connection;
+                    command.CommandText = query;
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -82,12 +87,19 @@ namespace fs_12_team_1_BE.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                $"VALUES (DEFAULT,'{tsorder.UserId}', '{tsorder.PaymentId}', '{tsorder.InvoiceNo}', {tsorder.OrderDate}, '{tsorder.IsPaid}')";
+                $"VALUES (DEFAULT, @UserId, @PaymentId, @InvoiceNo, @OrderDate, @IsPaid)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
+                    command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                    command.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -106,13 +118,20 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"UPDATE TsOrder SET UserId = '{tsorder.UserId}', PaymentId = '{tsorder.PaymentId}', InvoiceNo = '{tsorder.InvoiceNo}', OrderDate = '{tsorder.OrderDate}', IsPaid = '{tsorder.IsPaid}' " +
-                $"WHERE Id = '{id}'";
+            string query = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, OrderDate = @OrderDate, IsPaid = @IsPaid " +
+                $"WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", tsorder.Id);
+                    command.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
+                    command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                    command.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -131,12 +150,14 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM TsOrder WHERE Id = '{id}'";
+            string query = $"DELETE FROM TsOrder WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
                     command.Connection = connection;
                     command.CommandText = query;
 

@@ -17,6 +17,7 @@ namespace fs_12_team_1_BE.DataAccess
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
+
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -44,12 +45,16 @@ namespace fs_12_team_1_BE.DataAccess
         {
             TsOrderDetail? tsOrderDetail = null;
 
-            string query = $"SELECT * FROM TsOrderDetail WHERE Id = '{id}'";
+            string query = $"SELECT * FROM TsOrderDetail WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+                    command.Connection = connection;
+                    command.CommandText = query;
                     connection.Open();
 
                     using (MySqlDataReader reader = command.ExecuteReader())
@@ -78,12 +83,17 @@ namespace fs_12_team_1_BE.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO TsOrderDetail(Id, OrderId, CourseId, IsActive) " +
-                $"VALUES (DEFAULT,'{tsorderdetail.OrderId}', '{tsorderdetail.CourseId}', '{tsorderdetail.IsActive}')";
+                $"VALUES (DEFAULT, @OrderId, @CourseId, @IsActive)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
+                    command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
+                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActive);
+
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -102,13 +112,18 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"UPDATE TsOrderDetail SET OrderId = '{tsorderdetail.OrderId}', CourseId = '{tsorderdetail.CourseId}', IsActive = '{tsorderdetail.IsActive}' " +
-                $"WHERE Id = '{id}'";
+            string query = $"UPDATE TsOrderDetail SET OrderId = @OrderId, CourseId = @CourseId, IsActive = @IsActive" +
+                $"WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
+                    command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
+                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActive);
                     command.Connection = connection;
                     command.CommandText = query;
 
@@ -127,12 +142,14 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"DELETE FROM TsOrderDetail WHERE Id = '{id}'";
+            string query = $"DELETE FROM TsOrderDetail WHERE Id = @id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
                     command.Connection = connection;
                     command.CommandText = query;
 
