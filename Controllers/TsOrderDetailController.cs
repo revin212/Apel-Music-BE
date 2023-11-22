@@ -56,7 +56,7 @@ namespace fs_12_team_1_BE.Controllers
         public IActionResult Post([FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
             //select * from TsOrder
-            //Jika ada Order yang memiliki isPaid = false, jangan insert new
+            //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
             //tapi ubah TsOrderDetail.OrderId masing2 dengan TsOrder.Id yang memiliki isPaid = false
 
             //else insert new
