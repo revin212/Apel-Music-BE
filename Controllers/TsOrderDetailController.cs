@@ -53,19 +53,24 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] TsOrderDetailDTO tsorderDto)
+        public IActionResult Post([FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
+            //select * from TsOrder
+            //Jika ada Order yang memiliki isPaid = false, jangan insert new
+            //tapi ubah TsOrderDetail.OrderId masing2 dengan TsOrder.Id yang memiliki isPaid = false
+
+            //else insert new
             try
             {
-                if (tsorderDto == null)
+                if (tsorderdetailDto == null)
                     return BadRequest("Data should be inputed");
 
                 TsOrderDetail tsorder = new TsOrderDetail
                 {
                     //Id = Guid.NewGuid(),
-                    OrderId = tsorderDto.OrderId,
-                    CourseId = tsorderDto.CourseId,
-                    IsActive = tsorderDto.IsActive
+                    OrderId = tsorderdetailDto.OrderId,
+                    CourseId = tsorderdetailDto.CourseId,
+                    IsActive = tsorderdetailDto.IsActive
                 };
 
                 bool result = _tsOrderDetailData.Insert(tsorder);
@@ -87,18 +92,18 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderDto)
+        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
             try
             {
-                if (tsorderDto == null)
+                if (tsorderdetailDto == null)
                     return BadRequest("Data should be inputed");
 
                 TsOrderDetail tsorder = new TsOrderDetail
                 {
-                    OrderId = tsorderDto.OrderId,
-                    CourseId = tsorderDto.CourseId,
-                    IsActive = tsorderDto.IsActive
+                    OrderId = tsorderdetailDto.OrderId,
+                    CourseId = tsorderdetailDto.CourseId,
+                    IsActive = tsorderdetailDto.IsActive
                 };
 
                 bool result = _tsOrderDetailData.Update(id, tsorder);
