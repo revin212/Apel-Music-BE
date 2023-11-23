@@ -1,4 +1,5 @@
 ﻿using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.DTO.TsOrder;
 using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +39,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                TsOrderDetail? tsOrderDetail = _tsOrderDetailData.GetById(id);
+                TsOrderDetail? tsOrderDetail = _tsOrderDetailData.GetAllById(id);
 
                 if (tsOrderDetail == null)
                 {
@@ -55,7 +56,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] TsOrderDetailDTO tsorderdetailDto)
+        public IActionResult AddNewOrderDetail([FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
             //select * from TsOrder
             //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
@@ -68,23 +69,41 @@ namespace fs_12_team_1_BE.Controllers
                 if (tsorderdetailDto == null)
                     return BadRequest("Data should be inputed");
 
-                TsOrderDetail tsorder = new TsOrderDetail
+                TsOrderDetail tsorderdetail = new TsOrderDetail
                 {
                     //Id = Guid.NewGuid(),
-                    OrderId = tsorderdetailDto.OrderId,
+                    OrderId = null,
                     CourseId = tsorderdetailDto.CourseId,
-                    IsActivated = tsorderdetailDto.IsActivated
+                    IsActivated = false
                 };
 
-                List<TsOrder> tsOrder = _tsOrderData.GetAllIsPaidfalse(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false, mudah2an dapetnya satu
+                List<TsOrder> tsOrder = _tsOrderData.GetAllNotPaidByUserId(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false, mudah2an dapetnya satu
 
-                //TODO: jika tsOrder count > 0 maka ubah tsorderdetailDto.OrderId dengan tsOrder.Id
-
-                bool result = _tsOrderDetailData.Insert(tsorder);
+                //jika tsOrder count > 0 maka ubah tsorderdetailDto.OrderId dengan tsOrder.Id
+                if( tsOrder.Count > 0 )
+                {
+                    //TODO: add logic if Count > 1, loop delete where tsOrder[>1].Id
+                    tsorderdetail.OrderId = tsOrder[0].Id;
+                }
+                else
+                {
+                    TsOrder tsOrderNew = new TsOrder
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = tsorderdetailDto.UserId,
+                        PaymentId = null,
+                        InvoiceNo = string.Empty,
+                        OrderDate = null,
+                        IsPaid = false
+                    };
+                    _tsOrderData.Insert(tsOrderNew);
+                    tsorderdetail.OrderId = tsOrderNew.Id;
+                }
+                bool result = _tsOrderDetailData.Insert(tsorderdetail);
 
                 if (result)
                 {
-                    return StatusCode(201, tsorder.Id);
+                    return StatusCode(201, tsorderdetail.Id);
                 }
                 else
                 {

@@ -90,7 +90,7 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
-        public List<TsOrder> GetAllIsPaidfalse(Guid id)
+        public List<TsOrder> GetAllNotPaidByUserId(Guid userid)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace fs_12_team_1_BE.DataAccess
                     using (MySqlCommand command = new MySqlCommand())
                     {
                         command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@id", userid);
                         command.Connection = connection;
                         command.CommandText = query;
                         connection.Open();
@@ -140,13 +140,14 @@ namespace fs_12_team_1_BE.DataAccess
             bool result = false;
 
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                $"VALUES (DEFAULT, @UserId, @PaymentId, @InvoiceNo, @OrderDate, @IsPaid)";
+                $"VALUES (@Id, @UserId, @PaymentId, @InvoiceNo, @OrderDate, @IsPaid)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", tsorder.Id);
                     command.Parameters.AddWithValue("@UserId", tsorder.UserId);
                     command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
                     command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
@@ -166,8 +167,8 @@ namespace fs_12_team_1_BE.DataAccess
 
             return result;
         }
-
-        public bool Update(Guid id, TsOrder tsorder)
+        
+        public bool Update(TsOrder tsorder)
         {
             bool result = false;
 
