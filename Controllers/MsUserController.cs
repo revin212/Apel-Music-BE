@@ -1,7 +1,5 @@
 ﻿using fs_12_team_1_BE.DataAccess;
-using fs_12_team_1_BE.DTO.MsCourse;
 using fs_12_team_1_BE.DTO.MsUser;
-using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
@@ -53,14 +51,14 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("Register")]
-        public IActionResult Register([FromBody] MsUserDTO msUserDto)
+        public IActionResult Register([FromBody] MsUserRegisterDTO msUserDto)
         {
             try
             {
                 if (msUserDto == null)
                     return BadRequest("Data should be inputed");
 
-                MsUserDTO msUser = new MsUserDTO
+                MsUserRegisterDTO msUser = new MsUserRegisterDTO
                 {
                     //Id = Guid.NewGuid(),
                     Name = msUserDto.Name,
@@ -87,14 +85,14 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] MsUserDTO msUserDto)
+        public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
         {
             try
             {
                 if (msUserDto == null)
                     return BadRequest("Data should be inputed");
 
-                MsUserDTO msUser = new MsUserDTO
+                MsUserRegisterDTO msUser = new MsUserRegisterDTO
                 {
                     Name = msUserDto.Name,
                     Email = msUserDto.Email,

@@ -36,7 +36,6 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Email = reader["Email"].ToString() ?? string.Empty,
-                                Password = reader["Password"].ToString() ?? string.Empty
                             });
                         }
                     }
@@ -72,7 +71,6 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Email = reader["Email"].ToString() ?? string.Empty,
-                                Password = reader["Password"].ToString() ?? string.Empty
                             };
                         }
                     }
@@ -84,7 +82,7 @@ namespace fs_12_team_1_BE.DataAccess
             return msUser;
         }
 
-        public bool Register(MsUserDTO msUser)
+        public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;
 
@@ -116,7 +114,7 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool Update(Guid id, MsUserDTO msUser)
+        public bool Update(Guid id, MsUserRegisterDTO msUser)
         {
             bool result = false;
 
