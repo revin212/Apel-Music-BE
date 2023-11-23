@@ -29,7 +29,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                IsActive = bool.Parse(reader["IsActive"].ToString() ?? string.Empty)
+                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             });
                         }
                     }
@@ -66,7 +66,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                IsActive = bool.Parse(reader["IsActive"].ToString() ?? string.Empty)
+                                IsActivated = bool.Parse(reader["IsActive"].ToString() ?? string.Empty)
                             };
                         }
                     }
@@ -92,7 +92,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
                     command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActive);
+                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActivated);
 
                     command.Connection = connection;
                     command.CommandText = query;
@@ -123,7 +123,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.AddWithValue("@Id", id);
                     command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
                     command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActive);
+                    command.Parameters.AddWithValue("@IsActive", tsorderdetail.IsActivated);
                     command.Connection = connection;
                     command.CommandText = query;
 

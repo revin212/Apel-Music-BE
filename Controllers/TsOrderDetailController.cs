@@ -73,7 +73,7 @@ namespace fs_12_team_1_BE.Controllers
                     //Id = Guid.NewGuid(),
                     OrderId = tsorderdetailDto.OrderId,
                     CourseId = tsorderdetailDto.CourseId,
-                    IsActive = tsorderdetailDto.IsActive
+                    IsActivated = tsorderdetailDto.IsActivated
                 };
 
                 List<TsOrder> tsOrder = _tsOrderData.GetAllIsPaidfalse(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false, mudah2an dapetnya satu
@@ -110,7 +110,7 @@ namespace fs_12_team_1_BE.Controllers
                 {
                     OrderId = tsorderdetailDto.OrderId,
                     CourseId = tsorderdetailDto.CourseId,
-                    IsActive = tsorderdetailDto.IsActive
+                    IsActivated = tsorderdetailDto.IsActivated
                 };
 
                 bool result = _tsOrderDetailData.Update(id, tsorder);

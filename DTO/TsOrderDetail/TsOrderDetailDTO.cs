@@ -6,6 +6,6 @@
         public Guid UserId { get; set; }
         public Guid OrderId { get; set; }
         public Guid CourseId { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActivated { get; set; }
     }
 }
