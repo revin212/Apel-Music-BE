@@ -51,7 +51,7 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
-
+        //TODO: Checkout Order Route
         [HttpPost]
         public IActionResult Post([FromBody] TsOrderDTO tsorderDto)
         {
