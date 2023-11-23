@@ -111,11 +111,20 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             while (reader.Read())
                             {
+                                //error guid parse :(, kayaknya gara2 ada yg null
+                                Guid readId = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
+                                Guid readUserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty);
+                                //string readPaymentIdString = reader["PaymentId"].ToString() ?? string.Empty;
+                                //if(readPaymentIdString != string.Empty)
+                                //{
+                                //    Guid readPaymentId = Guid.Parse(readPaymentIdString);
+                                //}
+                                
                                 tsOrder.Add(new TsOrder
                                 {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                    PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
+                                    Id = readId,
+                                    UserId = readUserId,
+                                    //PaymentId = readPaymentId,
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                     OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
                                     IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)

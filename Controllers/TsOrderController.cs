@@ -107,7 +107,7 @@ namespace fs_12_team_1_BE.Controllers
 
                 };
 
-                bool result = _tsOrderData.Update(id, tsorder);
+                bool result = _tsOrderData.Update(tsorder);
 
                 if (result)
                 {

@@ -55,15 +55,20 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult AddNewOrderDetail([FromBody] TsOrderDetailDTO tsorderdetailDto)
+        [HttpPost("AddToCart")]
+        public IActionResult AddToCart([FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
             //select * from TsOrder
             //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
             //tapi ubah TsOrderDetail.OrderId masing2 dengan TsOrder.Id yang memiliki isPaid = false
 
             //else insert new
-
+            //test data
+            //{
+            //  "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
+            //  "courseId": "b3e79d1f-884a-11ee-b59a-3c5282e16d0b",
+            //  "isActivated": false
+            //}
             try
             {
                 if (tsorderdetailDto == null)
@@ -91,12 +96,12 @@ namespace fs_12_team_1_BE.Controllers
                     {
                         Id = Guid.NewGuid(),
                         UserId = tsorderdetailDto.UserId,
-                        PaymentId = null,
+                        //PaymentId = null,
                         InvoiceNo = string.Empty,
-                        OrderDate = null,
+                        //OrderDate = null,
                         IsPaid = false
                     };
-                    _tsOrderData.Insert(tsOrderNew);
+                    _tsOrderData.Insert(tsOrderNew); //Apa boleh langsung ke DataAccess? apa harus lewat tsorderdata controller dulu?
                     tsorderdetail.OrderId = tsOrderNew.Id;
                 }
                 bool result = _tsOrderDetailData.Insert(tsorderdetail);
@@ -116,7 +121,52 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
+        [HttpPost("DeleteFromCart")]
+        public IActionResult DeleteFromCart([FromBody] Guid id, Guid orderid)
+        {
+            
+            try
+            {
+                bool result = _tsOrderDetailData.DeleteOneNotActivated(id, orderid);
 
+                if (result)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpPost("ClearCart")]
+        public IActionResult ClearCart([FromBody] Guid orderid)
+        {
+
+            try
+            {
+                bool result = _tsOrderDetailData.DeleteAllNotActivatedByOrderId(orderid);
+
+                if (result)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderdetailDto)
         {
