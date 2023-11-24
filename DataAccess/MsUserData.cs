@@ -153,6 +153,57 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
+        public bool ActivateUser(string Email)
+        {
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                MySqlCommand command = new MySqlCommand();
+                command.Connection = connection;
+                command.Parameters.Clear();
+
+                command.CommandText = "UPDATE MsUser SET IsActivated = 1 WHERE Email = @Email";
+                command.Parameters.AddWithValue("@Email", Email);
+
+                connection.Open();
+                result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                connection.Close();
+            }
+
+            return result;
+        }
+
+        public bool ResetPassword(string email, string password)
+        {
+            bool result = false;
+
+            string query = "UPDATE MsUser SET Password = @Password WHERE Email = @Email";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+
+                    command.CommandText = query;
+                    
+                    command.Parameters.AddWithValue("@Email", email);
+                    command.Parameters.AddWithValue("@Password", password);
+
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
         public bool Update(Guid id, MsUserRegisterDTO msUser)
         {
             bool result = false;
