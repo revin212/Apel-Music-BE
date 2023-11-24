@@ -1,4 +1,5 @@
 using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -15,6 +16,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
 builder.Services.AddScoped<MsUserData>();
+builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddCors();
 
