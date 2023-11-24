@@ -82,6 +82,45 @@ namespace fs_12_team_1_BE.DataAccess
             return msUser;
         }
 
+        public MsUser? CheckUser(string Email)
+        {
+            MsUser? user = null;
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.CommandText = "SELECT * From MsUser WHERE Email = @Email";
+
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Email", Email);
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            user = new MsUser
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Email = reader["Email"].ToString() ?? string.Empty,
+                                Password = reader["Password"].ToString() ?? string.Empty
+                            };
+                        }
+                    }
+
+                    connection.Close();
+
+                }
+            }
+
+            return user;
+        }
+
+
         public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;

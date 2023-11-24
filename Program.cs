@@ -1,4 +1,7 @@
 using fs_12_team_1_BE.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,26 @@ builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
 builder.Services.AddScoped<MsUserData>();
 
+builder.Services.AddCors();
+
+var JwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+    builder.Configuration.GetSection("JwtConfig:Key").Value));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer
+        (options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                IssuerSigningKey = JwtKey,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+            };
+        });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +47,13 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+});
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
