@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
+using NuGet.Common;
 using Org.BouncyCastle.Crypto.Generators;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace fs_12_team_1_BE.Controllers
@@ -89,32 +92,36 @@ namespace fs_12_team_1_BE.Controllers
                 }
                 else
                 {
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    _configuration.GetSection("JwtConfig:Key").Value));
+                    string token = GenerateToken(user.Email);
+                    DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
+                    MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
+                    _msUserData.UpdateRefreshToken(refreshToken);
 
-                    var claims = new Claim[] {
-                    new Claim(ClaimTypes.Email, user.Email),
-                };
-
-                    var signingCredential = new SigningCredentials(
-                        key, SecurityAlgorithms.HmacSha256Signature);
-
-                    var tokenDescriptor = new SecurityTokenDescriptor
-                    {
-                        Subject = new ClaimsIdentity(claims),
-                        Expires = DateTime.UtcNow.AddMinutes(15),
-                        SigningCredentials = signingCredential
-                    };
-
-                    var tokenHandler = new JwtSecurityTokenHandler();
-
-                    var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-
-                    string token = tokenHandler.WriteToken(securityToken);
-
-                    return Ok(new LoginResponseDTO { Token = token });
+                    return Ok(new LoginResponseDTO { Email = credential.Email, Token = token, RefreshToken = refreshToken.RefreshToken, TokenExpires = TokenExpires });
                 }
             }
+        }
+
+        [HttpPost("refresh-token")]
+        public ActionResult RefreshToken(string refreshToken, string Email)
+        {
+            MsUserRefreshToken dbRefreshToken = _msUserData.GetRefreshToken(Email);
+
+            if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
+            {
+                return Unauthorized("Invalid Refresh Token.");
+            }
+            else if (dbRefreshToken.ExpiredAt < DateTime.Now)
+            {
+                return Unauthorized("Token expired.");
+            }
+
+            string newToken = GenerateToken(Email);
+            DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
+            MsUserRefreshToken newRefreshToken = GenerateRefreshToken(Email);
+            _msUserData.UpdateRefreshToken(newRefreshToken);
+
+            return Ok(new LoginResponseDTO { Email = Email, Token = newToken, RefreshToken = newRefreshToken.RefreshToken, TokenExpires = newTokenExpires });
         }
 
 
@@ -152,6 +159,45 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
+        private string GenerateToken(string Email)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                    _configuration.GetSection("JwtConfig:Key").Value));
+
+            var claims = new Claim[] {
+                    new Claim(ClaimTypes.Email, Email),
+                    };
+
+            var signingCredential = new SigningCredentials(
+                key, SecurityAlgorithms.HmacSha256Signature);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(15),
+                SigningCredentials = signingCredential
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+
+            string token = tokenHandler.WriteToken(securityToken);
+            return token;
+        }
+
+        private MsUserRefreshToken GenerateRefreshToken(string Email)
+        {
+            var refreshToken = new MsUserRefreshToken
+            {
+                UserEmail = Email,
+                RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                CreatedAt = DateTime.Now,
+                ExpiredAt = DateTime.Now.AddDays(7)
+            };
+            return refreshToken;
+        }
+
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
         {
@@ -180,7 +226,6 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }

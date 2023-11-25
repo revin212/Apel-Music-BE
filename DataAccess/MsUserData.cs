@@ -125,22 +125,75 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt) " +
-                $"VALUES (DEFAULT, @Name, @Email, @Password, 0, 0, @CreatedAt)";
+           
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    MySqlCommand command1 = new MySqlCommand();
+                    command1.Connection = connection;
+                    command1.Transaction = transaction;
+                    command1.Parameters.Clear();
+
+                    command1.CommandText = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt)  VALUES (DEFAULT, @Name, @Email, @Password, 0, 0, @CreatedAt)";
+                    command1.Parameters.AddWithValue("@Name", msUser.Name);
+                    command1.Parameters.AddWithValue("@Email", msUser.Email);
+                    command1.Parameters.AddWithValue("@Password", msUser.Password);
+                    command1.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+
+                    MySqlCommand command2 = new MySqlCommand();
+                    command2.Connection = connection;
+                    command2.Transaction = transaction;
+                    command2.Parameters.Clear();
+
+                    command2.CommandText = "INSERT INTO MsUserRefreshToken (UserEmail) VALUES (@UserEmail)";
+                    command2.Parameters.AddWithValue("@UserEmail", msUser.Email);
+
+                    var result1 = command1.ExecuteNonQuery();
+                    var result2 = command2.ExecuteNonQuery();
+
+                    transaction.Commit();
+
+                    result = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    result = false;
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        public bool UpdateRefreshToken(MsUserRefreshToken refreshToken)
+        {
+            bool result = false;
+
+            string query = "UPDATE MsUserRefreshToken SET RefreshToken = @RefreshToken, CreatedAt = @CreatedAt, ExpiredAt = @ExpiredAt " + "WHERE UserEmail = @UserEmail";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
+                    command.Connection = connection;
                     command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msUser.Name);
-                    command.Parameters.AddWithValue("@Email", msUser.Email);
-                    command.Parameters.AddWithValue("@Password", msUser.Password);
-                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-
-                    command.Connection = connection;
                     command.CommandText = query;
+
+                    command.Parameters.AddWithValue("@RefreshToken", refreshToken.RefreshToken);
+                    command.Parameters.AddWithValue("@CreatedAt", refreshToken.CreatedAt);
+                    command.Parameters.AddWithValue("@ExpiredAt", refreshToken.ExpiredAt);
+                    command.Parameters.AddWithValue("@UserEmail", refreshToken.UserEmail);
 
                     connection.Open();
 
@@ -151,6 +204,43 @@ namespace fs_12_team_1_BE.DataAccess
             }
 
             return result;
+        }
+
+        public MsUserRefreshToken GetRefreshToken(string Email)
+        {
+            MsUserRefreshToken msUserRefreshToken = new MsUserRefreshToken();
+
+            string query = $"SELECT * FROM MsUserRefreshToken WHERE UserEmail = @Email";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Email", Email);
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            msUserRefreshToken = new MsUserRefreshToken
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                UserEmail = reader["UserEmail"].ToString() ?? string.Empty,
+                                RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
+                                CreatedAt = reader.GetDateTime("CreatedAt"),
+                                ExpiredAt = reader.GetDateTime("ExpiredAt")
+                            };
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return msUserRefreshToken;
         }
 
         public bool ActivateUser(string Email)
