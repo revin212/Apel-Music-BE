@@ -40,9 +40,9 @@ namespace fs_12_team_1_BE.Controllers
                 List<MsUserDTO> msUser = _msUserData.GetAll();
                 return Ok(msUser);
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -61,67 +61,84 @@ namespace fs_12_team_1_BE.Controllers
 
                 return Ok(msUser); //200
             }
-            catch (Exception)
+            catch
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
         [HttpPost("Login")]
         public IActionResult Login([FromBody] MsUserLoginDTO credential)
         {
-            if (credential is null)
-                return BadRequest("Invalid client request");
-
-            if (string.IsNullOrEmpty(credential.Email) || string.IsNullOrEmpty(credential.Password))
-                return BadRequest("Invalid client request");
-
-            MsUser? user = _msUserData.CheckUser(credential.Email);
-
-            if (user == null)
-                return Unauthorized("You do not authorized");
-            else
+            try
             {
-                //bool isVerified = user?.Password == credential.Password;
-                bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
+                if (credential is null)
+                    return BadRequest("Invalid client request");
 
-                if (!isVerified)
-                {
-                    return BadRequest("Incorrect Password! Please check your password!");
-                }
+                if (string.IsNullOrEmpty(credential.Email) || string.IsNullOrEmpty(credential.Password))
+                    return BadRequest("Invalid client request");
+
+                MsUser? user = _msUserData.CheckUser(credential.Email);
+
+                if (user == null)
+                    return Unauthorized("You do not authorized");
                 else
                 {
-                    string token = GenerateToken(user.Email);
-                    DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
-                    MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
-                    _msUserData.UpdateRefreshToken(refreshToken);
+                    //bool isVerified = user?.Password == credential.Password;
+                    bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
 
-                    return Ok(new LoginResponseDTO { Email = credential.Email, Token = token, RefreshToken = refreshToken.RefreshToken, TokenExpires = TokenExpires });
+                    if (!isVerified)
+                    {
+                        return BadRequest("Incorrect Password! Please check your password!");
+                    }
+                    else
+                    {
+                        string token = GenerateToken(user.Email);
+                        DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
+                        MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
+                        SetRefreshTokenCookies(refreshToken);
+                        _msUserData.UpdateRefreshToken(refreshToken);
+
+                        return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires });
+                    }
                 }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
             }
         }
 
         [HttpPost("refresh-token")]
-        public ActionResult RefreshToken(string refreshToken, string Email)
+        public ActionResult RefreshToken()
         {
-            MsUserRefreshToken dbRefreshToken = _msUserData.GetRefreshToken(Email);
-
-            if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
+            try
             {
-                return Unauthorized("Invalid Refresh Token.");
+                string refreshToken = Request.Cookies["refreshToken"] ?? String.Empty;
+                string Email = Request.Cookies["email"] ?? String.Empty;
+                MsUserRefreshToken dbRefreshToken = _msUserData.GetRefreshToken(Email);
+
+                if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
+                {
+                    return Unauthorized("Invalid Refresh Token.");
+                }
+                else if (dbRefreshToken.ExpiredAt < DateTime.Now)
+                {
+                    return Unauthorized("Token expired.");
+                }
+
+                string newToken = GenerateToken(Email);
+                DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
+                MsUserRefreshToken newRefreshToken = GenerateRefreshToken(Email);
+                SetRefreshTokenCookies(newRefreshToken);
+                _msUserData.UpdateRefreshToken(newRefreshToken);
+
+                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires });
             }
-            else if (dbRefreshToken.ExpiredAt < DateTime.Now)
+            catch
             {
-                return Unauthorized("Token expired.");
+                return StatusCode(500, "Server Error occured");
             }
-
-            string newToken = GenerateToken(Email);
-            DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
-            MsUserRefreshToken newRefreshToken = GenerateRefreshToken(Email);
-            _msUserData.UpdateRefreshToken(newRefreshToken);
-
-            return Ok(new LoginResponseDTO { Email = Email, Token = newToken, RefreshToken = newRefreshToken.RefreshToken, TokenExpires = newTokenExpires });
         }
 
 
@@ -132,6 +149,15 @@ namespace fs_12_team_1_BE.Controllers
             {
                 if (msUserDto == null)
                     return BadRequest("Data should be inputed");
+
+                if (!_emailService.IsValidEmail(msUserDto.Email))
+                    return BadRequest("Invalid Email Address");
+
+                MsUser? user = _msUserData.CheckUser(msUserDto.Email);
+
+                if (user != null)
+                    return BadRequest("This email address is already used by another account");
+
 
                 MsUserRegisterDTO msUser = new MsUserRegisterDTO
                 {
@@ -152,10 +178,9 @@ namespace fs_12_team_1_BE.Controllers
                     return StatusCode(500, "Error occured");
                 }
             }
-            catch (Exception)
+            catch
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -198,6 +223,19 @@ namespace fs_12_team_1_BE.Controllers
             return refreshToken;
         }
 
+        private void SetRefreshTokenCookies(MsUserRefreshToken newRefreshToken)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = newRefreshToken.ExpiredAt
+            };
+            Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
+            Response.Cookies.Append("email", newRefreshToken.UserEmail, cookieOptions);
+        }
+
         [HttpPut]
         public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
         {
@@ -224,9 +262,9 @@ namespace fs_12_team_1_BE.Controllers
                     return StatusCode(500, "Error occured");
                 }
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -239,17 +277,38 @@ namespace fs_12_team_1_BE.Controllers
 
                 if (result)
                 {
-                    return NoContent();
+                    return Ok("Account soft deleted");
                 }
                 else
                 {
                     return StatusCode(500, "Error occured");
                 }
             }
-            catch (Exception)
+            catch
             {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
 
-                throw;
+        [HttpDelete("HardDelete")]
+        public IActionResult HardDelete(Guid id)
+        {
+            try
+            {
+                bool result = _msUserData.SoftDelete(id);
+
+                if (result)
+                {
+                    return Ok("Account Deleted");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -273,9 +332,9 @@ namespace fs_12_team_1_BE.Controllers
                 else
                     return StatusCode(500, "Activation Failed");
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -313,14 +372,19 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword(string email)
+        public async Task<IActionResult> ForgetPassword(string Email)
         {
             try
             {
-                if (string.IsNullOrEmpty(email))
+                if (string.IsNullOrEmpty(Email))
                     return BadRequest("Email is empty");
 
-                bool sendMail = await SendEmailForgetPassword(email);
+                MsUser? user = _msUserData.CheckUser(Email);
+
+                if (user == null)
+                    return NotFound("User doesn't exist");
+
+                bool sendMail = await SendEmailForgetPassword(user.Id.ToString() ?? string.Empty, Email);
 
                 if (sendMail)
                 {
@@ -328,14 +392,13 @@ namespace fs_12_team_1_BE.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Error");
+                    return StatusCode(500, "Server Error, Please try again");
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "Server Error occured");
             }
-
         }
 
         [HttpPost("ResetPassword")]
@@ -351,7 +414,7 @@ namespace fs_12_team_1_BE.Controllers
                     return BadRequest("Password doesn't match");
                 }
 
-                bool reset = _msUserData.ResetPassword(resetPassword.Email, BCrypt.Net.BCrypt.HashPassword(resetPassword.Password));
+                bool reset = _msUserData.ResetPassword(resetPassword.Id, BCrypt.Net.BCrypt.HashPassword(resetPassword.Password));
 
                 if (reset)
                 {
@@ -359,27 +422,27 @@ namespace fs_12_team_1_BE.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "Error");
+                    return StatusCode(500, "Server Error occured");
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, "Server Error occured");
             }
         }
 
 
-        private async Task<bool> SendEmailForgetPassword(string email)
+        private async Task<bool> SendEmailForgetPassword(string Id, string Email)
         {
             // send email
             List<string> to = new List<string>();
-            to.Add(email);
+            to.Add(Email);
 
             string subject = "Forget Password";
 
             var param = new Dictionary<string, string?>
                     {
-                        {"email", email }
+                        { "Id", Id },
                     };
 
             string callbackUrl = QueryHelpers.AddQueryString("https://localhost:3000/formReset", param);

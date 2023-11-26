@@ -125,12 +125,11 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-           
-
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
                 MySqlTransaction transaction = connection.BeginTransaction();
+                Guid Id = Guid.NewGuid();
 
                 try
                 {
@@ -139,7 +138,8 @@ namespace fs_12_team_1_BE.DataAccess
                     command1.Transaction = transaction;
                     command1.Parameters.Clear();
 
-                    command1.CommandText = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt)  VALUES (DEFAULT, @Name, @Email, @Password, 0, 0, @CreatedAt)";
+                    command1.CommandText = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt)  VALUES (@Id, @Name, @Email, @Password, 0, 0, @CreatedAt)";
+                    command1.Parameters.AddWithValue("@Id", Id);
                     command1.Parameters.AddWithValue("@Name", msUser.Name);
                     command1.Parameters.AddWithValue("@Email", msUser.Email);
                     command1.Parameters.AddWithValue("@Password", msUser.Password);
@@ -151,7 +151,8 @@ namespace fs_12_team_1_BE.DataAccess
                     command2.Transaction = transaction;
                     command2.Parameters.Clear();
 
-                    command2.CommandText = "INSERT INTO MsUserRefreshToken (UserEmail) VALUES (@UserEmail)";
+                    command2.CommandText = "INSERT INTO MsUserRefreshToken (Id, UserEmail) VALUES (@Id, @UserEmail)";
+                    command2.Parameters.AddWithValue("@Id", Id);
                     command2.Parameters.AddWithValue("@UserEmail", msUser.Email);
 
                     var result1 = command1.ExecuteNonQuery();
@@ -265,11 +266,11 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool ResetPassword(string email, string password)
+        public bool ResetPassword(string Id, string password)
         {
             bool result = false;
 
-            string query = "UPDATE MsUser SET Password = @Password WHERE Email = @Email";
+            string query = "UPDATE MsUser SET Password = @Password WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -280,7 +281,7 @@ namespace fs_12_team_1_BE.DataAccess
 
                     command.CommandText = query;
                     
-                    command.Parameters.AddWithValue("@Email", email);
+                    command.Parameters.AddWithValue("@Id", Id);
                     command.Parameters.AddWithValue("@Password", password);
 
                     connection.Open();
@@ -346,6 +347,55 @@ namespace fs_12_team_1_BE.DataAccess
 
                     result = command.ExecuteNonQuery() > 0 ? true : false;
 
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        public bool HardDelete(Guid id)
+        {
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    MySqlCommand command1 = new MySqlCommand();
+                    command1.Connection = connection;
+                    command1.Transaction = transaction;
+                    command1.Parameters.Clear();
+
+                    command1.CommandText = "DELETE FROM MsUserRefreshToken WHERE Id = @Id";
+                    command1.Parameters.AddWithValue("@Id", id);
+
+
+                    MySqlCommand command2 = new MySqlCommand();
+                    command2.Connection = connection;
+                    command2.Transaction = transaction;
+                    command2.Parameters.Clear();
+
+                    command2.CommandText = "DELETE FROM MsUser WHERE Id = @Id";
+                    command2.Parameters.AddWithValue("@Id", id);
+
+                    var result1 = command1.ExecuteNonQuery();
+                    var result2 = command2.ExecuteNonQuery();
+
+                    transaction.Commit();
+
+                    result = true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    result = false;
+                }
+                finally
+                {
                     connection.Close();
                 }
             }
