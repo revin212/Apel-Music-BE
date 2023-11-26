@@ -6,11 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
-using Org.BouncyCastle.Crypto.Generators;
-using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -59,7 +55,7 @@ namespace fs_12_team_1_BE.Controllers
                     return NotFound("Data not found");
                 }
 
-                return Ok(msUser); //200
+                return Ok(msUser);
             }
             catch
             {
@@ -81,26 +77,29 @@ namespace fs_12_team_1_BE.Controllers
                 MsUser? user = _msUserData.CheckUser(credential.Email);
 
                 if (user == null)
-                    return Unauthorized("You do not authorized");
+                    return Unauthorized("User doesn't exist");
                 else
                 {
-                    //bool isVerified = user?.Password == credential.Password;
+                    if (user.IsDeleted)
+                        return BadRequest("Account deleted");
+
                     bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
 
                     if (!isVerified)
                     {
-                        return BadRequest("Incorrect Password! Please check your password!");
+                        return BadRequest("Incorrect Password");
                     }
-                    else
-                    {
-                        string token = GenerateToken(user.Email);
-                        DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
-                        MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
-                        SetRefreshTokenCookies(refreshToken);
-                        _msUserData.UpdateRefreshToken(refreshToken);
 
-                        return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires });
-                    }
+                    if (!user.IsActivated)
+                        return BadRequest("Please Activate your account first");
+
+                    string token = GenerateToken(user.Email);
+                    DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
+                    MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
+                    SetRefreshTokenCookies(refreshToken);
+                    _msUserData.UpdateRefreshToken(refreshToken);
+
+                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires });
                 }
             }
             catch
@@ -109,7 +108,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpPost("refresh-token")]
+        [HttpPost("RefreshToken")]
         public ActionResult RefreshToken()
         {
             try
@@ -236,82 +235,6 @@ namespace fs_12_team_1_BE.Controllers
             Response.Cookies.Append("email", newRefreshToken.UserEmail, cookieOptions);
         }
 
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
-        {
-            try
-            {
-                if (msUserDto == null)
-                    return BadRequest("Data should be inputed");
-
-                MsUserRegisterDTO msUser = new MsUserRegisterDTO
-                {
-                    Name = msUserDto.Name,
-                    Email = msUserDto.Email,
-                    Password = msUserDto.Password
-                };
-
-                bool result = _msUserData.Update(id, msUser);
-
-                if (result)
-                {
-                    return NoContent();//204
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
-
-        [HttpDelete("SoftDelete")]
-        public IActionResult SoftDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
-
-                if (result)
-                {
-                    return Ok("Account soft deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
-
-        [HttpDelete("HardDelete")]
-        public IActionResult HardDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
-
-                if (result)
-                {
-                    return Ok("Account Deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
-
         [HttpGet("ActivateUser")]
         public IActionResult ActivateUser(string email)
         {
@@ -328,7 +251,7 @@ namespace fs_12_team_1_BE.Controllers
                 bool result = _msUserData.ActivateUser(email);
 
                 if (result)
-                    return Ok("User activated");
+                    return StatusCode(201, "User Activated");
                 else
                     return StatusCode(500, "Activation Failed");
             }
@@ -388,7 +311,7 @@ namespace fs_12_team_1_BE.Controllers
 
                 if (sendMail)
                 {
-                    return Ok("Mail sent");
+                    return StatusCode(201, "Please check your email to get the link for reset password");
                 }
                 else
                 {
@@ -418,7 +341,7 @@ namespace fs_12_team_1_BE.Controllers
 
                 if (reset)
                 {
-                    return Ok("Reset password OK");
+                    return StatusCode(201, "Reset password success");
                 }
                 else
                 {
@@ -454,6 +377,84 @@ namespace fs_12_team_1_BE.Controllers
             bool mailResult = await _emailService.SendAsync(mailModel, new CancellationToken());
 
             return mailResult;
+        }
+
+
+        [HttpPut]
+        public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
+        {
+            try
+            {
+                if (msUserDto == null)
+                    return BadRequest("Data should be inputed");
+
+                MsUserRegisterDTO msUser = new MsUserRegisterDTO
+                {
+                    Name = msUserDto.Name,
+                    Email = msUserDto.Email,
+                    Password = msUserDto.Password
+                };
+
+                bool result = _msUserData.Update(id, msUser);
+
+                if (result)
+                {
+                    return StatusCode(201, "Edit user success");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
+
+        [HttpDelete("SoftDelete")]
+        public IActionResult SoftDelete(Guid id)
+        {
+            try
+            {
+                bool result = _msUserData.SoftDelete(id);
+
+                if (result)
+                {
+                    return StatusCode(201, "Account soft deleted");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
+        [HttpDelete("HardDelete")]
+        public IActionResult HardDelete(Guid id)
+        {
+            try
+            {
+                bool result = _msUserData.SoftDelete(id);
+
+                if (result)
+                {
+                    return StatusCode(201, "Account deleted");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
         }
     }
 }

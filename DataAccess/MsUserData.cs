@@ -107,7 +107,9 @@ namespace fs_12_team_1_BE.DataAccess
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Email = reader["Email"].ToString() ?? string.Empty,
-                                Password = reader["Password"].ToString() ?? string.Empty
+                                Password = reader["Password"].ToString() ?? string.Empty,
+                                IsActivated = Convert.ToBoolean(reader["IsActivated"]),
+                                IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
                             };
                         }
                     }
