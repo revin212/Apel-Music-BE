@@ -109,9 +109,9 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public TsOrder? GetById(Guid id)
+        public TsOrder GetById(Guid id)
         {
-            TsOrder? tsOrder = null;
+            TsOrder tsOrder = new TsOrder();
 
             string query = $"SELECT * FROM TsOrder WHERE Id = @Id";
 
@@ -239,12 +239,12 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public bool Insert(TsOrder tsorder)
+        public bool NewCart(TsOrder tsorder)
         {
             bool result = false;
 
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                $"VALUES (@Id, @UserId, @PaymentId, @InvoiceNo, @OrderDate, @IsPaid)";
+                $"VALUES (@Id, @UserId, @PaymentId, @InvoiceNo, @OrderDate, 0)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -256,7 +256,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
                     command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
                     command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
-                    command.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
+                   
 
                     command.Connection = connection;
                     command.CommandText = query;

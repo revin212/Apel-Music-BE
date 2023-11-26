@@ -152,12 +152,12 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrderDetail;
         }
 
-        public bool Insert(TsOrderDetail tsorderdetail) 
+        public bool AddToCart(TsOrderDetail tsorderdetail) 
         {
             bool result = false;
 
             string query = $"INSERT INTO TsOrderDetail(Id, OrderId, CourseId, IsActivated) " +
-                $"VALUES (DEFAULT, @OrderId, @CourseId, @IsActivated)";
+                $"VALUES (DEFAULT, @OrderId, @CourseId, 0)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -166,7 +166,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
                     command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    command.Parameters.AddWithValue("@IsActivated", tsorderdetail.IsActivated);
+                    
 
                     command.Connection = connection;
                     command.CommandText = query;
@@ -212,32 +212,92 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool UpdateIsActivated(Guid orderid, bool isactivated)
+        public bool CheckoutCart(List<TsOrderDetail> tsorderdetailchecked, List<TsOrderDetail> tsorderdetailunchecked, TsOrder tsorder)
         {
-            bool result = false;
+            //use transaction
 
-            string query = $"UPDATE TsOrderDetail SET IsActivated = @IsActivated" +
-                $"WHERE OrderId = @id";
+            bool result = false;
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand())
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", orderid);
-                    command.Parameters.AddWithValue("@IsActivated", isactivated);
-                    //command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
-                    //command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    //command.Parameters.AddWithValue("@IsActivated", tsorderdetail.IsActivated);
-                    command.Connection = connection;
-                    command.CommandText = query;
+                    MySqlCommand command1 = new MySqlCommand();
+                    command1.Connection = connection;
+                    command1.Transaction = transaction;
+                    command1.Parameters.Clear();
+                    command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, OrderDate = @OrderDate, IsPaid = @IsPaid " +
+                    $"WHERE Id = @Id";
+                    command1.Parameters.AddWithValue("@Id", tsorder.Id);
+                    command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command1.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
+                    command1.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                    command1.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
 
-                    connection.Open();
+                    foreach(var item in tsorderdetailchecked)
+                    {
+                        MySqlCommand command2 = new MySqlCommand();
+                        command2.Connection = connection;
+                        command2.Transaction = transaction;
+                        command2.Parameters.Clear();
+                        command2.CommandText = $"UPDATE TsOrderDetail SET IsActivated = 1 " +
+                        $"WHERE Id = @Id";
+                        command2.Parameters.AddWithValue("@Id", item.Id);
+                        var result2 = command2.ExecuteNonQuery();
+                    }
+                    
+                    
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                    var result1 = command1.ExecuteNonQuery();
 
+                    if (tsorderdetailunchecked.Count > 0)
+                    {
+                        Guid CartOrderId = Guid.NewGuid();
+
+                        MySqlCommand command3 = new MySqlCommand();
+                        command3.Connection = connection;
+                        command3.Transaction = transaction;
+                        command3.Parameters.Clear();
+                        command3.CommandText = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
+                                                $"VALUES (@Id, @UserId, DEFAULT, DEFAULT, DEFAULT, 0)";
+                        command3.Parameters.AddWithValue("@Id", CartOrderId);
+                        command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                        var result3 = command3.ExecuteNonQuery();
+
+                        foreach (var item in tsorderdetailchecked)
+                        {
+                            MySqlCommand command4 = new MySqlCommand();
+                            command4.Connection = connection;
+                            command4.Transaction = transaction;
+                            command4.Parameters.Clear();
+                            command4.CommandText = $"UPDATE TsOrderDetail SET OrderId = @OrderId " +
+                            $"WHERE Id = @Id";
+                            command4.Parameters.AddWithValue("@Id", item.Id);
+                            command4.Parameters.AddWithValue("@OrderId", CartOrderId);
+                            var result4 = command4.ExecuteNonQuery();
+                        }
+                        
+                    }
+
+                    transaction.Commit();
+
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
                     connection.Close();
                 }
+
+
             }
 
             return result;
