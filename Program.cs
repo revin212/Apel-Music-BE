@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<MsCourseData>();
 builder.Services.AddScoped<MsCategoryData>();
 builder.Services.AddScoped<MsUserData>();
+builder.Services.AddScoped<MsPaymentMethodData>();
 builder.Services.AddScoped<EmailService>();
 
 builder.Services.AddCors();
