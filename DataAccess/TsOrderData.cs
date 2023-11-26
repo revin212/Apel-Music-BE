@@ -1,5 +1,6 @@
 ﻿using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
+using NuGet.Protocol.Plugins;
 
 namespace fs_12_team_1_BE.DataAccess
 {
@@ -19,6 +20,64 @@ namespace fs_12_team_1_BE.DataAccess
                 {
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Guid paymentid;
+                                if (Convert.IsDBNull(reader["PaymentId"]))
+                                {
+                                    paymentid = Guid.Empty;
+
+                                }
+                                else 
+                                {
+                                    paymentid = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty);
+                                }
+                                
+                                tsOrder.Add(new TsOrder
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                    PaymentId = paymentid,
+                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                                });
+                            }
+                        }
+
+                        connection.Close();
+                    }
+                }
+
+                return tsOrder;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public List<TsOrder> GetAllPaidByUserId(Guid userid)
+        {
+            try
+            {
+                List<TsOrder> tsOrder = new List<TsOrder>();
+
+                string query = "SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 1";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@UserId", userid);
+                        command.Connection = connection;
+                        command.CommandText = query;
                         connection.Open();
 
                         using (MySqlDataReader reader = command.ExecuteReader())
@@ -90,12 +149,13 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
-        public List<TsOrder> GetAllNotPaidByUserId(Guid userid)
+        public TsOrder GetCart(Guid userid)
         {
             try
             {
-                List<TsOrder> tsOrder = new List<TsOrder>();
-                string query = "SELECT * FROM TsOrder WHERE IsPaid = 0 AND UserId = @id";
+                
+                TsOrder tsOrder = new TsOrder();
+                string query = "SELECT * FROM TsOrder WHERE IsPaid = 0 AND UserId = @id LIMIT 1";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -111,24 +171,19 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             while (reader.Read())
                             {
-                                //error guid parse :(, kayaknya gara2 ada yg null
+                               
                                 Guid readId = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
                                 Guid readUserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty);
-                                //string readPaymentIdString = reader["PaymentId"].ToString() ?? string.Empty;
-                                //if(readPaymentIdString != string.Empty)
-                                //{
-                                //    Guid readPaymentId = Guid.Parse(readPaymentIdString);
-                                //}
+                               
                                 
-                                tsOrder.Add(new TsOrder
+                                tsOrder = new TsOrder
                                 {
                                     Id = readId,
                                     UserId = readUserId,
-                                    //PaymentId = readPaymentId,
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                     OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
                                     IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
-                                });
+                                };
                             }
                         }
 
@@ -204,6 +259,62 @@ namespace fs_12_team_1_BE.DataAccess
 
                     connection.Close();
                 }
+            }
+
+            return result;
+        }
+        public bool Checkout(TsOrder tsorder)
+        {
+            //use transaction
+            
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
+                {
+                    MySqlCommand command1 = new MySqlCommand();
+                    command1.Connection = connection;
+                    command1.Transaction = transaction;
+                    command1.Parameters.Clear();
+                    command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, OrderDate = @OrderDate, IsPaid = @IsPaid " +
+                    $"WHERE Id = @Id";
+                    command1.Parameters.AddWithValue("@Id", tsorder.Id);
+                    command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command1.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
+                    command1.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                    command1.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
+
+
+                    MySqlCommand command2 = new MySqlCommand();
+                    command2.Connection = connection;
+                    command2.Transaction = transaction;
+                    command2.Parameters.Clear();
+                    command2.CommandText = $"UPDATE TsOrderDetail SET IsActivated = 1 " +
+                    $"WHERE OrderId = @Id";
+                    command2.Parameters.AddWithValue("@Id", tsorder.Id);
+                    var result1 = command1.ExecuteNonQuery();
+                    var result2 = command2.ExecuteNonQuery();
+
+                    transaction.Commit();
+
+                    result = true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+
+
             }
 
             return result;

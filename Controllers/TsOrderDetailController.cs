@@ -55,8 +55,31 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
+        [HttpGet("GetCart")]
+        public IActionResult GetCart(Guid orderid, Guid userid)
+        {
+            try
+            {
+                List<TsOrderDetail?> tsOrderDetail = _tsOrderDetailData.GetCart(orderid, userid);
+
+                if (tsOrderDetail == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(tsOrderDetail); //200
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         [HttpPost("AddToCart")]
-        public IActionResult AddToCart([FromBody] TsOrderDetailDTO tsorderdetailDto)
+        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
         {
             //select * from TsOrder
             //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
@@ -65,8 +88,13 @@ namespace fs_12_team_1_BE.Controllers
             //else insert new
             //test data
             //{
-            //  "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
+            //    "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
             //  "courseId": "b3e79d1f-884a-11ee-b59a-3c5282e16d0b",
+            //  "isActivated": false
+            //}
+            //{
+            //    "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
+            //  "courseId": "b3e79c28-884a-11ee-b59a-3c5282e16d0b",
             //  "isActivated": false
             //}
             try
@@ -82,13 +110,13 @@ namespace fs_12_team_1_BE.Controllers
                     IsActivated = false
                 };
 
-                List<TsOrder> tsOrder = _tsOrderData.GetAllNotPaidByUserId(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false, mudah2an dapetnya satu
+                TsOrder tsOrder = _tsOrderData.GetCart(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
 
-                //jika tsOrder count > 0 maka ubah tsorderdetailDto.OrderId dengan tsOrder.Id
-                if( tsOrder.Count > 0 )
+                //jika tsOrder.Id not null maka ubah tsorderdetail.OrderId dengan tsOrder.Id
+                if ( tsOrder.Id != null )
                 {
-                    //TODO: add logic if Count > 1, loop delete where tsOrder[>1].Id
-                    tsorderdetail.OrderId = tsOrder[0].Id;
+                    
+                    tsorderdetail.OrderId = tsOrder.Id;
                 }
                 else
                 {
@@ -101,7 +129,7 @@ namespace fs_12_team_1_BE.Controllers
                         //OrderDate = null,
                         IsPaid = false
                     };
-                    _tsOrderData.Insert(tsOrderNew); //Apa boleh langsung ke DataAccess? apa harus lewat tsorderdata controller dulu?
+                    _tsOrderData.Insert(tsOrderNew);
                     tsorderdetail.OrderId = tsOrderNew.Id;
                 }
                 bool result = _tsOrderDetailData.Insert(tsorderdetail);
@@ -122,12 +150,12 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPost("DeleteFromCart")]
-        public IActionResult DeleteFromCart([FromBody] Guid id, Guid orderid)
+        public IActionResult DeleteFromCart([FromBody] TsOrderDetailDTODeleteFromCart deletedata)
         {
             
             try
             {
-                bool result = _tsOrderDetailData.DeleteOneNotActivated(id, orderid);
+                bool result = _tsOrderDetailData.DeleteOneNotActivated(deletedata.Id, deletedata.OrderId);
 
                 if (result)
                 {
@@ -150,7 +178,7 @@ namespace fs_12_team_1_BE.Controllers
 
             try
             {
-                bool result = _tsOrderDetailData.DeleteAllNotActivatedByOrderId(orderid);
+                bool result = _tsOrderDetailData.ClearCart(orderid);
 
                 if (result)
                 {
@@ -168,7 +196,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTO tsorderdetailDto)
+        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
         {
             try
             {

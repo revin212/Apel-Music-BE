@@ -1,6 +1,6 @@
 ﻿namespace fs_12_team_1_BE.DTO.TsOrderDetail
 {
-    public class TsOrderDetailDTO
+    public class TsOrderDetailDTOAddToCart
     {
         public Guid? Id { get; set; }
         public Guid UserId { get; set; }

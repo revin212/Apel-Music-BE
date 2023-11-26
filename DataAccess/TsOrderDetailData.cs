@@ -77,8 +77,44 @@ namespace fs_12_team_1_BE.DataAccess
 
             return tsOrderDetail;
         }
+        public List<TsOrderDetail?> GetCart(Guid orderid, Guid userid)
+        {
+            List<TsOrderDetail?> tsOrderDetail = new List<TsOrderDetail?>();
 
-        public TsOrderDetail? GetAllByOrderIdIsActivated(Guid orderid, bool isactivated)
+            string query = $"SELECT * FROM TsOrderDetail LEFT JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id WHERE OrderId = @OrderId AND UserId = @UserId";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@OrderId", orderid);
+                    command.Parameters.AddWithValue("@UserId", userid);
+                    command.Connection = connection;
+                    command.CommandText = query;
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tsOrderDetail.Add(new TsOrderDetail
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
+                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                            });
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return tsOrderDetail;
+        }
+        public TsOrderDetail? GetCourse(Guid orderid, bool isactivated)
         {
             TsOrderDetail? tsOrderDetail = null;
 
@@ -233,18 +269,18 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool DeleteAllNotActivatedByOrderId(Guid orderid)
+        public bool ClearCart(Guid orderid)
         {
             bool result = false;
 
-            string query = $"DELETE FROM TsOrderDetail WHERE OrderId = @id AND IsActivated=0";
+            string query = $"DELETE FROM TsOrderDetail WHERE OrderId = @OrderId AND IsActivated=0";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", orderid);
+                    command.Parameters.AddWithValue("@OrderId", orderid);
                     command.Connection = connection;
                     command.CommandText = query;
 
