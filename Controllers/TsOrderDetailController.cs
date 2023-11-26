@@ -196,37 +196,37 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
-        {
-            try
-            {
-                if (tsorderdetailDto == null)
-                    return BadRequest("Data should be inputed");
+        //public IActionResult Put(Guid id, [FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
+        //{
+        //    try
+        //    {
+        //        if (tsorderdetailDto == null)
+        //            return BadRequest("Data should be inputed");
 
-                TsOrderDetail tsorder = new TsOrderDetail
-                {
-                    OrderId = tsorderdetailDto.OrderId,
-                    CourseId = tsorderdetailDto.CourseId,
-                    IsActivated = tsorderdetailDto.IsActivated
-                };
+        //        TsOrderDetail tsorder = new TsOrderDetail
+        //        {
+        //            OrderId = tsorderdetailDto.OrderId,
+        //            CourseId = tsorderdetailDto.CourseId,
+        //            IsActivated = tsorderdetailDto.IsActivated
+        //        };
 
-                bool result = _tsOrderDetailData.Update(id, tsorder);
+        //        bool result = _tsOrderDetailData.Update(id, tsorder);
 
-                if (result)
-                {
-                    return NoContent();//204
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
+        //        if (result)
+        //        {
+        //            return NoContent();//204
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
         [HttpDelete]
         public IActionResult Delete(Guid id)

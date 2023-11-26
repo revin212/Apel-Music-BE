@@ -219,7 +219,7 @@ namespace fs_12_team_1_BE.DataAccess
 
                                 tsOrderDetail.Add( new TsOrderDetail
                                 {
-                                    Id = Guid.Parse(reader["TsOrderDetail.Id"].ToString() ?? string.Empty),
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                     OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                     CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                     IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
