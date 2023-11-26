@@ -110,10 +110,10 @@ namespace fs_12_team_1_BE.Controllers
                     IsActivated = false
                 };
 
-                TsOrder tsOrder = _tsOrderData.GetCart(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
+                TsOrder? tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
 
                 //jika tsOrder.Id not null maka ubah tsorderdetail.OrderId dengan tsOrder.Id
-                if ( tsOrder.Id != null )
+                if (tsOrder != null)
                 {
                     
                     tsorderdetail.OrderId = tsOrder.Id;

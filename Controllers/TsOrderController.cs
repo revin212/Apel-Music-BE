@@ -65,7 +65,51 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
-        
+        [HttpGet("GetCartInfo")]
+        public IActionResult GetCartInfo(Guid userid)
+        {
+            try
+            {
+                TsOrder? tsOrder = _tsOrderData.GetCartInfo(userid);
+
+                if (tsOrder == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(tsOrder); //200
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        [HttpGet("GetCart")]
+        public IActionResult GetCart(Guid userid)
+        {
+            try
+            {
+                List<TsOrderDetail?> tsorderdetail = _tsOrderData.GetCart(userid);
+
+                if (tsorderdetail == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(tsorderdetail); //200
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         [HttpPost("Checkout")]
         public IActionResult Checkout([FromBody] TsOrderDTOCheckout tsorderDtoCheckout)
         {

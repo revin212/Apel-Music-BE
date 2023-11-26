@@ -149,13 +149,58 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
-        public TsOrder GetCart(Guid userid)
+        public TsOrder? GetCartInfo(Guid userid)
+        {
+            TsOrder? tsOrder = null;
+
+            string query = $"SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@UserId", userid);
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.IsDBNull(0))
+                            {
+                                break;
+                            }
+                            tsOrder = new TsOrder
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                
+                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                            };
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return tsOrder;
+        }
+
+        public List<TsOrderDetail?> GetCart(Guid userid) //NOT COMPLETE
         {
             try
             {
                 
-                TsOrder tsOrder = new TsOrder();
-                string query = "SELECT * FROM TsOrder WHERE IsPaid = 0 AND UserId = @id LIMIT 1";
+                List<TsOrderDetail?> tsOrderDetail = new List<TsOrderDetail?>();
+                string query = "SELECT * FROM TsOrderDetail LEFT JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id" +
+                    " WHERE IsPaid = 0 AND UserId = @id AND IsActivated = 0";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -171,26 +216,21 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             while (reader.Read())
                             {
-                               
-                                Guid readId = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
-                                Guid readUserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty);
-                               
-                                
-                                tsOrder = new TsOrder
+
+                                tsOrderDetail.Add( new TsOrderDetail
                                 {
-                                    Id = readId,
-                                    UserId = readUserId,
-                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
-                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
-                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
-                                };
+                                    Id = Guid.Parse(reader["TsOrderDetail.Id"].ToString() ?? string.Empty),
+                                    OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                    CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
+                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                                });
                             }
                         }
 
                         connection.Close();
                     }
                 }
-                return tsOrder;
+                return tsOrderDetail;
             }
             catch (Exception)
             {
