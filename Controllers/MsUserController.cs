@@ -96,7 +96,7 @@ namespace fs_12_team_1_BE.Controllers
                     string token = GenerateToken(user.Email);
                     DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
                     MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
-                    SetRefreshTokenCookies(refreshToken);
+                    SetRefreshTokenCookies(refreshToken, user.Id.ToString() ?? string.Empty);
                     _msUserData.UpdateRefreshToken(refreshToken);
 
                     return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires });
@@ -115,6 +115,7 @@ namespace fs_12_team_1_BE.Controllers
             {
                 string refreshToken = Request.Cookies["refreshToken"] ?? String.Empty;
                 string Email = Request.Cookies["email"] ?? String.Empty;
+                string Id = Request.Cookies["userId"] ?? String.Empty;
                 MsUserRefreshToken dbRefreshToken = _msUserData.GetRefreshToken(Email);
 
                 if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
@@ -129,7 +130,7 @@ namespace fs_12_team_1_BE.Controllers
                 string newToken = GenerateToken(Email);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
                 MsUserRefreshToken newRefreshToken = GenerateRefreshToken(Email);
-                SetRefreshTokenCookies(newRefreshToken);
+                SetRefreshTokenCookies(newRefreshToken, Id);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
                 return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires });
@@ -222,7 +223,7 @@ namespace fs_12_team_1_BE.Controllers
             return refreshToken;
         }
 
-        private void SetRefreshTokenCookies(MsUserRefreshToken newRefreshToken)
+        private void SetRefreshTokenCookies(MsUserRefreshToken newRefreshToken, string Id)
         {
             var cookieOptions = new CookieOptions
             {
@@ -233,6 +234,7 @@ namespace fs_12_team_1_BE.Controllers
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
             Response.Cookies.Append("email", newRefreshToken.UserEmail, cookieOptions);
+            Response.Cookies.Append("userId", Id, cookieOptions);
         }
 
         [HttpGet("ActivateUser")]
