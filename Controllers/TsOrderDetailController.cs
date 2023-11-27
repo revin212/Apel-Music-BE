@@ -255,7 +255,7 @@ namespace fs_12_team_1_BE.Controllers
             
             try
             {
-                bool result = _tsOrderDetailData.DeleteOneNotActivated(deletedata.Id, deletedata.OrderId);
+                bool result = _tsOrderDetailData.DeleteOneNotActivated(deletedata.Id);
 
                 if (result)
                 {

@@ -6,7 +6,13 @@ namespace fs_12_team_1_BE.DataAccess
 {
     public class TsOrderData
     {
-        private readonly string connectionString = "server=localhost;port=3306;database=fs12apelmusic;user=root;password=";
+        private readonly string connectionString;
+        private readonly IConfiguration _configuration;
+        public TsOrderData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            connectionString = _configuration.GetConnectionString("DefaultConnection");
+        }
 
         public List<TsOrder> GetAll()
         {

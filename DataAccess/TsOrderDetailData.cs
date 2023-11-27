@@ -5,7 +5,14 @@ namespace fs_12_team_1_BE.DataAccess
 {
     public class TsOrderDetailData
     {
-        private readonly string connectionString = "server=localhost;port=3306;database=fs12apelmusic;user=root;password=";
+        
+        private readonly string connectionString;
+        private readonly IConfiguration _configuration;
+        public TsOrderDetailData(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            connectionString = _configuration.GetConnectionString("DefaultConnection");
+        }
 
         public List<TsOrderDetail> GetAll()
         {
@@ -354,11 +361,11 @@ namespace fs_12_team_1_BE.DataAccess
 
             return result;
         }
-        public bool DeleteOneNotActivated(Guid id, Guid orderid)
+        public bool DeleteOneNotActivated(Guid id)
         {
             bool result = false;
 
-            string query = $"DELETE FROM TsOrderDetail WHERE Id = @Id AND OrderId = @OrderId AND IsActivated = 0";
+            string query = $"DELETE FROM TsOrderDetail WHERE Id = @Id AND IsActivated = 0";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -366,7 +373,6 @@ namespace fs_12_team_1_BE.DataAccess
                 {
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@Id", id);
-                    command.Parameters.AddWithValue("@OrderId", orderid);
                     command.Connection = connection;
                     command.CommandText = query;
 
