@@ -268,7 +268,7 @@ namespace fs_12_team_1_BE.DataAccess
                         command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
                         var result3 = command3.ExecuteNonQuery();
 
-                        foreach (var item in tsorderdetailchecked)
+                        foreach (var item in tsorderdetailunchecked)
                         {
                             MySqlCommand command4 = new MySqlCommand();
                             command4.Connection = connection;

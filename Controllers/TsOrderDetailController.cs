@@ -96,15 +96,15 @@ namespace fs_12_team_1_BE.Controllers
             //      "paymentId": "3e544b7c-884a-11ee-b59a-3c5282e16d0b",
             //      "orderDate": "2023-11-27T02:04:31",
             //                    },
-            //      "cartItem": [
+            //"cartItem": [
             //          {
-            //            "id": "a4197ebe-8c8e-11ee-a7fb-71f57a8118f6",
+            //    "id": "a4197ebe-8c8e-11ee-a7fb-71f57a8118f6",
             //            "orderId": "faa4129e-655c-4492-a435-4bfe1e8959cf",
             //            "courseId": "b3e79d1f-884a-11ee-b59a-3c5282e16d0b",
             //            "isChecked": true
             //          },
             //          {
-            //                            "id": "c8994757-8c8e-11ee-a7fb-71f57a8118f6",
+            //    "id": "c8994757-8c8e-11ee-a7fb-71f57a8118f6",
             //            "orderId": "faa4129e-655c-4492-a435-4bfe1e8959cf",
             //            "courseId": "b3e79c28-884a-11ee-b59a-3c5282e16d0b",
             //            "isChecked": false
