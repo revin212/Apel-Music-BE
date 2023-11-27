@@ -3,6 +3,7 @@ using fs_12_team_1_BE.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using fs_12_team_1_BE.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         });
 
 
+builder.Services.AddScoped<TsOrderData>();
+builder.Services.AddScoped<TsOrderDetailData>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
