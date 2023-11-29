@@ -9,5 +9,7 @@
         public DateTime CreatedAt { get; set; }
         public bool IsActivated { get; set; } = false;
         public bool IsDeleted { get; set; } = false;
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpires { get; set; }
     }
 }

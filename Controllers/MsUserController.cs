@@ -3,6 +3,7 @@ using fs_12_team_1_BE.DTO.MsUser;
 using fs_12_team_1_BE.Email;
 using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
@@ -95,7 +96,7 @@ namespace fs_12_team_1_BE.Controllers
 
                     string token = GenerateToken(user.Email);
                     DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
-                    MsUserRefreshToken refreshToken = GenerateRefreshToken(credential.Email);
+                    RefreshTokenDTO refreshToken = GenerateRefreshToken(credential.Email);
                     SetRefreshTokenCookies(refreshToken, user.Id.ToString() ?? string.Empty);
                     _msUserData.UpdateRefreshToken(refreshToken);
 
@@ -116,24 +117,62 @@ namespace fs_12_team_1_BE.Controllers
                 string refreshToken = Request.Cookies["refreshToken"] ?? String.Empty;
                 string Email = Request.Cookies["email"] ?? String.Empty;
                 string Id = Request.Cookies["userId"] ?? String.Empty;
-                MsUserRefreshToken dbRefreshToken = _msUserData.GetRefreshToken(Email);
+                RefreshTokenDTO dbRefreshToken = _msUserData.GetRefreshToken(Email);
 
                 if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
                 {
                     return Unauthorized("Invalid Refresh Token.");
                 }
-                else if (dbRefreshToken.ExpiredAt < DateTime.Now)
+                else if (dbRefreshToken.RefreshTokenExpires < DateTime.Now)
                 {
                     return Unauthorized("Token expired.");
                 }
 
                 string newToken = GenerateToken(Email);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
-                MsUserRefreshToken newRefreshToken = GenerateRefreshToken(Email);
+                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email);
                 SetRefreshTokenCookies(newRefreshToken, Id);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
                 return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires });
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            try
+            {
+                bool isLoggedOut = false;
+                int cookieCount = Request.Cookies.Count;
+
+                if (cookieCount > 0)
+                {
+                    string Email = Request.Cookies["email"] ?? String.Empty;
+                    isLoggedOut = _msUserData.Logout(Email);
+
+                    var expiredCookieOption = new CookieOptions
+                    {
+                        HttpOnly = true,
+                        SameSite = SameSiteMode.None,
+                        Secure = true,
+                        Expires = DateTime.Now.AddDays(-1),
+                    };
+                    Response.Cookies.Append("refreshToken", string.Empty, expiredCookieOption);
+                    Response.Cookies.Append("email", string.Empty, expiredCookieOption);
+                    Response.Cookies.Append("userId", string.Empty, expiredCookieOption);
+                }
+
+                if(isLoggedOut)
+                    return StatusCode(204);
+                else
+                {
+                    return BadRequest("Already logged out");
+                }
             }
             catch
             {
@@ -157,6 +196,9 @@ namespace fs_12_team_1_BE.Controllers
 
                 if (user != null)
                     return BadRequest("This email address is already used by another account");
+
+                if(msUserDto.Password != msUserDto.ConfirmPassword)
+                    return BadRequest("Password do not match");
 
 
                 MsUserRegisterDTO msUser = new MsUserRegisterDTO
@@ -211,30 +253,29 @@ namespace fs_12_team_1_BE.Controllers
             return token;
         }
 
-        private MsUserRefreshToken GenerateRefreshToken(string Email)
+        private RefreshTokenDTO GenerateRefreshToken(string Email)
         {
-            var refreshToken = new MsUserRefreshToken
+            var refreshToken = new RefreshTokenDTO
             {
-                UserEmail = Email,
+                Email = Email,
                 RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-                CreatedAt = DateTime.Now,
-                ExpiredAt = DateTime.Now.AddDays(7)
+                RefreshTokenExpires = DateTime.Now.AddDays(7)
             };
             return refreshToken;
         }
 
-        private void SetRefreshTokenCookies(MsUserRefreshToken newRefreshToken, string Id)
+        private void SetRefreshTokenCookies(RefreshTokenDTO newRefreshToken, string UserId)
         {
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 SameSite = SameSiteMode.None,
                 Secure = true,
-                Expires = newRefreshToken.ExpiredAt
+                Expires = newRefreshToken.RefreshTokenExpires
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
-            Response.Cookies.Append("email", newRefreshToken.UserEmail, cookieOptions);
-            Response.Cookies.Append("userId", Id, cookieOptions);
+            Response.Cookies.Append("email", newRefreshToken.Email, cookieOptions);
+            Response.Cookies.Append("userId", UserId, cookieOptions);
         }
 
         [HttpGet("ActivateUser")]

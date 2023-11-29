@@ -126,77 +126,21 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                MySqlTransaction transaction = connection.BeginTransaction();
-                Guid Id = Guid.NewGuid();
-
-                try
-                {
-                    MySqlCommand command1 = new MySqlCommand();
-                    command1.Connection = connection;
-                    command1.Transaction = transaction;
-                    command1.Parameters.Clear();
-
-                    command1.CommandText = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt)  VALUES (@Id, @Name, @Email, @Password, 0, 0, @CreatedAt)";
-                    command1.Parameters.AddWithValue("@Id", Id);
-                    command1.Parameters.AddWithValue("@Name", msUser.Name);
-                    command1.Parameters.AddWithValue("@Email", msUser.Email);
-                    command1.Parameters.AddWithValue("@Password", msUser.Password);
-                    command1.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
-
-
-                    MySqlCommand command2 = new MySqlCommand();
-                    command2.Connection = connection;
-                    command2.Transaction = transaction;
-                    command2.Parameters.Clear();
-
-                    command2.CommandText = "INSERT INTO MsUserRefreshToken (Id, UserEmail) VALUES (@Id, @UserEmail)";
-                    command2.Parameters.AddWithValue("@Id", Id);
-                    command2.Parameters.AddWithValue("@UserEmail", msUser.Email);
-
-                    var result1 = command1.ExecuteNonQuery();
-                    var result2 = command2.ExecuteNonQuery();
-
-                    transaction.Commit();
-
-                    result = true;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    result = false;
-                }
-                finally
-                {
-                    connection.Close();
-                }
-            }
-
-            return result;
-        }
-
-        public bool UpdateRefreshToken(MsUserRefreshToken refreshToken)
-        {
-            bool result = false;
-
-            string query = "UPDATE MsUserRefreshToken SET RefreshToken = @RefreshToken, CreatedAt = @CreatedAt, ExpiredAt = @ExpiredAt " + "WHERE UserEmail = @UserEmail";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (DEFAULT, @Name, @Email, @Password, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
-                    command.Connection = connection;
                     command.Parameters.Clear();
 
-                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@Name", msUser.Name);
+                    command.Parameters.AddWithValue("@Email", msUser.Email);
+                    command.Parameters.AddWithValue("@Password", msUser.Password);
+                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
 
-                    command.Parameters.AddWithValue("@RefreshToken", refreshToken.RefreshToken);
-                    command.Parameters.AddWithValue("@CreatedAt", refreshToken.CreatedAt);
-                    command.Parameters.AddWithValue("@ExpiredAt", refreshToken.ExpiredAt);
-                    command.Parameters.AddWithValue("@UserEmail", refreshToken.UserEmail);
+                    command.Connection = connection;
+                    command.CommandText = query;
 
                     connection.Open();
 
@@ -209,11 +153,41 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public MsUserRefreshToken GetRefreshToken(string Email)
+        public bool UpdateRefreshToken(RefreshTokenDTO refreshToken)
         {
-            MsUserRefreshToken msUserRefreshToken = new MsUserRefreshToken();
+            bool result = false;
 
-            string query = $"SELECT * FROM MsUserRefreshToken WHERE UserEmail = @Email";
+            string query = "UPDATE MsUser SET RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires " + "WHERE Email = @Email";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+
+                    command.CommandText = query;
+
+                    command.Parameters.AddWithValue("@RefreshToken", refreshToken.RefreshToken);
+                    command.Parameters.AddWithValue("@RefreshTokenExpires", refreshToken.RefreshTokenExpires);
+                    command.Parameters.AddWithValue("@Email", refreshToken.Email);
+
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        public RefreshTokenDTO GetRefreshToken(string Email)
+        {
+            RefreshTokenDTO RefreshToken = new RefreshTokenDTO();
+
+            string query = $"SELECT * FROM MsUser WHERE Email = @Email";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -228,13 +202,11 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msUserRefreshToken = new MsUserRefreshToken
+                            RefreshToken = new RefreshTokenDTO
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                UserEmail = reader["UserEmail"].ToString() ?? string.Empty,
+                                Email = reader["Email"].ToString() ?? string.Empty,
                                 RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
-                                CreatedAt = reader.GetDateTime("CreatedAt"),
-                                ExpiredAt = reader.GetDateTime("ExpiredAt")
+                                RefreshTokenExpires = reader.GetDateTime("RefreshTokenExpires")
                             };
                         }
                     }
@@ -243,7 +215,31 @@ namespace fs_12_team_1_BE.DataAccess
                 }
             }
 
-            return msUserRefreshToken;
+            return RefreshToken;
+        }
+
+        public bool Logout(string Email)
+        {
+            bool result = false;
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                MySqlCommand command = new MySqlCommand();
+                command.Connection = connection;
+                command.Parameters.Clear();
+
+                command.CommandText = "UPDATE MsUser SET RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires WHERE Email = @Email";
+                command.Parameters.AddWithValue("@RefreshToken", string.Empty);
+                command.Parameters.AddWithValue("@RefreshTokenExpires", DateTime.Now.AddDays(-1));
+                command.Parameters.AddWithValue("@Email", Email);
+
+                connection.Open();
+                result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                connection.Close();
+            }
+
+            return result;
         }
 
         public bool ActivateUser(string Email)
@@ -359,45 +355,22 @@ namespace fs_12_team_1_BE.DataAccess
         public bool HardDelete(Guid id)
         {
             bool result = false;
+            string query = "DELETE FROM MsUser WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                connection.Open();
-                MySqlTransaction transaction = connection.BeginTransaction();
-
-                try
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    MySqlCommand command1 = new MySqlCommand();
-                    command1.Connection = connection;
-                    command1.Transaction = transaction;
-                    command1.Parameters.Clear();
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
 
-                    command1.CommandText = "DELETE FROM MsUserRefreshToken WHERE Id = @Id";
-                    command1.Parameters.AddWithValue("@Id", id);
+                    command.Connection = connection;
+                    command.CommandText = query;
 
+                    connection.Open();
 
-                    MySqlCommand command2 = new MySqlCommand();
-                    command2.Connection = connection;
-                    command2.Transaction = transaction;
-                    command2.Parameters.Clear();
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    command2.CommandText = "DELETE FROM MsUser WHERE Id = @Id";
-                    command2.Parameters.AddWithValue("@Id", id);
-
-                    var result1 = command1.ExecuteNonQuery();
-                    var result2 = command2.ExecuteNonQuery();
-
-                    transaction.Commit();
-
-                    result = true;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    result = false;
-                }
-                finally
-                {
                     connection.Close();
                 }
             }

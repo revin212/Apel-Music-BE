@@ -10,16 +10,9 @@ CREATE TABLE MsUser (
     Password VARCHAR(250) NOT NULL,  
     IsDeleted bool DEFAULT 0,
     IsActivated bool DEFAULT 0,
-    CreatedAt TIMESTAMP
-);
-
-CREATE TABLE MsUserRefreshToken (
-    Id VARCHAR(40) PRIMARY KEY DEFAULT (UUID()),
-    UserEmail VARCHAR(250) NOT NULL UNIQUE,
-    RefreshToken VARCHAR(250),
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ExpiredAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (UserEmail) REFERENCES MsUser(Email)
+    RefreshToken VARCHAR(250),
+    RefreshTokenExpires TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE MsCategory (
