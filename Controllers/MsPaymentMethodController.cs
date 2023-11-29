@@ -29,44 +29,44 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
-        {
-            try
-            {
-                MsPaymentMethod? msPaymentMethod = _msPaymentMethodData.GetById(id);
+        //[HttpGet("GetById")]
+        //public IActionResult Get(Guid id)
+        //{
+        //    try
+        //    {
+        //        MsPaymentMethod? msPaymentMethod = _msPaymentMethodData.GetById(id);
 
-                if (msPaymentMethod == null)
-                {
-                    return NotFound("Data not found");
-                }
+        //        if (msPaymentMethod == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
 
-                return Ok(msPaymentMethod);
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        return Ok(msPaymentMethod);
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
-        [HttpGet("GetByName")]
-        public IActionResult GetByName(string Name)
-        {
-            try
-            {
-                MsPaymentMethod? msPaymentMethod = _msPaymentMethodData.GetByName(Name);
+        //[HttpGet("GetByName")]
+        //public IActionResult GetByName(string Name)
+        //{
+        //    try
+        //    {
+        //        MsPaymentMethod? msPaymentMethod = _msPaymentMethodData.GetByName(Name);
 
-                if (msPaymentMethod == null)
-                {
-                    return NotFound("Data not found");
-                }
+        //        if (msPaymentMethod == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
 
-                return Ok(msPaymentMethod);
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        return Ok(msPaymentMethod);
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
     }
 }
