@@ -22,7 +22,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<MsCourse> msCourse = _msCourseData.GetAll();
+                List<MsCourseResponseDTO> msCourse = _msCourseData.GetAll();
                 return Ok(msCourse);
             }
             catch (Exception)
@@ -31,12 +31,47 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
+        [HttpGet("GetRecommendedCourses")]
+        public IActionResult GetRecommendedCourses()
         {
             try
             {
-                MsCourse? msCourse = _msCourseData.GetById(id);
+                List<MsCourseResponseDTO> msCourse = _msCourseData.GetRecommendedCourses();
+                return Ok(msCourse);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        //[HttpGet("GetById")]
+        //public IActionResult Get(Guid id)
+        //{
+        //    try
+        //    {
+        //        MsCourseResponseDTO? msCourse = _msCourseData.GetById(id);
+
+        //        if (msCourse == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
+
+        //        return Ok(msCourse); //200
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
+
+        [HttpGet("GetByName")]
+        public IActionResult GetByName(string name)
+        {
+            try
+            {
+                MsCourseResponseDTO? msCourse = _msCourseData.GetByName(name);
 
                 if (msCourse == null)
                 {
@@ -47,106 +82,125 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
+        [HttpGet("GetByCategory")]
+        public IActionResult GetByCategory(string CategoryName)
         {
             try
             {
-                if (mscourseDto == null)
-                    return BadRequest("Data should be inputed");
+                MsCourseResponseDTO? msCourse = _msCourseData.GetByCategory(CategoryName);
 
-                MsCourse mscourse = new MsCourse
+                if (msCourse == null)
                 {
-                    //Id = Guid.NewGuid(),
-                    Name = mscourseDto.Name,
-                    Description = mscourseDto.Description,
-                    Image = mscourseDto.Image,
-                    Price = mscourseDto.Price,
-                    CategoryId = mscourseDto.CategoryId
-                };
-
-                bool result = _msCourseData.Insert(mscourse);
-
-                if (result)
-                {
-                    return StatusCode(201, mscourse.Id);
+                    return NotFound("Data not found");
                 }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
+
+                return Ok(msCourse); //200
             }
             catch (Exception)
             {
-
                 throw;
             }
         }
 
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] MsCourseDTO mscourseDto)
-        {
-            try
-            {
-                if (mscourseDto == null)
-                    return BadRequest("Data should be inputed");
+        //[HttpPost]
+        //public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
+        //{
+        //    try
+        //    {
+        //        if (mscourseDto == null)
+        //            return BadRequest("Data should be inputed");
 
-                MsCourse mscourse = new MsCourse
-                {
-                    Name = mscourseDto.Name,
-                    Description = mscourseDto.Description,
-                    Image = mscourseDto.Image,
-                    Price = mscourseDto.Price,
-                    CategoryId = mscourseDto.CategoryId
+        //        MsCourse mscourse = new MsCourse
+        //        {
+        //            //Id = Guid.NewGuid(),
+        //            Name = mscourseDto.Name,
+        //            Description = mscourseDto.Description,
+        //            Image = mscourseDto.Image,
+        //            Price = mscourseDto.Price,
+        //            CategoryId = mscourseDto.CategoryId
+        //        };
+
+        //        bool result = _msCourseData.Insert(mscourse);
+
+        //        if (result)
+        //        {
+        //            return StatusCode(201, mscourse.Id);
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
+
+        //[HttpPut]
+        //public IActionResult Put(Guid id, [FromBody] MsCourseDTO mscourseDto)
+        //{
+        //    try
+        //    {
+        //        if (mscourseDto == null)
+        //            return BadRequest("Data should be inputed");
+
+        //        MsCourse mscourse = new MsCourse
+        //        {
+        //            Name = mscourseDto.Name,
+        //            Description = mscourseDto.Description,
+        //            Image = mscourseDto.Image,
+        //            Price = mscourseDto.Price,
+        //            CategoryId = mscourseDto.CategoryId
 
 
-                };
+        //        };
 
-                bool result = _msCourseData.Update(id, mscourse);
+        //        bool result = _msCourseData.Update(id, mscourse);
 
-                if (result)
-                {
-                    return NoContent();//204
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
+        //        if (result)
+        //        {
+        //            return NoContent();//204
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
-        [HttpDelete]
-        public IActionResult Delete(Guid id)
-        {
-            try
-            {
-                bool result = _msCourseData.Delete(id);
+        //[HttpDelete]
+        //public IActionResult Delete(Guid id)
+        //{
+        //    try
+        //    {
+        //        bool result = _msCourseData.Delete(id);
 
-                if (result)
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
+        //        if (result)
+        //        {
+        //            return NoContent();
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
     }
 }
