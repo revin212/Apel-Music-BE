@@ -158,6 +158,9 @@ namespace fs_12_team_1_BE.Controllers
                 if (user != null)
                     return BadRequest("This email address is already used by another account");
 
+                if(msUserDto.Password != msUserDto.ConfirmPassword)
+                    return BadRequest("Password do not match");
+
 
                 MsUserRegisterDTO msUser = new MsUserRegisterDTO
                 {
