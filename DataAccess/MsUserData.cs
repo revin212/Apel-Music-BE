@@ -293,89 +293,89 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool Update(Guid id, MsUserRegisterDTO msUser)
-        {
-            bool result = false;
+        //public bool Update(Guid id, MsUserRegisterDTO msUser)
+        //{
+        //    bool result = false;
 
-            string query = $"UPDATE MsUser SET Name = @Name, Email = @Email, Password = @Password " +
-                $"WHERE Id = @Id";
+        //    string query = $"UPDATE MsUser SET Name = @Name, Email = @Email, Password = @Password " +
+        //        $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msUser.Name);
-                    command.Parameters.AddWithValue("@Email", msUser.Email);
-                    command.Parameters.AddWithValue("@Password", msUser.Password);
-                    command.Parameters.AddWithValue("@Id", id);
+        //            command.Parameters.AddWithValue("@Name", msUser.Name);
+        //            command.Parameters.AddWithValue("@Email", msUser.Email);
+        //            command.Parameters.AddWithValue("@Password", msUser.Password);
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public bool SoftDelete(Guid id)
-        {
-            bool result = false;
+        //public bool SoftDelete(Guid id)
+        //{
+        //    bool result = false;
 
-            string query = $"UPDATE MsUser SET IsDeleted = 1 WHERE Id = @Id";
+        //    string query = $"UPDATE MsUser SET IsDeleted = 1 WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public bool HardDelete(Guid id)
-        {
-            bool result = false;
-            string query = "DELETE FROM MsUser WHERE Id = @Id";
+        //public bool HardDelete(Guid id)
+        //{
+        //    bool result = false;
+        //    string query = "DELETE FROM MsUser WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
     }
 }
