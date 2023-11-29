@@ -48,43 +48,43 @@ namespace fs_12_team_1_BE.DataAccess
             return msCategory;
         }
 
-        public MsCategory? GetById(Guid id)
-        {
-            MsCategory? msCategory = null;
+        //public MsCategory? GetById(Guid id)
+        //{
+        //    MsCategory? msCategory = null;
 
-            string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
+        //    string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    connection.Open();
+        //            connection.Open();
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msCategory = new MsCategory
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Title = reader["Title"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
-                            };
-                        }
-                    }
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msCategory = new MsCategory
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Title = reader["Title"].ToString() ?? string.Empty,
+        //                        Description = reader["Description"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty,
+        //                        HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
+        //                    };
+        //                }
+        //            }
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return msCategory;
-        }
+        //    return msCategory;
+        //}
 
         public MsCategory? GetByName(string Name)
         {
@@ -124,99 +124,99 @@ namespace fs_12_team_1_BE.DataAccess
             return msCategory;
         }
 
-        public bool Insert(MsCategory msCategory)
-        {
-            bool result = false;
+        //public bool Insert(MsCategory msCategory)
+        //{
+        //    bool result = false;
 
-            string query = $"INSERT INTO MsCategory(Id, Name, Title, Description, Image, HeaderImage) " +
-                $"VALUES (DEFAULT, @Name, @Title, @Description, @Image, @HeaderImage)";
+        //    string query = $"INSERT INTO MsCategory(Id, Name, Title, Description, Image, HeaderImage) " +
+        //        $"VALUES (DEFAULT, @Name, @Title, @Description, @Image, @HeaderImage)";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msCategory.Name);
-                    command.Parameters.AddWithValue("@Title", msCategory.Title);
-                    command.Parameters.AddWithValue("@Description", msCategory.Description);
-                    command.Parameters.AddWithValue("@Image", msCategory.Image);
-                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+        //            command.Parameters.AddWithValue("@Name", msCategory.Name);
+        //            command.Parameters.AddWithValue("@Title", msCategory.Title);
+        //            command.Parameters.AddWithValue("@Description", msCategory.Description);
+        //            command.Parameters.AddWithValue("@Image", msCategory.Image);
+        //            command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public bool Update(Guid id, MsCategory msCategory)
-        {
-            bool result = false;
+        //public bool Update(Guid id, MsCategory msCategory)
+        //{
+        //    bool result = false;
 
-            string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage " +
-                $"WHERE Id = @Id";
+        //    string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage " +
+        //        $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msCategory.Name);
-                    command.Parameters.AddWithValue("@Title", msCategory.Title);
-                    command.Parameters.AddWithValue("@Description", msCategory.Description);
-                    command.Parameters.AddWithValue("@Image", msCategory.Image);
-                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
-                    command.Parameters.AddWithValue("@Id", id);
+        //            command.Parameters.AddWithValue("@Name", msCategory.Name);
+        //            command.Parameters.AddWithValue("@Title", msCategory.Title);
+        //            command.Parameters.AddWithValue("@Description", msCategory.Description);
+        //            command.Parameters.AddWithValue("@Image", msCategory.Image);
+        //            command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public bool Delete(Guid id)
-        {
-            bool result = false;
+        //public bool Delete(Guid id)
+        //{
+        //    bool result = false;
 
-            string query = $"DELETE FROM MsCategory WHERE Id = @Id";
+        //    string query = $"DELETE FROM MsCategory WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
     }
 }

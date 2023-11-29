@@ -25,9 +25,9 @@ namespace fs_12_team_1_BE.Controllers
                 List<MsCourseResponseDTO> msCourse = _msCourseData.GetAll();
                 return Ok(msCourse);
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -39,9 +39,9 @@ namespace fs_12_team_1_BE.Controllers
                 List<MsCourseResponseDTO> msCourse = _msCourseData.GetRecommendedCourses();
                 return Ok(msCourse);
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -59,10 +59,10 @@ namespace fs_12_team_1_BE.Controllers
 
         //        return Ok(msCourse); //200
         //    }
-        //    catch (Exception)
+        //    catch
         //    {
 
-        //        throw;
+        //        return StatusCode(500, "Server Error occured");
         //    }
         //}
 
@@ -80,9 +80,9 @@ namespace fs_12_team_1_BE.Controllers
 
                 return Ok(msCourse); //200
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -100,9 +100,9 @@ namespace fs_12_team_1_BE.Controllers
 
                 return Ok(msCourse); //200
             }
-            catch (Exception)
+            catch
             {
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
@@ -135,10 +135,10 @@ namespace fs_12_team_1_BE.Controllers
         //            return StatusCode(500, "Error occured");
         //        }
         //    }
-        //    catch (Exception)
+        //    catch
         //    {
 
-        //        throw;
+        //        return StatusCode(500, "Server Error occured");
         //    }
         //}
 
@@ -172,10 +172,10 @@ namespace fs_12_team_1_BE.Controllers
         //            return StatusCode(500, "Error occured");
         //        }
         //    }
-        //    catch (Exception)
+        //    catch
         //    {
 
-        //        throw;
+        //        return StatusCode(500, "Server Error occured");
         //    }
         //}
 
@@ -195,10 +195,10 @@ namespace fs_12_team_1_BE.Controllers
         //            return StatusCode(500, "Error occured");
         //        }
         //    }
-        //    catch (Exception)
+        //    catch
         //    {
 
-        //        throw;
+        //        return StatusCode(500, "Server Error occured");
         //    }
         //}
 
