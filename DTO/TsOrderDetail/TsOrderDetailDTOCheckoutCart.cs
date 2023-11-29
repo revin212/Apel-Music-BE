@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public Guid OrderId { get; set; }
         public Guid CourseId { get; set; }
+        public DateOnly Jadwal {  get; set; }
         public bool IsChecked { get; set; }
     }
 }

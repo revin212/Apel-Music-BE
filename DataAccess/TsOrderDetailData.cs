@@ -163,8 +163,8 @@ namespace fs_12_team_1_BE.DataAccess
         {
             bool result = false;
 
-            string query = $"INSERT INTO TsOrderDetail(Id, OrderId, CourseId, IsActivated) " +
-                $"VALUES (DEFAULT, @OrderId, @CourseId, 0)";
+            string query = $"INSERT INTO TsOrderDetail(Id, OrderId, CourseId, Jadwal, IsActivated) " +
+                $"VALUES (DEFAULT, @OrderId, @CourseId, @Jadwal, 0)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -173,7 +173,8 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
                     command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    
+                    command.Parameters.AddWithValue("@Jadwal", tsorderdetail.Jadwal);
+
 
                     command.Connection = connection;
                     command.CommandText = query;
