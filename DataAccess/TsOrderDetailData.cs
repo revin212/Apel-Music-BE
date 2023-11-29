@@ -280,12 +280,7 @@ namespace fs_12_team_1_BE.DataAccess
                         var result3 = command3.ExecuteNonQuery();
 
                         
-                        MySqlCommand commandgetcartinfo = new MySqlCommand();
-                        commandgetcartinfo.Parameters.Clear();
-                        commandgetcartinfo.Connection = connection;
-                        commandgetcartinfo.CommandText = $"SELECT id FROM TsOrder WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1";
-                        command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
-                        int cartid = int.Parse(commandgetcartinfo.ExecuteScalar().ToString() ?? string.Empty);
+                        int cartid = int.Parse(command3.LastInsertedId.ToString() ?? string.Empty);
 
                         foreach (var item in tsorderdetailunchecked)
                         {
@@ -373,7 +368,7 @@ namespace fs_12_team_1_BE.DataAccess
 
             return result;
         }
-        public bool DeleteOneNotActivated(Guid id)
+        public bool DeleteOneNotActivated(int id)
         {
             bool result = false;
 

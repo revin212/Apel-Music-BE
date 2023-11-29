@@ -181,7 +181,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPost("AddToCart")]
-        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
+        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto) //not complete
         {
             //select * from TsOrder
             //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
@@ -223,15 +223,15 @@ namespace fs_12_team_1_BE.Controllers
                 {
                     TsOrder tsOrderNew = new TsOrder
                     {
-                        Id = Guid.NewGuid(),
+                        //Id = Guid.NewGuid(),
                         UserId = tsorderdetailDto.UserId,
                         //PaymentId = null,
                         InvoiceNo = string.Empty,
                         //OrderDate = null,
                         IsPaid = false
                     };
-                    _tsOrderData.NewCart(tsOrderNew);
-                    tsorderdetail.OrderId = tsOrderNew.Id;
+                    int new_cartid = _tsOrderData.NewCart(tsOrderNew);
+                    tsorderdetail.OrderId = new_cartid;
                 }
                 bool result = _tsOrderDetailData.AddToCart(tsorderdetail);
 

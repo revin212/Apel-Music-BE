@@ -245,19 +245,19 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public bool NewCart(TsOrder tsorder)
+        public int NewCart(TsOrder tsorder)
         {
-            bool result = false;
+            int result = 0;
 
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                $"VALUES (@Id, @UserId, @PaymentId, @InvoiceNo, @OrderDate, 0)";
+                $"VALUES (DEFAULT, @UserId, @PaymentId, @InvoiceNo, @OrderDate, 0)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", tsorder.Id);
+                    //command.Parameters.AddWithValue("@Id", tsorder.Id);
                     command.Parameters.AddWithValue("@UserId", tsorder.UserId);
                     command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
                     command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
@@ -269,7 +269,8 @@ namespace fs_12_team_1_BE.DataAccess
 
                     connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                    command.ExecuteNonQuery();
+                    result = int.Parse( command.LastInsertedId.ToString() ?? string.Empty);
 
                     connection.Close();
                 }
