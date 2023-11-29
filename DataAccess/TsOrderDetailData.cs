@@ -1,4 +1,5 @@
 ﻿using fs_12_team_1_BE.Model;
+using MailKit.Search;
 using MySql.Data.MySqlClient;
 
 namespace fs_12_team_1_BE.DataAccess
@@ -33,8 +34,8 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrderDetail.Add(new TsOrderDetail
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             });
@@ -70,8 +71,8 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrderDetail = new TsOrderDetail
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             };
@@ -107,8 +108,8 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrderDetail.Add(new TsOrderDetail
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             });
@@ -144,8 +145,8 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrderDetail = new TsOrderDetail
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             };
@@ -264,17 +265,27 @@ namespace fs_12_team_1_BE.DataAccess
 
                     if (tsorderdetailunchecked.Count > 0)
                     {
-                        Guid CartOrderId = Guid.NewGuid();
+                        
+
+                        //Guid CartOrderId = Guid.NewGuid();
 
                         MySqlCommand command3 = new MySqlCommand();
                         command3.Connection = connection;
                         command3.Transaction = transaction;
                         command3.Parameters.Clear();
                         command3.CommandText = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                                                $"VALUES (@Id, @UserId, DEFAULT, DEFAULT, DEFAULT, 0)";
-                        command3.Parameters.AddWithValue("@Id", CartOrderId);
+                                                $"VALUES (DEFAULT, @UserId, DEFAULT, DEFAULT, DEFAULT, 0)";
+                        
                         command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
                         var result3 = command3.ExecuteNonQuery();
+
+                        
+                        MySqlCommand commandgetcartinfo = new MySqlCommand();
+                        commandgetcartinfo.Parameters.Clear();
+                        commandgetcartinfo.Connection = connection;
+                        commandgetcartinfo.CommandText = $"SELECT id FROM TsOrder WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1";
+                        command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                        int cartid = int.Parse(commandgetcartinfo.ExecuteScalar().ToString() ?? string.Empty);
 
                         foreach (var item in tsorderdetailunchecked)
                         {
@@ -285,7 +296,7 @@ namespace fs_12_team_1_BE.DataAccess
                             command4.CommandText = $"UPDATE TsOrderDetail SET OrderId = @OrderId " +
                             $"WHERE Id = @Id";
                             command4.Parameters.AddWithValue("@Id", item.Id);
-                            command4.Parameters.AddWithValue("@OrderId", CartOrderId);
+                            command4.Parameters.AddWithValue("@OrderId", cartid);
                             var result4 = command4.ExecuteNonQuery();
                         }
                         
