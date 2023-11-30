@@ -2,6 +2,7 @@
 using fs_12_team_1_BE.DTO.TsOrder;
 using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
+using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
@@ -118,7 +119,7 @@ namespace fs_12_team_1_BE.Controllers
 
                 DateTime now = DateTime.Now;
                 TsOrderDTOCheckout order = tsorderdetaildtocheckout.CartInfo;
-                string inv = $"INV/{now.ToString("yyyyMMdd")}/{order?.Id.ToString("N")}";
+                string inv = $"APM{order?.Id.ToString("D5")}";
 
                 TsOrder tsorder = new TsOrder
                 {
@@ -143,7 +144,7 @@ namespace fs_12_team_1_BE.Controllers
                             Id = item.Id,
                             OrderId = item.OrderId,
                             CourseId = item.CourseId,
-
+                            Jadwal = item.Jadwal
                         };
                         tsOrderDetailListChecked.Add(orderdetailschecked);
                     }
@@ -154,7 +155,7 @@ namespace fs_12_team_1_BE.Controllers
                             Id = item.Id,
                             OrderId = item.OrderId,
                             CourseId = item.CourseId,
-
+                            Jadwal = item.Jadwal
                         };
                         tsOrderDetailListUnchecked.Add(orderdetailsunchecked);
                     }
@@ -180,7 +181,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPost("AddToCart")]
-        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
+        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto) //not complete
         {
             //select * from TsOrder
             //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
@@ -222,15 +223,15 @@ namespace fs_12_team_1_BE.Controllers
                 {
                     TsOrder tsOrderNew = new TsOrder
                     {
-                        Id = Guid.NewGuid(),
+                        //Id = Guid.NewGuid(),
                         UserId = tsorderdetailDto.UserId,
                         //PaymentId = null,
                         InvoiceNo = string.Empty,
                         //OrderDate = null,
                         IsPaid = false
                     };
-                    _tsOrderData.NewCart(tsOrderNew);
-                    tsorderdetail.OrderId = tsOrderNew.Id;
+                    int new_cartid = _tsOrderData.NewCart(tsOrderNew);
+                    tsorderdetail.OrderId = new_cartid;
                 }
                 bool result = _tsOrderDetailData.AddToCart(tsorderdetail);
 
