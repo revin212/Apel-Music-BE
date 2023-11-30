@@ -25,33 +25,32 @@ namespace fs_12_team_1_BE.Controllers
                 List<MsCategory> msCategory = _msCategoryData.GetAll();
                 return Ok(msCategory);
             }
-            catch (Exception)
+            catch
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
-        [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
-        {
-            try
-            {
-                MsCategory? msCategory = _msCategoryData.GetById(id);
+        //[HttpGet("GetById")]
+        //public IActionResult Get(Guid id)
+        //{
+        //    try
+        //    {
+        //        MsCategory? msCategory = _msCategoryData.GetById(id);
 
-                if (msCategory == null)
-                {
-                    return NotFound("Data not found");
-                }
+        //        if (msCategory == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
 
-                return Ok(msCategory); //200
-            }
-            catch (Exception)
-            {
+        //        return Ok(msCategory); //200
+        //    }
+        //    catch
+        //    {
 
-                throw;
-            }
-        }
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
         [HttpGet("GetByName")]
         public IActionResult GetByName(string Name)
@@ -67,105 +66,104 @@ namespace fs_12_team_1_BE.Controllers
 
                 return Ok(msCategory); //200
             }
-            catch (Exception)
+            catch
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] MsCategoryDTO msCategoryDto)
-        {
-            try
-            {
-                if (msCategoryDto == null)
-                    return BadRequest("Data should be inputed");
+        //[HttpPost]
+        //public IActionResult Post([FromBody] MsCategoryDTO msCategoryDto)
+        //{
+        //    try
+        //    {
+        //        if (msCategoryDto == null)
+        //            return BadRequest("Data should be inputed");
 
-                MsCategory msCategory = new MsCategory
-                {
-                    //Id = Guid.NewGuid(),
-                    Name = msCategoryDto.Name,
-                    Title = msCategoryDto.Title,
-                    Description = msCategoryDto.Description,
-                    Image = msCategoryDto.Image,
-                    HeaderImage = msCategoryDto.HeaderImage,
-                };
+        //        MsCategory msCategory = new MsCategory
+        //        {
+        //            //Id = Guid.NewGuid(),
+        //            Name = msCategoryDto.Name,
+        //            Title = msCategoryDto.Title,
+        //            Description = msCategoryDto.Description,
+        //            Image = msCategoryDto.Image,
+        //            HeaderImage = msCategoryDto.HeaderImage,
+        //        };
 
-                bool result = _msCategoryData.Insert(msCategory);
+        //        bool result = _msCategoryData.Insert(msCategory);
 
-                if (result)
-                {
-                    return StatusCode(201, "Category created");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
+        //        if (result)
+        //        {
+        //            return StatusCode(201, "Category created");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
 
-                throw;
-            }
-        }
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] MsCategoryDTO msCategoryDto)
-        {
-            try
-            {
-                if (msCategoryDto == null)
-                    return BadRequest("Data should be inputed");
+        //[HttpPut]
+        //public IActionResult Put(Guid id, [FromBody] MsCategoryDTO msCategoryDto)
+        //{
+        //    try
+        //    {
+        //        if (msCategoryDto == null)
+        //            return BadRequest("Data should be inputed");
 
-                MsCategory msCategory = new MsCategory
-                {
-                    Name = msCategoryDto.Name,
-                    Title = msCategoryDto.Title,
-                    Description = msCategoryDto.Description,
-                    Image = msCategoryDto.Image,
-                    HeaderImage = msCategoryDto.HeaderImage,
-                };
+        //        MsCategory msCategory = new MsCategory
+        //        {
+        //            Name = msCategoryDto.Name,
+        //            Title = msCategoryDto.Title,
+        //            Description = msCategoryDto.Description,
+        //            Image = msCategoryDto.Image,
+        //            HeaderImage = msCategoryDto.HeaderImage,
+        //        };
 
-                bool result = _msCategoryData.Update(id, msCategory);
+        //        bool result = _msCategoryData.Update(id, msCategory);
 
-                if (result)
-                {
-                    return NoContent();//204
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //        if (result)
+        //        {
+        //            return NoContent();//204
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
-        [HttpDelete]
-        public IActionResult Delete(Guid id)
-        {
-            try
-            {
-                bool result = _msCategoryData.Delete(id);
+        //[HttpDelete]
+        //public IActionResult Delete(Guid id)
+        //{
+        //    try
+        //    {
+        //        bool result = _msCategoryData.Delete(id);
 
-                if (result)
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
+        //        if (result)
+        //        {
+        //            return NoContent();
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
 
-                throw;
-            }
-        }
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
     }
 }

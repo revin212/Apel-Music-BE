@@ -423,81 +423,81 @@ namespace fs_12_team_1_BE.Controllers
         }
 
 
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
-        {
-            try
-            {
-                if (msUserDto == null)
-                    return BadRequest("Data should be inputed");
+        //[HttpPut]
+        //public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
+        //{
+        //    try
+        //    {
+        //        if (msUserDto == null)
+        //            return BadRequest("Data should be inputed");
 
-                MsUserRegisterDTO msUser = new MsUserRegisterDTO
-                {
-                    Name = msUserDto.Name,
-                    Email = msUserDto.Email,
-                    Password = msUserDto.Password
-                };
+        //        MsUserRegisterDTO msUser = new MsUserRegisterDTO
+        //        {
+        //            Name = msUserDto.Name,
+        //            Email = msUserDto.Email,
+        //            Password = msUserDto.Password
+        //        };
 
-                bool result = _msUserData.Update(id, msUser);
+        //        bool result = _msUserData.Update(id, msUser);
 
-                if (result)
-                {
-                    return StatusCode(201, "Edit user success");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        if (result)
+        //        {
+        //            return StatusCode(201, "Edit user success");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
 
-        [HttpDelete("SoftDelete")]
-        public IActionResult SoftDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
+        //[HttpDelete("SoftDelete")]
+        //public IActionResult SoftDelete(Guid id)
+        //{
+        //    try
+        //    {
+        //        bool result = _msUserData.SoftDelete(id);
 
-                if (result)
-                {
-                    return StatusCode(201, "Account soft deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        if (result)
+        //        {
+        //            return StatusCode(201, "Account soft deleted");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
-        [HttpDelete("HardDelete")]
-        public IActionResult HardDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
+        //[HttpDelete("HardDelete")]
+        //public IActionResult HardDelete(Guid id)
+        //{
+        //    try
+        //    {
+        //        bool result = _msUserData.SoftDelete(id);
 
-                if (result)
-                {
-                    return StatusCode(201, "Account deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        if (result)
+        //        {
+        //            return StatusCode(201, "Account deleted");
+        //        }
+        //        else
+        //        {
+        //            return StatusCode(500, "Error occured");
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
     }
 }

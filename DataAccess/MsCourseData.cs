@@ -1,4 +1,5 @@
-﻿using fs_12_team_1_BE.Model;
+﻿using fs_12_team_1_BE.DTO.MsCourse;
+using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
 
 namespace fs_12_team_1_BE.DataAccess
@@ -13,11 +14,11 @@ namespace fs_12_team_1_BE.DataAccess
             connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<MsCourse> GetAll()
+        public List<MsCourseResponseDTO> GetAll()
         {
-            List<MsCourse> msCourse = new List<MsCourse>();
+            List<MsCourseResponseDTO> msCourse = new List<MsCourseResponseDTO>();
 
-            string query = "SELECT * FROM MsCourse";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -29,14 +30,14 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msCourse.Add(new MsCourse
+                            msCourse.Add(new MsCourseResponseDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
-                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty)
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
                             });
                         }
                     }
@@ -48,18 +49,92 @@ namespace fs_12_team_1_BE.DataAccess
             return msCourse;
         }
 
-        public MsCourse? GetById(Guid id)
+        public List<MsCourseResponseDTO> GetRecommendedCourses()
         {
-            MsCourse? msCourse = null;
+            List<MsCourseResponseDTO> msCourse = new List<MsCourseResponseDTO>();
 
-            string query = $"SELECT * FROM MsCourse WHERE Id = @Id";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 3) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            msCourse.Add(new MsCourseResponseDTO
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Description = reader["Description"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                Price = Convert.ToDouble(reader["Price"]),
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+                            });
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return msCourse;
+        }
+
+        //public MsCourseResponseDTO? GetById(Guid id)
+        //{
+        //    MsCourseResponseDTO? msCourse = null;
+
+        //    string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id";
+
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
+
+        //            connection.Open();
+
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msCourse = new MsCourseResponseDTO
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Description = reader["Description"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty,
+        //                        Price = Convert.ToDouble(reader["Price"]),
+        //                        CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+        //                    };
+        //                }
+        //            }
+
+        //            connection.Close();
+        //        }
+        //    }
+
+        //    return msCourse;
+        //}
+
+        public MsCourseResponseDTO? GetByName(string name)
+        {
+            MsCourseResponseDTO? msCourse = null;
+            string filteredName = name.Replace("-", " ");
+
+            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Name = @Name";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@Name", filteredName);
 
                     connection.Open();
 
@@ -67,14 +142,14 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msCourse = new MsCourse
+                            msCourse = new MsCourseResponseDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
-                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty)
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
                             };
                         }
                     }
@@ -86,99 +161,137 @@ namespace fs_12_team_1_BE.DataAccess
             return msCourse;
         }
 
-        public bool Insert(MsCourse mscourse)
+        public MsCourseResponseDTO? GetByCategory(string CategoryName)
         {
-            bool result = false;
+            MsCourseResponseDTO? msCourse = null;
 
-            string query = $"INSERT INTO MsCourse(Id, Name, Description, Image, Price, CategoryId) " +
-                $"VALUES (DEFAULT, @Name, @Description, @Image, @Price, @CategoryId)";
+            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Name = @CategoryName";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.Clear();
-
-                    command.Parameters.AddWithValue("@Name", mscourse.Name);
-                    command.Parameters.AddWithValue("@Description", mscourse.Description);
-                    command.Parameters.AddWithValue("@Image", mscourse.Image);
-                    command.Parameters.AddWithValue("@Price", mscourse.Price);
-                    command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
-
-                    command.Connection = connection;
-                    command.CommandText = query;
+                    command.Parameters.AddWithValue("@CategoryName", CategoryName);
 
                     connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            msCourse = new MsCourseResponseDTO
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Description = reader["Description"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                Price = Convert.ToDouble(reader["Price"]),
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
+                            };
+                        }
+                    }
 
                     connection.Close();
                 }
             }
 
-            return result;
+            return msCourse;
         }
 
-        public bool Update(Guid id, MsCourse mscourse)
-        {
-            bool result = false;
+        //public bool Insert(MsCourse mscourse)
+        //{
+        //    bool result = false;
 
-            string query = $"UPDATE MsCourse SET Name = @Name, Description = @Description, Image = @Image, Price = @Price, CategoryId = @CategoryId " +
-                $"WHERE Id = @Id";
+        //    string query = $"INSERT INTO MsCourse(Id, Name, Description, Image, Price, CategoryId) " +
+        //        $"VALUES (DEFAULT, @Name, @Description, @Image, @Price, @CategoryId)";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", mscourse.Name);
-                    command.Parameters.AddWithValue("@Description", mscourse.Description);
-                    command.Parameters.AddWithValue("@Image", mscourse.Image);
-                    command.Parameters.AddWithValue("@Price", mscourse.Price);
-                    command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
-                    command.Parameters.AddWithValue("@Id", id);
+        //            command.Parameters.AddWithValue("@Name", mscourse.Name);
+        //            command.Parameters.AddWithValue("@Description", mscourse.Description);
+        //            command.Parameters.AddWithValue("@Image", mscourse.Image);
+        //            command.Parameters.AddWithValue("@Price", mscourse.Price);
+        //            command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    connection.Open();
+        //            connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public bool Delete(Guid id)
-        {
-            bool result = false;
+        //public bool Update(Guid id, MsCourse mscourse)
+        //{
+        //    bool result = false;
 
-            string query = $"DELETE FROM MsCourse WHERE Id = @Id";
+        //    string query = $"UPDATE MsCourse SET Name = @Name, Description = @Description, Image = @Image, Price = @Price, CategoryId = @CategoryId " +
+        //        $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+        //            command.Parameters.AddWithValue("@Name", mscourse.Name);
+        //            command.Parameters.AddWithValue("@Description", mscourse.Description);
+        //            command.Parameters.AddWithValue("@Image", mscourse.Image);
+        //            command.Parameters.AddWithValue("@Price", mscourse.Price);
+        //            command.Parameters.AddWithValue("@CategoryId", mscourse.CategoryId);
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    connection.Open();
+        //            command.Connection = connection;
+        //            command.CommandText = query;
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+        //            connection.Open();
 
-                    connection.Close();
-                }
-            }
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-            return result;
-        }
+        //            connection.Close();
+        //        }
+        //    }
+
+        //    return result;
+        //}
+
+        //public bool Delete(Guid id)
+        //{
+        //    bool result = false;
+
+        //    string query = $"DELETE FROM MsCourse WHERE Id = @Id";
+
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand())
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
+
+        //            command.Connection = connection;
+        //            command.CommandText = query;
+
+        //            connection.Open();
+
+        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+
+        //            connection.Close();
+        //        }
+        //    }
+
+        //    return result;
+        //}
 
     }
 }
