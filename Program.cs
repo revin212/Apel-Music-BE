@@ -19,8 +19,19 @@ builder.Services.AddScoped<MsCategoryData>();
 builder.Services.AddScoped<MsUserData>();
 builder.Services.AddScoped<MsPaymentMethodData>();
 builder.Services.AddScoped<EmailService>();
-
-builder.Services.AddCors();
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173", //url client
+                                              "https://localhost:7201") //optional
+                                             .AllowAnyHeader()
+                                             .AllowAnyMethod()
+                                             .AllowCredentials();
+                      });
+});
 
 var JwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
     builder.Configuration.GetSection("JwtConfig:Key").Value));
@@ -54,10 +65,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-});
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthentication();
 
