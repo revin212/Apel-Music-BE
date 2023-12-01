@@ -45,74 +45,74 @@ namespace fs_12_team_1_BE.DataAccess
             return msPaymentMethod;
         }
 
-        public MsPaymentMethod? GetById(Guid id)
-        {
-            MsPaymentMethod? msPaymentMethod = null;
+        //public MsPaymentMethod? GetById(Guid id)
+        //{
+        //    MsPaymentMethod? msPaymentMethod = null;
 
-            string query = "SELECT * FROM MsPaymentMethod WHERE Id = @Id";
+        //    string query = "SELECT * FROM MsPaymentMethod WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    connection.Open();
+        //            connection.Open();
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msPaymentMethod = new MsPaymentMethod
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty
-                            };
-                        }
-                    }
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msPaymentMethod = new MsPaymentMethod
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty
+        //                    };
+        //                }
+        //            }
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return msPaymentMethod;
-        }
+        //    return msPaymentMethod;
+        //}
 
-        public MsPaymentMethod? GetByName(string Name)
-        {
-            MsPaymentMethod? msPaymentMethod = null;
+        //public MsPaymentMethod? GetByName(string Name)
+        //{
+        //    MsPaymentMethod? msPaymentMethod = null;
 
-            string query = "SELECT * FROM MsPaymentMethod WHERE Name = @Name";
+        //    string query = "SELECT * FROM MsPaymentMethod WHERE Name = @Name";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Name", Name);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Name", Name);
 
-                    connection.Open();
+        //            connection.Open();
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msPaymentMethod = new MsPaymentMethod
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty
-                            };
-                        }
-                    }
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msPaymentMethod = new MsPaymentMethod
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty
+        //                    };
+        //                }
+        //            }
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return msPaymentMethod;
-        }
+        //    return msPaymentMethod;
+        //}
     }
 }

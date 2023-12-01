@@ -45,7 +45,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 
                                 tsOrder.Add(new TsOrder
                                 {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                     UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
                                     PaymentId = paymentid,
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
@@ -92,7 +92,7 @@ namespace fs_12_team_1_BE.DataAccess
                             {
                                 tsOrder.Add(new TsOrder
                                 {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                     UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
                                     PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
@@ -138,7 +138,7 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrder = new TsOrder
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                 UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
                                 PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
                                 InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
@@ -182,7 +182,7 @@ namespace fs_12_team_1_BE.DataAccess
                             }
                             tsOrder = new TsOrder
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                 UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
                                 
                                 InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
@@ -199,7 +199,7 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
-        public List<TsOrderDetail?> GetCart(Guid userid) //NOT COMPLETE
+        public List<TsOrderDetail?> GetCart(Guid userid)
         {
             try
             {
@@ -225,8 +225,8 @@ namespace fs_12_team_1_BE.DataAccess
 
                                 tsOrderDetail.Add( new TsOrderDetail
                                 {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    OrderId = Guid.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                    Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                     CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                     IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                                 });
@@ -245,19 +245,19 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public bool NewCart(TsOrder tsorder)
+        public int NewCart(TsOrder tsorder)
         {
-            bool result = false;
+            int result = 0;
 
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, OrderDate, IsPaid) " +
-                $"VALUES (@Id, @UserId, @PaymentId, @InvoiceNo, @OrderDate, 0)";
+                $"VALUES (DEFAULT, @UserId, @PaymentId, @InvoiceNo, @OrderDate, 0)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", tsorder.Id);
+                    //command.Parameters.AddWithValue("@Id", tsorder.Id);
                     command.Parameters.AddWithValue("@UserId", tsorder.UserId);
                     command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
                     command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
@@ -269,7 +269,8 @@ namespace fs_12_team_1_BE.DataAccess
 
                     connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                    command.ExecuteNonQuery();
+                    result = int.Parse( command.LastInsertedId.ToString() ?? string.Empty);
 
                     connection.Close();
                 }
