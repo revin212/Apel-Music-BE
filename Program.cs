@@ -19,6 +19,8 @@ builder.Services.AddScoped<MsCategoryData>();
 builder.Services.AddScoped<MsUserData>();
 builder.Services.AddScoped<MsPaymentMethodData>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<TsOrderData>();
+builder.Services.AddScoped<TsOrderDetailData>();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
@@ -51,8 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         });
 
 
-builder.Services.AddScoped<TsOrderData>();
-builder.Services.AddScoped<TsOrderDetailData>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -64,6 +65,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseCors(MyAllowSpecificOrigins);
 

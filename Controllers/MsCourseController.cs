@@ -36,7 +36,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<MsCourseGetFavoriteListResponseDTO> msCourse = _msCourseData.GetFavoriteList();
+                List<MsCourseGetFavoriteListResDTO> msCourse = _msCourseData.GetFavoriteList();
                 return Ok(msCourse);
             }
             catch
@@ -50,7 +50,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                MsCourseGetDetailResponseDTO? msCourse = _msCourseData.GetDetail(id);
+                MsCourseGetDetailResDTO? msCourse = _msCourseData.GetDetail(id);
 
                 if (msCourse == null)
                 {
@@ -91,7 +91,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<MsCourseGetByCategoryListDTO> msCourse = _msCourseData.GetByCategoryList(id);
+                List<MsCourseGetByCategoryListResDTO> msCourse = _msCourseData.GetByCategoryList(id);
 
                 if (msCourse == null)
                 {
@@ -106,6 +106,25 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
+        [HttpGet("GetOtherList")]
+        public IActionResult GetOtherList(Guid categoryid, Guid courseid)
+        {
+            try
+            {
+                List<MsCourseGetOtherListRes> msCourse = _msCourseData.GetOtherList(categoryid, courseid);
+
+                if (msCourse == null)
+                {
+                    return NotFound("Data not found");
+                }
+
+                return Ok(msCourse); //200
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
         //[HttpPost]
         //public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
         //{

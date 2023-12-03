@@ -1,6 +1,6 @@
 ﻿namespace fs_12_team_1_BE.DTO.MsCategory
 {
-    public class MsCategoryDTO
+    public class MsCategoryDetailResDTO
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

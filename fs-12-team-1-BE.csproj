@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="DatabaseMySQL\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

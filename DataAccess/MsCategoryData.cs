@@ -1,4 +1,5 @@
-﻿using fs_12_team_1_BE.Model;
+﻿using fs_12_team_1_BE.DTO.MsCategory;
+using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
 
 namespace fs_12_team_1_BE.DataAccess
@@ -13,7 +14,7 @@ namespace fs_12_team_1_BE.DataAccess
             connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<MsCategory> GetAll()
+        public List<MsCategory> GetShortList()
         {
             List<MsCategory> msCategory = new List<MsCategory>();
 
@@ -33,10 +34,7 @@ namespace fs_12_team_1_BE.DataAccess
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
-                                Title = reader["Title"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty
                             });
                         }
                     }
@@ -48,9 +46,9 @@ namespace fs_12_team_1_BE.DataAccess
             return msCategory;
         }
 
-        public MsCategory? GetCategoryDetail(Guid id)
+        public MsCategoryDetailResDTO GetCategoryDetail(Guid id)
         {
-            MsCategory? msCategory = null;
+            MsCategoryDetailResDTO msCategory = new MsCategoryDetailResDTO();
 
             string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
 
@@ -67,7 +65,7 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msCategory = new MsCategory
+                            msCategory = new MsCategoryDetailResDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,

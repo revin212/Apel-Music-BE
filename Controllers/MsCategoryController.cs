@@ -17,12 +17,12 @@ namespace fs_12_team_1_BE.Controllers
         }
 
 
-        [HttpGet("GetAll")]
-        public IActionResult GetAll()
+        [HttpGet("GetShortList")]
+        public IActionResult GetShortList()
         {
             try
             {
-                List<MsCategory> msCategory = _msCategoryData.GetAll();
+                List<MsCategory> msCategory = _msCategoryData.GetShortList();
                 return Ok(msCategory);
             }
             catch
@@ -36,7 +36,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                MsCategory? msCategory = _msCategoryData.GetCategoryDetail(id);
+                MsCategoryDetailResDTO? msCategory = _msCategoryData.GetCategoryDetail(id);
 
                 if (msCategory == null)
                 {
