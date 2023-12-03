@@ -53,7 +53,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsCourseGetFavoriteListResDTO> msCourse = new List<MsCourseGetFavoriteListResDTO>();
 
-            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 3) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -204,7 +204,7 @@ namespace fs_12_team_1_BE.DataAccess
             List<MsCourseGetOtherListRes> msCourse = new List<MsCourseGetOtherListRes>();
 
             string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName FROM MsCourse cs " +
-                $"JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Id = @CategoryId AND NOT cs.Id = @CourseId ";
+                $"JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Id = @CategoryId AND NOT cs.Id = @CourseId ORDER BY RAND() LIMIT 3";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
