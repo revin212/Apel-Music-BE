@@ -31,33 +31,12 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        //[HttpGet("GetById")]
-        //public IActionResult Get(Guid id)
-        //{
-        //    try
-        //    {
-        //        MsCategory? msCategory = _msCategoryData.GetById(id);
-
-        //        if (msCategory == null)
-        //        {
-        //            return NotFound("Data not found");
-        //        }
-
-        //        return Ok(msCategory); //200
-        //    }
-        //    catch
-        //    {
-
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-        [HttpGet("GetByName")]
-        public IActionResult GetByName(string Name)
+        [HttpGet("GetCategoryDetail")]
+        public IActionResult GetCategoryDetail(Guid id)
         {
             try
             {
-                MsCategory? msCategory = _msCategoryData.GetByName(Name);
+                MsCategory? msCategory = _msCategoryData.GetCategoryDetail(id);
 
                 if (msCategory == null)
                 {
@@ -68,9 +47,30 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch
             {
+
                 return StatusCode(500, "Server Error occured");
             }
         }
+
+        //[HttpGet("GetByName")]
+        //public IActionResult GetByName(string Name)
+        //{
+        //    try
+        //    {
+        //        MsCategory? msCategory = _msCategoryData.GetByName(Name);
+
+        //        if (msCategory == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
+
+        //        return Ok(msCategory); //200
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
         //[HttpPost]
         //public IActionResult Post([FromBody] MsCategoryDTO msCategoryDto)

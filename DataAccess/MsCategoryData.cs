@@ -48,56 +48,18 @@ namespace fs_12_team_1_BE.DataAccess
             return msCategory;
         }
 
-        //public MsCategory? GetById(Guid id)
-        //{
-        //    MsCategory? msCategory = null;
-
-        //    string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand(query, connection))
-        //        {
-        //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Id", id);
-
-        //            connection.Open();
-
-        //            using (MySqlDataReader reader = command.ExecuteReader())
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    msCategory = new MsCategory
-        //                    {
-        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-        //                        Name = reader["Name"].ToString() ?? string.Empty,
-        //                        Title = reader["Title"].ToString() ?? string.Empty,
-        //                        Description = reader["Description"].ToString() ?? string.Empty,
-        //                        Image = reader["Image"].ToString() ?? string.Empty,
-        //                        HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
-        //                    };
-        //                }
-        //            }
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return msCategory;
-        //}
-
-        public MsCategory? GetByName(string Name)
+        public MsCategory? GetCategoryDetail(Guid id)
         {
             MsCategory? msCategory = null;
 
-            string query = $"SELECT * FROM MsCategory WHERE Name = @Name";
+            string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Name", Name);
+                    command.Parameters.AddWithValue("@Id", id);
 
                     connection.Open();
 
@@ -123,6 +85,44 @@ namespace fs_12_team_1_BE.DataAccess
 
             return msCategory;
         }
+
+        //public MsCategory? GetByName(string Name)
+        //{
+        //    MsCategory? msCategory = null;
+
+        //    string query = $"SELECT * FROM MsCategory WHERE Name = @Name";
+
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Name", Name);
+
+        //            connection.Open();
+
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msCategory = new MsCategory
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Title = reader["Title"].ToString() ?? string.Empty,
+        //                        Description = reader["Description"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty,
+        //                        HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
+        //                    };
+        //                }
+        //            }
+
+        //            connection.Close();
+        //        }
+        //    }
+
+        //    return msCategory;
+        //}
 
         //public bool Insert(MsCategory msCategory)
         //{

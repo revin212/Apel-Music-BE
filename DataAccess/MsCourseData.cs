@@ -14,44 +14,44 @@ namespace fs_12_team_1_BE.DataAccess
             connectionString = _configuration.GetConnectionString("DefaultConnection");
         }
 
-        public List<MsCourseResponseDTO> GetAll()
+        //public List<MsCourseResponseDTO> GetAll()
+        //{
+        //    List<MsCourseResponseDTO> msCourse = new List<MsCourseResponseDTO>();
+
+        //    string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
+
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            connection.Open();
+
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msCourse.Add(new MsCourseResponseDTO
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        //Description = reader["Description"].ToString() ?? string.Empty,
+        //                        Image = reader["Image"].ToString() ?? string.Empty,
+        //                        Price = Convert.ToDouble(reader["Price"]),
+        //                        CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+        //                    });
+        //                }
+        //            }
+
+        //            connection.Close();
+        //        }
+        //    }
+
+        //    return msCourse;
+        //}
+
+        public List<MsCourseGetFavoriteListResponseDTO> GetFavoriteList()
         {
-            List<MsCourseResponseDTO> msCourse = new List<MsCourseResponseDTO>();
-
-            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msCourse.Add(new MsCourseResponseDTO
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
-                            });
-                        }
-                    }
-
-                    connection.Close();
-                }
-            }
-
-            return msCourse;
-        }
-
-        public List<MsCourseResponseDTO> GetRecommendedCourses()
-        {
-            List<MsCourseResponseDTO> msCourse = new List<MsCourseResponseDTO>();
+            List<MsCourseGetFavoriteListResponseDTO> msCourse = new List<MsCourseGetFavoriteListResponseDTO>();
 
             string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse ORDER BY RAND() LIMIT 3) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id";
 
@@ -65,11 +65,10 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msCourse.Add(new MsCourseResponseDTO
+                            msCourse.Add(new MsCourseGetFavoriteListResponseDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
                                 CategoryName = reader["CategoryName"].ToString() ?? string.Empty
@@ -84,18 +83,59 @@ namespace fs_12_team_1_BE.DataAccess
             return msCourse;
         }
 
-        //public MsCourseResponseDTO? GetById(Guid id)
+        public MsCourseGetDetailResponseDTO? GetDetail(Guid id)
+        {
+            MsCourseGetDetailResponseDTO? msCourse = null;
+
+            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id As CategoryId, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            msCourse = new MsCourseGetDetailResponseDTO
+                            {
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Description = reader["Description"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                Price = Convert.ToDouble(reader["Price"]),
+                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+                                
+                            };
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return msCourse;
+        }
+
+        //public MsCourseResponseDTO? GetByName(string name)
         //{
         //    MsCourseResponseDTO? msCourse = null;
+        //    string filteredName = name.Replace("-", " ");
 
-        //    string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id";
+        //    string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Name = @Name";
 
         //    using (MySqlConnection connection = new MySqlConnection(connectionString))
         //    {
         //        using (MySqlCommand command = new MySqlCommand(query, connection))
         //        {
         //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Id", id);
+        //            command.Parameters.AddWithValue("@Name", filteredName);
 
         //            connection.Open();
 
@@ -107,7 +147,7 @@ namespace fs_12_team_1_BE.DataAccess
         //                    {
         //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
         //                        Name = reader["Name"].ToString() ?? string.Empty,
-        //                        Description = reader["Description"].ToString() ?? string.Empty,
+        //                        //Description = reader["Description"].ToString() ?? string.Empty,
         //                        Image = reader["Image"].ToString() ?? string.Empty,
         //                        Price = Convert.ToDouble(reader["Price"]),
         //                        CategoryName = reader["CategoryName"].ToString() ?? string.Empty
@@ -122,19 +162,18 @@ namespace fs_12_team_1_BE.DataAccess
         //    return msCourse;
         //}
 
-        public MsCourseResponseDTO? GetByName(string name)
+        public List<MsCourseGetByCategoryListDTO> GetByCategoryList(Guid Id)
         {
-            MsCourseResponseDTO? msCourse = null;
-            string filteredName = name.Replace("-", " ");
+            List<MsCourseGetByCategoryListDTO> msCourse = new List<MsCourseGetByCategoryListDTO>();
 
-            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Name = @Name";
+            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Name", filteredName);
+                    command.Parameters.AddWithValue("@Id", Id);
 
                     connection.Open();
 
@@ -142,53 +181,14 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msCourse = new MsCourseResponseDTO
+                            msCourse.Add(new MsCourseGetByCategoryListDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
-                            };
-                        }
-                    }
-
-                    connection.Close();
-                }
-            }
-
-            return msCourse;
-        }
-
-        public MsCourseResponseDTO? GetByCategory(string CategoryName)
-        {
-            MsCourseResponseDTO? msCourse = null;
-
-            string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Name = @CategoryName";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@CategoryName", CategoryName);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msCourse = new MsCourseResponseDTO
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
                                 Image = reader["Image"].ToString() ?? string.Empty,
                                 Price = Convert.ToDouble(reader["Price"]),
                                 CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
-                            };
+                            });
                         }
                     }
 

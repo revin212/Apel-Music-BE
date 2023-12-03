@@ -122,11 +122,11 @@ namespace fs_12_team_1_BE.DataAccess
 
             return tsOrderDetail;
         }
-        public TsOrderDetail? GetCourse(Guid orderid, bool isactivated)
+        public List<TsOrderDetail> GetMyInvoiceDetailList(Guid orderid)
         {
-            TsOrderDetail? tsOrderDetail = null;
+            List<TsOrderDetail> tsOrderDetail = new List<TsOrderDetail>();
 
-            string query = $"SELECT * FROM TsOrderDetail WHERE OrderId = @id AND IsActivated = @IsActivated";
+            string query = $"SELECT * FROM TsOrderDetail WHERE OrderId = @id AND IsActivated = 1";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -134,7 +134,6 @@ namespace fs_12_team_1_BE.DataAccess
                 {
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@Id", orderid);
-                    command.Parameters.AddWithValue("@IsActivated", isactivated);
                     command.Connection = connection;
                     command.CommandText = query;
                     connection.Open();
@@ -143,13 +142,13 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            tsOrderDetail = new TsOrderDetail
+                            tsOrderDetail.Add(new TsOrderDetail
                             {
                                 Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                 OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
-                            };
+                            });
                         }
                     }
 

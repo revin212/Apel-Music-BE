@@ -30,12 +30,12 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
-        [HttpGet("OrderRecords")]
-        public IActionResult GetOrderRecords(Guid userid)
+        [HttpGet("GetMyInvoicesList")]
+        public IActionResult GetMyInvoicesList(Guid userid)
         {
             try
             {
-                List<TsOrder> tsOrder = _tsOrderData.GetAllPaidByUserId(userid);
+                List<TsOrder> tsOrder = _tsOrderData.GetMyInvoicesList(userid);
                 return Ok(tsOrder);
             }
             catch (Exception)

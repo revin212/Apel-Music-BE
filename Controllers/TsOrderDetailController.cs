@@ -55,6 +55,20 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
+        [HttpGet("GetMyInvoicesDetailList")]
+        public IActionResult GetMyInvoicesDetailList(Guid orderid)
+        {
+            try
+            {
+                List<TsOrderDetail> tsOrderDetail = _tsOrderDetailData.GetMyInvoiceDetailList(orderid);
+                return Ok(tsOrderDetail);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         [HttpGet("GetCart")]
         public IActionResult GetCart(Guid orderid, Guid userid)
@@ -78,8 +92,8 @@ namespace fs_12_team_1_BE.Controllers
                 throw;
             }
         }
-        //TODO: Add checkout list route
-        [HttpPost("Checkout")]
+        
+        [HttpPost("CheckoutCart")]
         public IActionResult CheckoutCart(TsOrderDetailDTOCheckout tsorderdetaildtocheckout)
         {
             //{

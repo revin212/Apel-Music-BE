@@ -68,7 +68,7 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public List<TsOrder> GetAllPaidByUserId(Guid userid)
+        public List<TsOrder> GetMyInvoicesList(Guid userid)
         {
             try
             {
