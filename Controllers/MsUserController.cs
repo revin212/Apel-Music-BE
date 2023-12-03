@@ -319,10 +319,10 @@ namespace fs_12_team_1_BE.Controllers
             string subject = "Account Activation";
             var param = new Dictionary<string, string?>
                     {
-                        {"Email", user.Email }
+                        {"email", user.Email }
                     };
 
-            string callbackUrl = QueryHelpers.AddQueryString("https://localhost:7201/api/MsUser/ActivateUser", param);
+            string callbackUrl = QueryHelpers.AddQueryString("http://localhost:5173/email-confirm", param);
 
             //string body = "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>";
             string body = _emailService.GetEmailTemplate(new EmailActivation
