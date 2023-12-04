@@ -278,7 +278,7 @@ namespace fs_12_team_1_BE.Controllers
             Response.Cookies.Append("userId", UserId, cookieOptions);
         }
 
-        [HttpGet("ActivateUser")]
+        [HttpPost("ActivateUser")]
         public IActionResult ActivateUser(string email)
         {
             try
@@ -344,6 +344,8 @@ namespace fs_12_team_1_BE.Controllers
             {
                 if (string.IsNullOrEmpty(Email))
                     return BadRequest("Email is empty");
+                if (!_emailService.IsValidEmail(Email))
+                    return BadRequest("Invalid Email Address");
 
                 MsUser? user = _msUserData.CheckUser(Email);
 
@@ -411,7 +413,7 @@ namespace fs_12_team_1_BE.Controllers
                         { "Id", Id },
                     };
 
-            string callbackUrl = QueryHelpers.AddQueryString("https://localhost:3000/formReset", param);
+            string callbackUrl = QueryHelpers.AddQueryString("http://localhost:5173/new-password", param);
 
             string body = "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>";
 
