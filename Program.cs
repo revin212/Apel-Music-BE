@@ -22,13 +22,19 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<TsOrderData>();
 builder.Services.AddScoped<TsOrderDetailData>();
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var AllowedUrl1 = builder.Configuration["AllowedUrls:FrontEnd1"];
+var AllowedUrl2 = builder.Configuration["AllowedUrls:FrontEnd2"];
+var AllowedUrl3 = builder.Configuration["AllowedUrls:FrontEnd3"];
+var AllowedUrl4 = builder.Configuration["AllowedUrls:Other"];
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:5173", //url client
-                                              "https://localhost:7201") //optional
+                          policy.WithOrigins(AllowedUrl1,
+                                              AllowedUrl2,
+                                              AllowedUrl3,
+                                              AllowedUrl4)
                                              .AllowAnyHeader()
                                              .AllowAnyMethod()
                                              .AllowCredentials();
