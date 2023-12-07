@@ -1,6 +1,7 @@
 ﻿using fs_12_team_1_BE.DTO.MsUser;
 using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
+using System.Collections.Generic;
 
 namespace fs_12_team_1_BE.DataAccess
 {
@@ -45,6 +46,44 @@ namespace fs_12_team_1_BE.DataAccess
             }
 
             return msUser;
+        }
+
+        public List<MsUserGetMyClassListResDTO> GetMyClass(Guid userid)
+        {
+            List<MsUserGetMyClassListResDTO> myclass = new List<MsUserGetMyClassListResDTO>();  
+            
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Connection = connection;
+                    command.Parameters.Clear();
+                    command.CommandText = "SELECT CourseId, MsCourse.Name AS CourseName, MsCourse.Image AS CourseImage, CategoryId, MsCategory.Name AS CategoryName FROM TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id INNER JOIN MsCourse ON TsOrderDetail.CourseId = MsCourse.Id INNER JOIN MsCategory ON MsCourse.CategoryId = MsCategory.Id WHERE TsOrder.UserId = @UserId AND IsActivated = 1";
+                    command.Parameters.AddWithValue("@UserId", userid);
+
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            myclass.Add(new MsUserGetMyClassListResDTO
+                            {
+                                CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
+                                Name = reader["CourseName"].ToString() ?? string.Empty,
+                                Image = reader["CourseImage"].ToString() ?? string.Empty,
+                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
+                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+                            });
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+
+            return myclass;
         }
 
         public MsUserDTO? GetById(Guid id)

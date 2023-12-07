@@ -28,6 +28,19 @@ namespace fs_12_team_1_BE.Controllers
             _emailService = emailService;
         }
 
+        [HttpGet("MyClass")]
+        public IActionResult GetMyClass(Guid userid) {
+            try
+            {
+                List<MsUserGetMyClassListResDTO> myclass = _msUserData.GetMyClass(userid);
+                return Ok(myclass);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Server Error occured");
+                
+            }
+        }
 
         [HttpGet("GetAll")]
         public IActionResult GetAll()
