@@ -176,7 +176,6 @@ namespace fs_12_team_1_BE.Controllers
                     };
                     Response.Cookies.Append("refreshToken", string.Empty, expiredCookieOption);
                     Response.Cookies.Append("email", string.Empty, expiredCookieOption);
-                    Response.Cookies.Append("userId", string.Empty, expiredCookieOption);
                 }
 
                 if(isLoggedOut)
