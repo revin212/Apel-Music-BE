@@ -8,7 +8,7 @@
         public string Image {  get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
         public string CourseName { get; set; } = string.Empty;
-        public DateOnly Jadwal { get; set; }
+        public DateTime Jadwal { get; set; }
         public double Harga { get; set; }
         public bool? IsActivated { get; set; }
         public bool? IsSelected { get; set; }

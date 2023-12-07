@@ -126,11 +126,11 @@ namespace fs_12_team_1_BE.DataAccess
 
         //    return tsOrderDetail;
         //}
-        public List<TsOrderDetail> GetMyInvoiceDetailList(int orderid)
+        public List<TsOrderDetailGetMyInvoiceDetailListResDTO> GetMyInvoiceDetailList(int orderid)
         {
-            List<TsOrderDetail> tsOrderDetail = new List<TsOrderDetail>();
+            List<TsOrderDetailGetMyInvoiceDetailListResDTO> tsOrderDetail = new List<TsOrderDetailGetMyInvoiceDetailListResDTO>();
 
-            string query = $"SELECT * FROM TsOrderDetail WHERE OrderId = @id AND IsActivated = 1";
+            string query = $"SELECT invdetail.Id AS InvId, invdetail.OrderId AS OrderId, invdetail.CourseId AS CourseId, course.Name AS CourseName, course.CategoryId AS CourseCategoryId, cat.Name AS CourseCategoryName, Jadwal, Harga, IsActivated FROM TsOrderDetail AS invdetail INNER JOIN MsCourse AS course ON invdetail.CourseId = course.Id INNER JOIN MsCategory AS cat ON course.CategoryId = cat.Id WHERE OrderId = @id AND IsActivated = 1";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -146,12 +146,15 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            tsOrderDetail.Add(new TsOrderDetail
+                            tsOrderDetail.Add(new TsOrderDetailGetMyInvoiceDetailListResDTO
                             {
-                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Id = int.Parse(reader["InvId"].ToString() ?? string.Empty),
                                 OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 8)),
+                                CourseName = reader["CourseName"].ToString() ?? string.Empty,
+                                CourseCategoryId = Guid.Parse(reader["CourseCategoryId"].ToString() ?? string.Empty),
+                                CourseCategoryName = reader["CourseCategoryName"].ToString() ?? string.Empty,
+                                Jadwal = DateTime.Parse((reader["Jadwal"].ToString() ?? string.Empty)),
                                 Harga = double.Parse(reader["Harga"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             });

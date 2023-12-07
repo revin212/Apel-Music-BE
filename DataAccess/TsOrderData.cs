@@ -99,6 +99,7 @@ namespace fs_12_team_1_BE.DataAccess
                                     PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                     OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    TotalHarga = int.Parse(reader["TotalHarga"].ToString() ?? string.Empty),
                                     IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
                                 });
                             }
@@ -242,7 +243,7 @@ namespace fs_12_team_1_BE.DataAccess
                                     Image = reader["Image"].ToString() ?? string.Empty,
                                     CategoryName = reader["catname"].ToString() ?? string.Empty,
                                     CourseName = reader["coursename"].ToString() ?? string.Empty,
-                                    Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 8)),
+                                    Jadwal = DateTime.Parse((reader["Jadwal"].ToString() ?? string.Empty)),
                                     Harga = double.Parse(reader["Price"].ToString() ?? string.Empty),
                                     IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
                                     IsSelected = bool.Parse(reader["IsSelected"].ToString() ?? string.Empty)

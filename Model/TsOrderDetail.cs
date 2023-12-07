@@ -5,7 +5,7 @@
         public int? Id { get; set; }
         public int? OrderId { get; set; }
         public Guid CourseId { get; set; }
-        public DateOnly Jadwal { get; set; }
+        public DateTime Jadwal { get; set; }
         public double Harga { get; set; }
         public bool? IsActivated { get; set; }
     }

@@ -60,7 +60,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<TsOrderDetail> tsOrderDetail = _tsOrderDetailData.GetMyInvoiceDetailList(orderid);
+                List<TsOrderDetailGetMyInvoiceDetailListResDTO> tsOrderDetail = _tsOrderDetailData.GetMyInvoiceDetailList(orderid);
                 return Ok(tsOrderDetail);
             }
             catch (Exception)
