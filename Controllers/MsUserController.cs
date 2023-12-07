@@ -28,7 +28,7 @@ namespace fs_12_team_1_BE.Controllers
             _emailService = emailService;
         }
 
-        [HttpGet("MyClass")]
+        [HttpGet("GetMyClass")]
         public IActionResult GetMyClass(Guid userid) {
             try
             {
