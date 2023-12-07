@@ -72,7 +72,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                TsOrder? tsOrder = _tsOrderData.GetCartInfo(userid);
+                TsOrder tsOrder = _tsOrderData.GetCartInfo(userid);
 
                 if (tsOrder == null)
                 {

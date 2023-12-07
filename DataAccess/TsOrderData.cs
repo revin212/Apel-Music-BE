@@ -157,9 +157,9 @@ namespace fs_12_team_1_BE.DataAccess
             return tsOrder;
         }
 
-        public TsOrder? GetCartInfo(Guid userid)
+        public TsOrder GetCartInfo(Guid userid)
         {
-            TsOrder? tsOrder = null;
+            TsOrder tsOrder = new TsOrder();
 
             string query = $"SELECT Id, UserId, InvoiceNo, " +
                 $"(SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = cart.Id AND IsSelected = 1) AS TotalHarga," +
@@ -281,7 +281,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command1.Transaction = transaction;
                     command1.Parameters.Clear();
                     command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, " +
-                        $"TotalHarga = (SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = @Id AND IsSelected = 1 AND IsActivated = 0), " +
+                        $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND IsActivated = 1), " +
                         $"OrderDate = DEFAULT, IsPaid = 1 " +
                         $"WHERE Id = @Id";
                     command1.Parameters.AddWithValue("@Id", tsorder.Id);

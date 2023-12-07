@@ -3,6 +3,7 @@ using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
 using MailKit.Search;
 using MySql.Data.MySqlClient;
+using System.Transactions;
 
 namespace fs_12_team_1_BE.DataAccess
 {
@@ -278,31 +279,72 @@ namespace fs_12_team_1_BE.DataAccess
 
             return result;
         }
-        public bool UpdateSelectedCartItem (int cartitemid, bool isselected)
+        public TsOrder UpdateSelectedCartItem (int cartitemid, bool isselected, Guid userid)
         {
-            bool result = false;
-
             
+
+            TsOrder tsOrder = new TsOrder();
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand())
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+                try
                 {
+                   
+
+                    MySqlCommand command = new MySqlCommand();
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@Id", cartitemid);
                     command.Parameters.AddWithValue("@IsSelected", isselected);
                     command.Connection = connection;
                     command.CommandText = $"UPDATE TsOrderDetail SET IsSelected = @IsSelected WHERE Id = @Id AND IsActivated = 0";
+                    var result1 = command.ExecuteNonQuery();
 
-                    connection.Open();
+                    MySqlCommand command2 = new MySqlCommand();
+                    command2.Parameters.Clear();
+                    command2.Parameters.AddWithValue("@UserId", userid);
+                    command2.Connection = connection;
+                    command2.CommandText = $"SELECT Id, UserId, InvoiceNo, " +
+                                            $"(SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = cart.Id AND IsSelected = 1 AND IsActivated = 0) AS TotalHarga," +
+                                            $" OrderDate, IsPaid FROM TsOrder AS cart WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1;";
+                    using (MySqlDataReader reader = command2.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.IsDBNull(0))
+                            {
+                                break;
+                            }
+                            //var test = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty);
+                            tsOrder = new TsOrder
+                            {
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty),
+                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                            };
+                        }
+                    }
+                    transaction.Commit();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
-
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine(ex);
+                    
+                }
+                finally
+                {
                     connection.Close();
                 }
+                
             }
 
-            return result;
+            return tsOrder;
         }
 
         public bool DeleteFromCart(int id)

@@ -92,25 +92,21 @@ namespace fs_12_team_1_BE.Controllers
         //        throw;
         //    }
         //}
-        [HttpPatch("UpdateSelectedCartItem")]
-        public IActionResult UpdateSelectedCartItem(int cartitemid, bool isselected)
+        [HttpPost("UpdateSelectedCartItem")]
+        public IActionResult UpdateSelectedCartItem([FromBody] TsOrderDetailUpdateSelectedCartItemDTO selectedCartItemDTO)
         {
+            TsOrder result = new TsOrder();
             try 
             {
-                bool result = false;
-                result = _tsOrderDetailData.UpdateSelectedCartItem(cartitemid, isselected);
-                if (result)
-                {
-                    return Ok(result);
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
+
+                result = _tsOrderDetailData.UpdateSelectedCartItem(selectedCartItemDTO.CartItemId, selectedCartItemDTO.IsSelected, selectedCartItemDTO.UserId);
+                
+                return Ok(result);
+                
             }
             catch(Exception)
             {
-                throw;
+                return StatusCode(500, "Error occured");
             }
         }
         
@@ -145,7 +141,7 @@ namespace fs_12_team_1_BE.Controllers
                     Jadwal = tsorderdetailDto.Jadwal
                 };
 
-                TsOrder? tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
+                TsOrder tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
 
                 //jika tsOrder.Id not null maka ubah tsorderdetail.OrderId dengan tsOrder.Id
                 if (tsOrder != null)
