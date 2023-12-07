@@ -242,7 +242,7 @@ namespace fs_12_team_1_BE.DataAccess
                                     Image = reader["Image"].ToString() ?? string.Empty,
                                     CategoryName = reader["catname"].ToString() ?? string.Empty,
                                     CourseName = reader["coursename"].ToString() ?? string.Empty,
-                                    Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 10)),
+                                    Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 8)),
                                     Harga = double.Parse(reader["Price"].ToString() ?? string.Empty),
                                     IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
                                     IsSelected = bool.Parse(reader["IsSelected"].ToString() ?? string.Empty)
