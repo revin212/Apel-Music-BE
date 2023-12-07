@@ -278,7 +278,7 @@ namespace fs_12_team_1_BE.DataAccess
 
             return result;
         }
-        public bool UpdateSelectedCart (int cartitemid, bool isselected)
+        public bool UpdateSelectedCartItem (int cartitemid, bool isselected)
         {
             bool result = false;
 

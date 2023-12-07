@@ -92,13 +92,13 @@ namespace fs_12_team_1_BE.Controllers
         //        throw;
         //    }
         //}
-        [HttpPatch("UpdateSelectedCart")]
-        public IActionResult UpdateSelectedCart(int cartitemid, bool isselected)
+        [HttpPatch("UpdateSelectedCartItem")]
+        public IActionResult UpdateSelectedCartItem(int cartitemid, bool isselected)
         {
             try 
             {
                 bool result = false;
-                result = _tsOrderDetailData.UpdateSelectedCart(cartitemid, isselected);
+                result = _tsOrderDetailData.UpdateSelectedCartItem(cartitemid, isselected);
                 if (result)
                 {
                     return Ok(result);
