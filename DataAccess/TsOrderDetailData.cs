@@ -150,7 +150,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                 OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
                                 CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 10)),
+                                Jadwal = DateOnly.Parse((reader["Jadwal"].ToString() ?? string.Empty).Substring(1, 8)),
                                 Harga = double.Parse(reader["Harga"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
                             });
