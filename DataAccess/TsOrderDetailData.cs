@@ -178,7 +178,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@OrderId", tsorderdetail.OrderId);
                     command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
-                    command.Parameters.AddWithValue("@Jadwal", tsorderdetail.Jadwal);
+                    command.Parameters.AddWithValue("@Jadwal", tsorderdetail.Jadwal.ToString("yyyy-MM-dd"));
 
 
                     command.Connection = connection;

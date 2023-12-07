@@ -142,7 +142,7 @@ namespace fs_12_team_1_BE.Controllers
                     //Id = Guid.NewGuid(),
                     OrderId = null,
                     CourseId = tsorderdetailDto.CourseId,
-
+                    Jadwal = tsorderdetailDto.Jadwal
                 };
 
                 TsOrder? tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
