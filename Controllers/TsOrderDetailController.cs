@@ -115,23 +115,9 @@ namespace fs_12_team_1_BE.Controllers
         
         [HttpPost("AddToCart")]
         [Authorize]
-        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto) //not complete
+        public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto)
         {
-            //select * from TsOrder
-            //Jika ada Order yang memiliki isPaid = false, jangan insert new Order
-            //tapi ubah TsOrderDetail.OrderId masing2 dengan TsOrder.Id yang memiliki isPaid = false
-
-            //else insert new
-            //test data
-            //{
-            //    "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
-            //  "courseId": "b3e79d1f-884a-11ee-b59a-3c5282e16d0b"
-
-            //}
-            //{
-            //    "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
-            //  "courseId": "b3e79c28-884a-11ee-b59a-3c5282e16d0b"
-            //}
+            
             try
             {
                 if (tsorderdetailDto == null)
@@ -139,15 +125,15 @@ namespace fs_12_team_1_BE.Controllers
 
                 TsOrderDetail tsorderdetail = new TsOrderDetail
                 {
-                    //Id = Guid.NewGuid(),
+                   
                     OrderId = null,
                     CourseId = tsorderdetailDto.CourseId,
                     Jadwal = tsorderdetailDto.Jadwal
                 };
 
-                TsOrder tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); //ambil semua order dengan IsPaid = false
+                TsOrder tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); 
 
-                //jika tsOrder.Id not null maka ubah tsorderdetail.OrderId dengan tsOrder.Id
+               
                 if (tsOrder.Id != null)
                 {
 
@@ -157,11 +143,8 @@ namespace fs_12_team_1_BE.Controllers
                 {
                     TsOrder tsOrderNew = new TsOrder
                     {
-                        //Id = Guid.NewGuid(),
                         UserId = tsorderdetailDto.UserId,
-                        //PaymentId = null,
                         InvoiceNo = string.Empty,
-                        //OrderDate = null,
                         IsPaid = false
                     };
                     int new_cartid = _tsOrderData.NewCart(tsOrderNew);
