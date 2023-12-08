@@ -3,6 +3,7 @@ using fs_12_team_1_BE.DTO.TsOrder;
 using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
@@ -56,6 +57,7 @@ namespace fs_12_team_1_BE.Controllers
         //    }
         //}
         [HttpGet("GetMyInvoicesDetailList")]
+        [Authorize]
         public IActionResult GetMyInvoicesDetailList(int orderid)
         {
             try
@@ -93,6 +95,7 @@ namespace fs_12_team_1_BE.Controllers
         //    }
         //}
         [HttpPost("UpdateSelectedCartItem")]
+        [Authorize]
         public IActionResult UpdateSelectedCartItem([FromBody] TsOrderDetailUpdateSelectedCartItemDTO selectedCartItemDTO)
         {
             TsOrder result = new TsOrder();
@@ -111,6 +114,7 @@ namespace fs_12_team_1_BE.Controllers
         }
         
         [HttpPost("AddToCart")]
+        [Authorize]
         public IActionResult AddToCart([FromBody] TsOrderDetailDTOAddToCart tsorderdetailDto) //not complete
         {
             //select * from TsOrder
@@ -181,6 +185,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpPost("DeleteFromCart")]
+        [Authorize]
         public IActionResult DeleteFromCart([FromBody] TsOrderDetailDTODeleteFromCart deletedata)
         {
 

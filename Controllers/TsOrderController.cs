@@ -2,6 +2,7 @@
 using fs_12_team_1_BE.DTO.TsOrder;
 using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
@@ -33,6 +34,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpGet("GetMyInvoicesList")]
+        [Authorize]
         public IActionResult GetMyInvoicesList(Guid userid)
         {
             try
@@ -48,6 +50,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpGet("GetById")]
+        [Authorize]
         public IActionResult Get(Guid id)
         {
             try
@@ -68,6 +71,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
         [HttpGet("GetCartInfo")]
+        [Authorize]
         public IActionResult GetCartInfo(Guid userid)
         {
             try
@@ -91,6 +95,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpGet("GetCart")]
+        [Authorize]
         public IActionResult GetCart(Guid userid)
         {
             try
@@ -114,6 +119,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("CheckoutCart")]
+        [Authorize]
         public IActionResult CheckoutCart(TsOrderDTOCheckout tsorderdtocheckout)
         {
             //{

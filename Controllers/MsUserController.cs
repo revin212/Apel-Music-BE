@@ -29,6 +29,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpGet("GetMyClass")]
+        [Authorize]
         public IActionResult GetMyClass(Guid userid) {
             try
             {
