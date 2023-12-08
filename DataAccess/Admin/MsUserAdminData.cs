@@ -1,4 +1,5 @@
 ﻿using fs_12_team_1_BE.DTO.Admin.MsUserAdmin;
+using fs_12_team_1_BE.DTO.MsUser;
 //using fs_12_team_1_BE.DTO.MsUser;
 using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
@@ -346,89 +347,95 @@ namespace fs_12_team_1_BE.DataAccess
         //    return result;
         //}
 
-        //public bool Update(Guid id, MsUserRegisterDTO msUser)
-        //{
-        //    bool result = false;
+        public bool Update(Guid id, MsUserAdminGetDTO msUser)
+        {
+            bool result = false;
 
-        //    string query = $"UPDATE MsUser SET Name = @Name, Email = @Email, Password = @Password " +
-        //        $"WHERE Id = @Id";
+            string query = $"UPDATE MsUser SET Name = @Name, Email = @Email, Password = @Password, " +
+                $"IsDeleted = @IsDeleted, IsActivated = @IsActivated, " +
+                $"RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires " +
+                $"WHERE Id = @Id";
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Parameters.Clear();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
 
-        //            command.Parameters.AddWithValue("@Name", msUser.Name);
-        //            command.Parameters.AddWithValue("@Email", msUser.Email);
-        //            command.Parameters.AddWithValue("@Password", msUser.Password);
-        //            command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@Name", msUser.Name);
+                    command.Parameters.AddWithValue("@Email", msUser.Email);
+                    command.Parameters.AddWithValue("@Password", msUser.Password);
+                    command.Parameters.AddWithValue("@IsDeleted", msUser.IsDeleted);
+                    command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                    command.Parameters.AddWithValue("@RefreshToken", msUser.RefreshToken);
+                    command.Parameters.AddWithValue("@RefreshTokenExpires", msUser.RefreshTokenExpires);
+                    command.Parameters.AddWithValue("@Id", id);
 
-        //            command.Connection = connection;
-        //            command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //            connection.Open();
+                    connection.Open();
 
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //            connection.Close();
-        //        }
-        //    }
+                    connection.Close();
+                }
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
 
-        //public bool SoftDelete(Guid id)
-        //{
-        //    bool result = false;
+        public bool SoftDelete(Guid id)
+        {
+            bool result = false;
 
-        //    string query = $"UPDATE MsUser SET IsDeleted = 1 WHERE Id = @Id";
+            string query = $"UPDATE MsUser SET IsDeleted = 1 WHERE Id = @Id";
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Id", id);
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
 
-        //            command.Connection = connection;
-        //            command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //            connection.Open();
+                    connection.Open();
 
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //            connection.Close();
-        //        }
-        //    }
+                    connection.Close();
+                }
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
 
-        //public bool HardDelete(Guid id)
-        //{
-        //    bool result = false;
-        //    string query = "DELETE FROM MsUser WHERE Id = @Id";
+        public bool HardDelete(Guid id)
+        {
+            bool result = false;
+            string query = "DELETE FROM MsUser WHERE Id = @Id";
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Id", id);
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
 
-        //            command.Connection = connection;
-        //            command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-        //            connection.Open();
+                    connection.Open();
 
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-        //            connection.Close();
-        //        }
-        //    }
+                    connection.Close();
+                }
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
     }
 }
