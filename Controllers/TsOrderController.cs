@@ -37,8 +37,8 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<TsOrder> tsOrder = _tsOrderData.GetMyInvoicesList(userid);
-                return Ok(tsOrder);
+                List<TsOrderGetMyInvoiceListResDTO> myInvoiceList = _tsOrderData.GetMyInvoicesList(userid);
+                return Ok(myInvoiceList);
             }
             catch (Exception)
             {
