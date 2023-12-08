@@ -21,6 +21,8 @@ builder.Services.AddScoped<MsPaymentMethodData>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<TsOrderData>();
 builder.Services.AddScoped<TsOrderDetailData>();
+builder.Services.AddScoped<MsUserAdminData>();
+
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var AllowedUrl1 = builder.Configuration["AllowedUrls:FrontEnd1"];
 var AllowedUrl2 = builder.Configuration["AllowedUrls:FrontEnd2"];
