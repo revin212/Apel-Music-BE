@@ -47,12 +47,12 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
+        [HttpGet("GetInvoiceDetailHeader")]
+        public IActionResult GetInvoiceDetailHeader(int id)
         {
             try
             {
-                TsOrder? tsOrder = _tsOrderData.GetById(id);
+                 TsOrderGetInvoiceDetailHeaderRes tsOrder = _tsOrderData.GetInvoiceDetailHeader(id);
 
                 if (tsOrder == null)
                 {

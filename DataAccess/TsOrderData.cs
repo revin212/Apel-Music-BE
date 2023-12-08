@@ -120,9 +120,9 @@ namespace fs_12_team_1_BE.DataAccess
             }
         }
 
-        public TsOrder GetById(Guid id)
+        public TsOrderGetInvoiceDetailHeaderRes GetInvoiceDetailHeader(int id)
         {
-            TsOrder tsOrder = new TsOrder();
+            TsOrderGetInvoiceDetailHeaderRes tsOrder = new TsOrderGetInvoiceDetailHeaderRes();
 
             string query = $"SELECT * FROM TsOrder WHERE Id = @Id";
 
@@ -141,14 +141,11 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            tsOrder = new TsOrder
+                            tsOrder = new TsOrderGetInvoiceDetailHeaderRes
                             {
-                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
-                                UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
                                 InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                 OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
-                                IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                                TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
                             };
                         }
                     }
