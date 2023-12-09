@@ -114,7 +114,7 @@ namespace fs_12_team_1_BE.Controllers
                     SetRefreshTokenCookies(refreshToken);
                     _msUserData.UpdateRefreshToken(refreshToken);
 
-                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty, RoleName = user.RoleName });
+                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty, RoleName = RoleNameEncoder(user.RoleName) });
                 }
             }
             catch
@@ -130,8 +130,13 @@ namespace fs_12_team_1_BE.Controllers
             {
                 string refreshToken = Request.Cookies["refreshToken"] ?? string.Empty;
                 string Email = Request.Cookies["email"] ?? string.Empty;
-                string RoleName = Request.Cookies["rolename"] ?? string.Empty;
-                RefreshTokenDTO dbRefreshToken = _msUserData.GetRefreshToken(Email);
+
+                RefreshTokenDTO? dbRefreshToken = _msUserData.GetRefreshToken(Email);
+
+                if (dbRefreshToken == null)
+                {
+                    return Unauthorized("User does not exist");
+                }
 
                 if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
                 {
@@ -142,13 +147,13 @@ namespace fs_12_team_1_BE.Controllers
                     return Unauthorized("Token expired.");
                 }
 
-                string newToken = GenerateToken(Email, RoleName);
+                string newToken = GenerateToken(Email, dbRefreshToken.RoleName);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
-                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email, RoleName);
+                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email, dbRefreshToken.RoleName);
                 SetRefreshTokenCookies(newRefreshToken);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
-                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = string.Empty, RoleName = RoleName });
+                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = dbRefreshToken.UserId, RoleName = RoleNameEncoder(dbRefreshToken.RoleName) });
             }
             catch
             {
@@ -290,7 +295,31 @@ namespace fs_12_team_1_BE.Controllers
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
             Response.Cookies.Append("email", newRefreshToken.Email, cookieOptions);
-            Response.Cookies.Append("rolename", newRefreshToken.RoleName, cookieOptions);
+        }
+
+        private string RoleNameEncoder(string RoleName)
+        {
+            if (RoleName == "User")
+            {
+                return _configuration.GetSection("RoleNameEncode:User").Value;
+            }
+            else if (RoleName == "Admin")
+            {
+                return _configuration.GetSection("RoleNameEncode:Admin").Value;
+            }
+            else return "";
+        }
+        private string RoleNameDecoder(string RoleNameEncoded)
+        {
+            if (RoleNameEncoded == _configuration.GetSection("RoleNameEncode:Admin").Value)
+            {
+                return "Admin";
+            }
+            else if (RoleNameEncoded == _configuration.GetSection("RoleNameEncode:User").Value)
+            {
+                return "User";
+            }
+            else return "User";
         }
 
         [HttpPost("ActivateUser")]

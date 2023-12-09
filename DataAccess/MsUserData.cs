@@ -229,7 +229,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             RefreshTokenDTO RefreshToken = new RefreshTokenDTO();
 
-            string query = $"SELECT * FROM MsUser WHERE Email = @Email";
+            string query = "SELECT mu.Id, Email, RefreshToken, RefreshTokenExpires, mr.Name AS RoleName FROM MsUser mu JOIN msrole mr ON mu.Role = mr.id WHERE Email = @Email";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -246,7 +246,9 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             RefreshToken = new RefreshTokenDTO
                             {
+                                UserId = reader["Id"].ToString() ?? string.Empty,
                                 Email = reader["Email"].ToString() ?? string.Empty,
+                                RoleName = reader["RoleName"].ToString() ?? string.Empty,
                                 RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
                                 RefreshTokenExpires = reader.GetDateTime("RefreshTokenExpires")
                             };
