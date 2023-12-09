@@ -17,6 +17,7 @@ namespace fs_12_team_1_BE.Controllers
 {
     [Route("api/admin/[controller]")]
     [ApiController]
+    [Authorize(Roles ="Admin")]
     public class MsUserAdminController : ControllerBase
     {
         private readonly MsUserAdminData _msUserData;
@@ -30,7 +31,6 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpGet("GetUserClass")]
-        [Authorize]
         public IActionResult GetUserClass(Guid userid) {
             try
             {

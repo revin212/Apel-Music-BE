@@ -3,6 +3,7 @@
     public class RefreshTokenDTO
     {
         public string Email { get; set; } = string.Empty;
+        public string RoleName { get; set; } = string.Empty;
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime RefreshTokenExpires { get; set; } = DateTime.Now;
     }

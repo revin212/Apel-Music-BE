@@ -10,6 +10,7 @@ namespace fs_12_team_1_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin, User")]
     public class TsOrderDetailController : ControllerBase
     {
         private readonly TsOrderDetailData _tsOrderDetailData;

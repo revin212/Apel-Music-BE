@@ -131,7 +131,7 @@ namespace fs_12_team_1_BE.DataAccess
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Connection = connection;
-                    command.CommandText = "SELECT * From MsUser WHERE Email = @Email";
+                    command.CommandText = "SELECT MsUser.Id AS UserId, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsActivated, IsDeleted From MsUser JOIN MsRole ON Role = MsRole.Id WHERE Email = @Email";
 
                     command.Parameters.Clear();
 
@@ -145,9 +145,11 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             user = new MsUser
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Id = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
                                 Email = reader["Email"].ToString() ?? string.Empty,
                                 Password = reader["Password"].ToString() ?? string.Empty,
+                                RoleId = int.Parse(reader["RoleId"].ToString() ?? string.Empty),
+                                RoleName = reader["RoleName"].ToString() ?? string.Empty,
                                 IsActivated = Convert.ToBoolean(reader["IsActivated"]),
                                 IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
                             };
@@ -166,7 +168,7 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;
-            string query = "INSERT INTO MsUser(Id, Name, Email, Password, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (UUID(), @Name, @Email, @Password, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (UUID(), @Name, @Email, @Password, DEFAULT, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {

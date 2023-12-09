@@ -2,11 +2,13 @@
 using fs_12_team_1_BE.DTO.MsUser;
 //using fs_12_team_1_BE.DTO.MsUser;
 using fs_12_team_1_BE.Model;
+using Microsoft.AspNetCore.Authorization;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 
 namespace fs_12_team_1_BE.DataAccess
 {
+    [Authorize]
     public class MsUserAdminData
     {
         private readonly string connectionString;

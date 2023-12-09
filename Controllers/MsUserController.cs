@@ -108,13 +108,13 @@ namespace fs_12_team_1_BE.Controllers
                     if (!user.IsActivated)
                         return BadRequest("Please Activate your account first");
 
-                    string token = GenerateToken(user.Email);
+                    string token = GenerateToken(user.Email, user.RoleName);
                     DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
-                    RefreshTokenDTO refreshToken = GenerateRefreshToken(credential.Email);
+                    RefreshTokenDTO refreshToken = GenerateRefreshToken(credential.Email, user.RoleName);
                     SetRefreshTokenCookies(refreshToken);
                     _msUserData.UpdateRefreshToken(refreshToken);
 
-                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty });
+                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty, RoleName = user.RoleName });
                 }
             }
             catch
@@ -128,8 +128,9 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                string refreshToken = Request.Cookies["refreshToken"] ?? String.Empty;
-                string Email = Request.Cookies["email"] ?? String.Empty;
+                string refreshToken = Request.Cookies["refreshToken"] ?? string.Empty;
+                string Email = Request.Cookies["email"] ?? string.Empty;
+                string RoleName = Request.Cookies["rolename"] ?? string.Empty;
                 RefreshTokenDTO dbRefreshToken = _msUserData.GetRefreshToken(Email);
 
                 if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
@@ -141,13 +142,13 @@ namespace fs_12_team_1_BE.Controllers
                     return Unauthorized("Token expired.");
                 }
 
-                string newToken = GenerateToken(Email);
+                string newToken = GenerateToken(Email, RoleName);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
-                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email);
+                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email, RoleName);
                 SetRefreshTokenCookies(newRefreshToken);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
-                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = string.Empty });
+                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = string.Empty, RoleName = RoleName });
             }
             catch
             {
@@ -238,13 +239,14 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        private string GenerateToken(string Email)
+        private string GenerateToken(string Email, string Rolename)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                     _configuration.GetSection("JwtConfig:Key").Value));
 
             var claims = new Claim[] {
                     new Claim(ClaimTypes.Email, Email),
+                    new Claim(ClaimTypes.Role, Rolename),
                     };
 
             var signingCredential = new SigningCredentials(
@@ -265,11 +267,12 @@ namespace fs_12_team_1_BE.Controllers
             return token;
         }
 
-        private RefreshTokenDTO GenerateRefreshToken(string Email)
+        private RefreshTokenDTO GenerateRefreshToken(string Email, string RoleName)
         {
             var refreshToken = new RefreshTokenDTO
             {
                 Email = Email,
+                RoleName = RoleName,
                 RefreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
                 RefreshTokenExpires = DateTime.Now.AddDays(7)
             };
@@ -287,6 +290,7 @@ namespace fs_12_team_1_BE.Controllers
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
             Response.Cookies.Append("email", newRefreshToken.Email, cookieOptions);
+            Response.Cookies.Append("rolename", newRefreshToken.RoleName, cookieOptions);
         }
 
         [HttpPost("ActivateUser")]
