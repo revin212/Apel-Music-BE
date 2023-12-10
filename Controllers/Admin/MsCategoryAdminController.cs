@@ -84,7 +84,11 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 if (MsCategoryAdminDTO == null)
                     return BadRequest("Data should be inputed");
 
-                MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, id);
+                if (MsCategoryAdminDTO.Image.Length > 50)
+                {
+                    MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, id);
+                }
+
                 bool result = _msCategoryAdminData.Update(id, MsCategoryAdminDTO);
                 
                 if (result)
