@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using fs_12_team_1_BE.Model;
+using fs_12_team_1_BE.DataAccess.Admin;
+using fs_12_team_1_BE.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<TsOrderData>();
 builder.Services.AddScoped<TsOrderDetailData>();
 builder.Services.AddScoped<MsUserAdminData>();
+builder.Services.AddScoped<MsCategoryAdminData>();
+builder.Services.AddScoped<ImageSaverUtil>();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var AllowedUrl1 = builder.Configuration["AllowedUrls:FrontEnd1"];

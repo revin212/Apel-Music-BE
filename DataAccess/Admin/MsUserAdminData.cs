@@ -20,9 +20,9 @@ namespace fs_12_team_1_BE.DataAccess
         }
 
 
-        public List<MsUserAdminGetDTO> GetAll()
+        public List<MsUserAdminDTO> GetAll()
         {
-            List<MsUserAdminGetDTO> msUser = new List<MsUserAdminGetDTO>();
+            List<MsUserAdminDTO> msUser = new List<MsUserAdminDTO>();
 
             string query = "SELECT * FROM MsUser WHERE IsDeleted = 0";
 
@@ -36,7 +36,7 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msUser.Add(new MsUserAdminGetDTO
+                            msUser.Add(new MsUserAdminDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
@@ -57,9 +57,9 @@ namespace fs_12_team_1_BE.DataAccess
 
             return msUser;
         }
-        public MsUserAdminGetDTO GetById(Guid id)
+        public MsUserAdminDTO GetById(Guid id)
         {
-            MsUserAdminGetDTO msUser = new MsUserAdminGetDTO();
+            MsUserAdminDTO msUser = new MsUserAdminDTO();
 
             string query = $"SELECT * FROM MsUser WHERE Id = @Id";
 
@@ -76,7 +76,7 @@ namespace fs_12_team_1_BE.DataAccess
                     {
                         while (reader.Read())
                         {
-                            msUser = new MsUserAdminGetDTO
+                            msUser = new MsUserAdminDTO
                             {
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
@@ -349,7 +349,7 @@ namespace fs_12_team_1_BE.DataAccess
         //    return result;
         //}
 
-        public bool Update(Guid id, MsUserAdminGetDTO msUser)
+        public bool Update(Guid id, MsUserAdminDTO msUser)
         {
             bool result = false;
 

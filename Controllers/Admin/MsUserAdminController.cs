@@ -49,7 +49,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                List<MsUserAdminGetDTO> msUser = _msUserData.GetAll();
+                List<MsUserAdminDTO> msUser = _msUserData.GetAll();
                 return Ok(msUser);
             }
             catch
@@ -63,7 +63,7 @@ namespace fs_12_team_1_BE.Controllers
         {
             try
             {
-                MsUserAdminGetDTO msUser = _msUserData.GetById(id);
+                MsUserAdminDTO msUser = _msUserData.GetById(id);
 
                 if (msUser == null)
                 {
@@ -123,12 +123,14 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPatch]
-        public IActionResult Update(Guid id, [FromBody] MsUserAdminGetDTO msUserDto)
+        public IActionResult Update(Guid id, [FromBody] MsUserAdminDTO msUserDto)
         {
             try
             {
                 if (msUserDto == null)
                     return BadRequest("Data should be inputed");
+
+                msUserDto.Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password);
 
                 bool result = _msUserData.Update(id, msUserDto);
 
