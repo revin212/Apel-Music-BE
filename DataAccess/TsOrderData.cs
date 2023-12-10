@@ -278,8 +278,8 @@ namespace fs_12_team_1_BE.DataAccess
                     command1.Transaction = transaction;
                     command1.Parameters.Clear();
                     command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, " +
-                        $"Course_count = (SELECT IFNULL(COUNT(Id),0) FROM TsOrderDetail WHERE OrderId = @Id AND IsActivated = 1), " +
-                        $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND IsActivated = 1), " +
+                        $"Course_count = (SELECT IFNULL(COUNT(Id),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
+                        $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
                         $"OrderDate = DEFAULT, IsPaid = 1 " +
                         $"WHERE Id = @Id";
                     command1.Parameters.AddWithValue("@Id", tsorder.Id);
@@ -291,7 +291,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command2.Connection = connection;
                     command2.Transaction = transaction;
                     command2.Parameters.Clear();
-                    command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), IsActivated = 1 " +
+                    command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), TsOrderDetail.IsActivated = 1 " +
                     $"WHERE UserId = @UserId AND IsSelected = 1";
                     command2.Parameters.AddWithValue("@UserId", tsorder.UserId);
 
@@ -305,7 +305,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command3.Parameters.Clear();
                     command3.CommandText = $"INSERT INTO TsOrder(UserId) " +
                                             $"SELECT UserId FROM TsOrderDetail JOIN TsOrder ON OrderId = TsOrder.Id " +
-                                            $"WHERE TsOrder.UserId = @UserId AND IsSelected = 0 AND IsActivated = 0 LIMIT 1";
+                                            $"WHERE TsOrder.UserId = @UserId AND IsSelected = 0 AND TsOrderDetail.IsActivated = 0 LIMIT 1";
                                             
 
                     command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
@@ -320,7 +320,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command4.Parameters.Clear();
                     command4.CommandText = $"UPDATE TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id " +
                                             $"SET TsOrderDetail.OrderId = @OrderId " +
-                                            $"WHERE IsSelected = 0 AND IsActivated = 0 AND TsOrder.UserId = @UserId";
+                                            $"WHERE IsSelected = 0 AND TsOrderDetail.IsActivated = 0 AND TsOrder.UserId = @UserId";
                     command4.Parameters.AddWithValue("@OrderId", cartid);
                     command4.Parameters.AddWithValue("@UserId", tsorder.UserId);
                     var result4 = command4.ExecuteNonQuery();

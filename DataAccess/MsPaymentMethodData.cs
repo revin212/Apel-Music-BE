@@ -17,7 +17,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsPaymentMethod> msPaymentMethod = new List<MsPaymentMethod>();
 
-            string query = "SELECT * FROM MsPaymentMethod";
+            string query = "SELECT * FROM MsPaymentMethod WHERE IsActivated = 1";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {

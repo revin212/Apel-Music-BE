@@ -18,7 +18,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsCategory> msCategory = new List<MsCategory>();
 
-            string query = "SELECT * FROM MsCategory";
+            string query = "SELECT * FROM MsCategory WHERE IsActivated = 1";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {

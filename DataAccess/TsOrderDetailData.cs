@@ -130,7 +130,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<TsOrderDetailGetMyInvoiceDetailListResDTO> tsOrderDetail = new List<TsOrderDetailGetMyInvoiceDetailListResDTO>();
 
-            string query = $"SELECT invdetail.Id AS InvId, invdetail.OrderId AS OrderId, invdetail.CourseId AS CourseId, course.Name AS CourseName, course.CategoryId AS CourseCategoryId, cat.Name AS CourseCategoryName, Jadwal, Harga, IsActivated FROM TsOrderDetail AS invdetail INNER JOIN MsCourse AS course ON invdetail.CourseId = course.Id INNER JOIN MsCategory AS cat ON course.CategoryId = cat.Id WHERE OrderId = @id AND IsActivated = 1";
+            string query = $"SELECT invdetail.Id AS InvId, invdetail.OrderId AS OrderId, invdetail.CourseId AS CourseId, course.Name AS CourseName, course.CategoryId AS CourseCategoryId, cat.Name AS CourseCategoryName, Jadwal, Harga, invdetail.IsActivated FROM TsOrderDetail AS invdetail INNER JOIN MsCourse AS course ON invdetail.CourseId = course.Id INNER JOIN MsCategory AS cat ON course.CategoryId = cat.Id WHERE OrderId = @id AND invdetail.IsActivated = 1";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
