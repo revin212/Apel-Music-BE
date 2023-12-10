@@ -291,7 +291,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command2.Connection = connection;
                     command2.Transaction = transaction;
                     command2.Parameters.Clear();
-                    command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), TsOrderDetail.IsActivated = 1 " +
+                    command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), cartitem.IsActivated = 1 " +
                     $"WHERE UserId = @UserId AND IsSelected = 1";
                     command2.Parameters.AddWithValue("@UserId", tsorder.UserId);
 
