@@ -57,6 +57,19 @@ namespace fs_12_team_1_BE.Controllers
                 return StatusCode(500, "Server Error occured");
             }
         }
+        [HttpGet("GetRoles")]
+        public IActionResult GetRoles()
+        {
+            try
+            {
+                List<MsRoleAdminDTO> msUser = _msUserData.GetRoles();
+                return Ok(msUser);
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
 
         [HttpGet("GetById")]
         public IActionResult GetById(Guid id)
@@ -263,50 +276,42 @@ namespace fs_12_team_1_BE.Controllers
         //}
 
 
-        //[HttpPost("Register")]
-        //public async Task<IActionResult> Register([FromBody] MsUserRegisterDTO msUserDto)
-        //{
-        //    try
-        //    {
-        //        if (msUserDto == null)
-        //            return BadRequest("Data should be inputed");
+        [HttpPost("Create")]
+        public IActionResult Create([FromBody] MsUserAdminDTO msUserDto)
+        {
+            try
+            {
+                if (msUserDto == null)
+                    return BadRequest("Data should be inputed");
 
-        //        if (!_emailService.IsValidEmail(msUserDto.Email))
-        //            return BadRequest("Invalid Email Address");
+                if (!_emailService.IsValidEmail(msUserDto.Email))
+                    return BadRequest("Invalid Email Address");
 
-        //        MsUser? user = _msUserData.CheckUser(msUserDto.Email);
+                Guid user = _msUserData.CheckUser(msUserDto.Email);
+                   
+                if (user != Guid.Empty)
+                    return BadRequest("This email address is already used by another account");
 
-        //        if (user != null)
-        //            return BadRequest("This email address is already used by another account");
+                msUserDto.Id = Guid.NewGuid();
+                msUserDto.Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password);
 
-        //        if(msUserDto.Password != msUserDto.ConfirmPassword)
-        //            return BadRequest("Password do not match");
+                bool result = _msUserData.Create(msUserDto);
 
-
-        //        MsUserRegisterDTO msUser = new MsUserRegisterDTO
-        //        {
-        //            Name = msUserDto.Name,
-        //            Email = msUserDto.Email,
-        //            Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password),
-        //        };
-
-        //        bool result = _msUserData.Register(msUser);
-
-        //        if (result)
-        //        {
-        //            bool mailResult = await SendEmailActivation(msUser);
-        //            return StatusCode(201, "Register Berhasil");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
+                if (result)
+                {
+                    //bool mailResult = await SendEmailActivation(msUser);
+                    return StatusCode(201, "Create Berhasil");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
 
         //private string GenerateToken(string Email)
         //{
