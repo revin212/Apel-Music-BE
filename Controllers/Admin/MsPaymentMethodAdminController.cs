@@ -10,7 +10,7 @@ using fs_12_team_1_BE.DTO.Admin;
 
 namespace fs_12_team_1_BE.Controllers.Admin
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class MsPaymentMethodAdminController : ControllerBase
