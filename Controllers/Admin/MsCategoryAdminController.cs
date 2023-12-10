@@ -11,7 +11,7 @@ namespace fs_12_team_1_BE.Controllers.Admin
 
     [Route("api/admin/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class MsCategoryAdminController : ControllerBase
     {
         private readonly MsCategoryAdminData _msCategoryAdminData;
@@ -107,16 +107,18 @@ namespace fs_12_team_1_BE.Controllers.Admin
             {
                 if (MsCategoryAdminDTO == null)
                     return BadRequest("Data should be inputed");
+
+                MsCategoryAdminDTO.Id = Guid.NewGuid();
+                MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, MsCategoryAdminDTO.Id);
+                bool result = _msCategoryAdminData.CreateCategory(MsCategoryAdminDTO);
                 
-                Guid result = _msCategoryAdminData.CreateCategory(MsCategoryAdminDTO);
-                MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, result);
-                if (result != Guid.Empty)
+                if (result)
                 {
-                    return StatusCode(201, "Create user success");
+                    return StatusCode(201, "Create Category Success");
                 }
                 else
                 {
-                    return StatusCode(500, "Error occured");
+                    return StatusCode(500, "Error Occured");
                 }
             }
             catch
