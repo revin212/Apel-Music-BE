@@ -13,13 +13,20 @@ namespace fs_12_team_1_BE.Utilities
         {
             byte[] decodedByteArray = Convert.FromBase64CharArray(
                 inputStr.ToCharArray(), 0, inputStr.Length);
-            string filePath = _webHostEnvironment.WebRootPath + Id +".png";
-            FileStream fstrm = new FileStream(@"C:\winnt_copy.bmp", FileMode.CreateNew, FileAccess.Write);
-            BinaryWriter writer = new BinaryWriter(fstrm);
+            string filePath = _webHostEnvironment.WebRootPath + "\\images\\" + Id +".png";
+            
+            FileStream stream = new FileStream(@filePath, FileMode.CreateNew, FileAccess.Write);
+            BinaryWriter writer = new BinaryWriter(stream);
             writer.Write(decodedByteArray);
             writer.Close();
-            fstrm.Close();
-            return (filePath);
+            stream.Close();
+            Uri absoluteUri = new Uri(filePath);
+            Uri rootUri = new Uri(_webHostEnvironment.WebRootPath);
+            
+            
+            Uri relativeUri = rootUri.MakeRelativeUri(absoluteUri);
+            return Uri.UnescapeDataString(relativeUri.ToString()).ToString().Substring(8);
+
         }
     }
 }

@@ -99,19 +99,19 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             return msCategory;
         }
-        public Guid CreateCategory(MsCategoryAdminCreateDTO msCategory)
+        public bool CreateCategory(MsCategoryAdminCreateDTO msCategory)
         {
-            Guid result = Guid.Empty;
+            bool result = false;
 
             string query = $"INSERT INTO MsCategory(Id, Name, Title, Description, Image, HeaderImage, IsActivated) " +
-                $"VALUES (UUID(), @Name, @Title, @Description, @Image, @HeaderImage, @IsActivated)";
+                $"VALUES (@Id, @Name, @Title, @Description, @Image, @HeaderImage, @IsActivated)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
-
+                    command.Parameters.AddWithValue("@Id", msCategory.Id);
                     command.Parameters.AddWithValue("@Name", msCategory.Name);
                     command.Parameters.AddWithValue("@Title", msCategory.Title);
                     command.Parameters.AddWithValue("@Description", msCategory.Description);
@@ -124,8 +124,8 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
                     connection.Open();
 
-                    command.ExecuteNonQuery();
-                    result = Guid.Parse(command.LastInsertedId.ToString() ?? string.Empty);
+                    
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
                     connection.Close();
                 }
             }
