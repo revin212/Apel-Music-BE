@@ -309,7 +309,7 @@ namespace fs_12_team_1_BE.DataAccess
                     command2.Parameters.AddWithValue("@UserId", userid);
                     command2.Connection = connection;
                     command2.CommandText = $"SELECT Id, UserId, InvoiceNo, " +
-                                            $"(SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = cart.Id AND IsSelected = 1 AND IsActivated = 0) AS TotalHarga," +
+                                            $"(SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail od INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = cart.Id AND od.IsSelected = 1 AND od.IsActivated = 0) AS TotalHarga," +
                                             $" OrderDate, IsPaid FROM TsOrder AS cart WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1;";
                     using (MySqlDataReader reader = command2.ExecuteReader())
                     {
