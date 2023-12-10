@@ -25,6 +25,7 @@ builder.Services.AddScoped<TsOrderData>();
 builder.Services.AddScoped<TsOrderDetailData>();
 builder.Services.AddScoped<MsUserAdminData>();
 builder.Services.AddScoped<MsCategoryAdminData>();
+builder.Services.AddScoped<MsPaymentMethodAdminData>();
 builder.Services.AddScoped<ImageSaverUtil>();
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
