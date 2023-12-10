@@ -94,7 +94,11 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 if (MsPaymentMethodAdminUpdate == null)
                     return BadRequest("Data should be inputed");
 
-                MsPaymentMethodAdminUpdate.Image = _imageSaver.SaveImageToFile(MsPaymentMethodAdminUpdate.Image, id);
+                if (MsPaymentMethodAdminUpdate.Image.Length > 50)
+                {
+                    MsPaymentMethodAdminUpdate.Image = _imageSaver.SaveImageToFile(MsPaymentMethodAdminUpdate.Image, id);
+                }
+
                 bool result = _msPaymentMethodAdminData.Update(id, MsPaymentMethodAdminUpdate);
 
                 if (result)
