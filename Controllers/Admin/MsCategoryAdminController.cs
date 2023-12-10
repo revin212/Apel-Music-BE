@@ -1,5 +1,6 @@
 ﻿using fs_12_team_1_BE.DataAccess;
 using fs_12_team_1_BE.DataAccess.Admin;
+using fs_12_team_1_BE.DTO.Admin;
 using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
 using fs_12_team_1_BE.DTO.Admin.MsUserAdmin;
 using fs_12_team_1_BE.Email;
@@ -88,7 +89,7 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 
                 if (result)
                 {
-                    return StatusCode(201, "Edit user success");
+                    return StatusCode(201, "Edit category success");
                 }
                 else
                 {
@@ -100,6 +101,32 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 return StatusCode(500, "Server Error occured");
             }
         }
+
+        [HttpPatch("ToggleActiveStatus")]
+        public IActionResult ToggleActiveStatus(Guid id, [FromBody] ToggleActiveStatusDTO msCategory)
+        {
+            try
+            {
+                if (msCategory == null)
+                    return BadRequest("Data should be inputed");
+
+                bool result = _msCategoryAdminData.ToggleActiveStatus(id, msCategory);
+
+                if (result)
+                {
+                    return StatusCode(201, "Toggle active status success");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
         [HttpPost("Create")]
         public IActionResult Create([FromBody] MsCategoryAdminCreateDTO MsCategoryAdminDTO)
         {

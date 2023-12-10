@@ -6,6 +6,7 @@ using fs_12_team_1_BE.Model;
 using Microsoft.AspNetCore.Authorization;
 using fs_12_team_1_BE.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using fs_12_team_1_BE.DTO.Admin;
 
 namespace fs_12_team_1_BE.Controllers.Admin
 {
@@ -99,6 +100,31 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 if (result)
                 {
                     return StatusCode(201, "Edit payment method success");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
+        [HttpPatch("ToggleActiveStatus")]
+        public IActionResult ToggleActiveStatus(Guid id, [FromBody] ToggleActiveStatusDTO msPaymentMethod)
+        {
+            try
+            {
+                if (msPaymentMethod == null)
+                    return BadRequest("Data should be inputed");
+
+                bool result = _msPaymentMethodAdminData.ToggleActiveStatus(id, msPaymentMethod);
+
+                if (result)
+                {
+                    return StatusCode(201, "Toggle active status success");
                 }
                 else
                 {

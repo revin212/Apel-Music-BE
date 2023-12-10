@@ -1,4 +1,5 @@
-﻿using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
+﻿using fs_12_team_1_BE.DTO.Admin;
+using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
 using fs_12_team_1_BE.DTO.Admin.MsPaymentMethod;
 using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
@@ -130,6 +131,36 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
                     command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
                     command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
+                    command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                    connection.Close();
+                }
+            }
+
+            return result;
+        }
+
+        public bool ToggleActiveStatus(Guid id, ToggleActiveStatusDTO msPaymentMethod)
+        {
+            bool result = false;
+
+            string query = $"UPDATE MsPaymentMethod SET IsActivated = @IsActivated " +
+                $"WHERE Id = @Id";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+
                     command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
                     command.Parameters.AddWithValue("@Id", id);
 
