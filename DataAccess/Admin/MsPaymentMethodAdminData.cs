@@ -84,12 +84,12 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             return msPaymentMethod;
         }
 
-        public bool CreatePaymentMethod(MsPaymentMethodAdminCreateDTO msPaymentMethod)
+        public bool CreatePaymentMethod(MsPaymentMethodAdminDTO msPaymentMethod)
         {
             bool result = false;
 
             string query = $"INSERT INTO MsPaymentMethod(Id, Name, Image, IsActivated) " +
-                $"VALUES (UUID(), @Name, @Image, @IsActivated)";
+                $"VALUES (@Id, @Name, @Image, @IsActivated)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -97,6 +97,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
                 {
                     command.Parameters.Clear();
 
+                    command.Parameters.AddWithValue("@Id", msPaymentMethod.Id);
                     command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
                     command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
                     command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
@@ -115,7 +116,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             return result;
         }
 
-        public bool Update(Guid id, MsPaymentMethodAdminCreateDTO msPaymentMethod)
+        public bool Update(Guid id, MsPaymentMethodAdminDTO msPaymentMethod)
         {
             bool result = false;
 

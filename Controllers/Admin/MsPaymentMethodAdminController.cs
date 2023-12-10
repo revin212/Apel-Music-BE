@@ -3,18 +3,24 @@ using fs_12_team_1_BE.DataAccess.Admin;
 using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
 using fs_12_team_1_BE.DTO.Admin.MsPaymentMethod;
 using fs_12_team_1_BE.Model;
+using Microsoft.AspNetCore.Authorization;
+using fs_12_team_1_BE.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers.Admin
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class MsPaymentMethodAdminController : ControllerBase
     {
         private readonly MsPaymentMethodAdminData _msPaymentMethodAdminData;
-        public MsPaymentMethodAdminController(MsPaymentMethodAdminData msPaymentMethodAdminData)
+        private ImageSaverUtil _imageSaver;
+
+        public MsPaymentMethodAdminController(MsPaymentMethodAdminData msPaymentMethodAdminData, ImageSaverUtil imageSaver)
         {
             _msPaymentMethodAdminData = msPaymentMethodAdminData;
+            _imageSaver = imageSaver;
         }
 
 
@@ -53,15 +59,17 @@ namespace fs_12_team_1_BE.Controllers.Admin
         }
 
         [HttpPost("Create")]
-        public IActionResult Create([FromBody] MsPaymentMethodAdminCreateDTO MsPaymentMethodAdminCreate)
+        public IActionResult Create([FromBody] MsPaymentMethodAdminDTO MsPaymentMethodAdminCreate)
         {
             try
             {
                 if (MsPaymentMethodAdminCreate == null)
                     return BadRequest("Data should be inputed");
 
+                MsPaymentMethodAdminCreate.Id = Guid.NewGuid();
+                MsPaymentMethodAdminCreate.Image = _imageSaver.SaveImageToFile(MsPaymentMethodAdminCreate.Image, MsPaymentMethodAdminCreate.Id);
                 bool result = _msPaymentMethodAdminData.CreatePaymentMethod(MsPaymentMethodAdminCreate);
-                //MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, result);
+
                 if (result)
                 {
                     return StatusCode(201, "Create payment method success");
@@ -78,19 +86,19 @@ namespace fs_12_team_1_BE.Controllers.Admin
         }
 
         [HttpPatch("Update")]
-        public IActionResult Update(Guid id, [FromBody] MsPaymentMethodAdminCreateDTO MsPaymentMethodAdminUpdate)
+        public IActionResult Update(Guid id, [FromBody] MsPaymentMethodAdminDTO MsPaymentMethodAdminUpdate)
         {
             try
             {
                 if (MsPaymentMethodAdminUpdate == null)
                     return BadRequest("Data should be inputed");
 
-                //MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, MsCategoryAdminDTO.Id);
+                MsPaymentMethodAdminUpdate.Image = _imageSaver.SaveImageToFile(MsPaymentMethodAdminUpdate.Image, id);
                 bool result = _msPaymentMethodAdminData.Update(id, MsPaymentMethodAdminUpdate);
 
                 if (result)
                 {
-                    return StatusCode(201, "Edit user success");
+                    return StatusCode(201, "Edit payment method success");
                 }
                 else
                 {
