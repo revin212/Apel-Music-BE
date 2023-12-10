@@ -11,7 +11,7 @@ namespace fs_12_team_1_BE.Controllers.Admin
 
     [Route("api/admin/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class MsCategoryAdminController : ControllerBase
     {
         private readonly MsCategoryAdminData _msCategoryAdminData;

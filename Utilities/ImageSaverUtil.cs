@@ -25,7 +25,7 @@ namespace fs_12_team_1_BE.Utilities
             
             
             Uri relativeUri = rootUri.MakeRelativeUri(absoluteUri);
-            return Uri.UnescapeDataString(relativeUri.ToString()).ToString().Substring(8);
+            return Uri.UnescapeDataString(relativeUri.ToString()).ToString().Substring(7);
 
         }
     }
