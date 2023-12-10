@@ -15,10 +15,13 @@ namespace fs_12_team_1_BE.Utilities
                 inputStr.ToCharArray(), 0, inputStr.Length);
             string filePath = _webHostEnvironment.WebRootPath + "\\images\\" + Id +".png";
             
-            FileStream stream = new FileStream(@filePath, FileMode.CreateNew, FileAccess.Write);
-            BinaryWriter writer = new BinaryWriter(stream);
-            writer.Write(decodedByteArray);
-            writer.Close();
+            FileStream stream = new FileStream(@filePath, FileMode.Create, FileAccess.Write);
+            using (BinaryWriter writer = new BinaryWriter(stream))
+            {
+                writer.Write(decodedByteArray);
+                writer.Flush();
+                writer.Close();
+            }
             stream.Close();
             Uri absoluteUri = new Uri(filePath);
             Uri rootUri = new Uri(_webHostEnvironment.WebRootPath);
