@@ -64,7 +64,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             MsUserAdminDTO msUser = new MsUserAdminDTO();
 
-            string query = $"SELECT * FROM MsUser WHERE Id = @Id";
+            string query = $"SELECT Id, Name, Email, Role, IsActivated FROM MsUser WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -84,12 +84,8 @@ namespace fs_12_team_1_BE.DataAccess
                                 Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
                                 Name = reader["Name"].ToString() ?? string.Empty,
                                 Email = reader["Email"].ToString() ?? string.Empty,
-                                Password = reader["Password"].ToString() ?? string.Empty,
-                                IsDeleted = bool.Parse(reader["IsDeleted"].ToString() ?? string.Empty),
-                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
-                                CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString() ?? string.Empty),
-                                RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
-                                RefreshTokenExpires = reader["RefreshTokenExpires"].ToString() ?? string.Empty,
+                                RoleId = int.Parse(reader["Role"].ToString() ?? string.Empty),
+                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)                   
                             };
                         }
                     }
@@ -243,7 +239,7 @@ namespace fs_12_team_1_BE.DataAccess
         }
 
 
-        public bool Create(MsUserAdminDTO msUser)
+        public bool Create(MsUserAdminCreateDTO msUser)
         {
             bool result = false;
             string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, @Role, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
@@ -253,7 +249,7 @@ namespace fs_12_team_1_BE.DataAccess
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", msUser.Id);
+                    command.Parameters.AddWithValue("@Id", Guid.NewGuid());
                     command.Parameters.AddWithValue("@Name", msUser.Name);
                     command.Parameters.AddWithValue("@Email", msUser.Email);
                     command.Parameters.AddWithValue("@Password", msUser.Password);
@@ -414,38 +410,61 @@ namespace fs_12_team_1_BE.DataAccess
         //    return result;
         //}
 
-        public bool Update(Guid id, MsUserAdminDTO msUser)
+        public bool Update(Guid id, MsUserAdminCreateDTO msUser)
         {
             bool result = false;
-
-            string query = $"UPDATE MsUser SET Name = @Name, Email = @Email, Password = @Password, " +
-                $"IsDeleted = @IsDeleted, IsActivated = @IsActivated, " +
-                $"RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires " +
-                $"WHERE Id = @Id";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            if (msUser.Password == "")
             {
-                using (MySqlCommand command = new MySqlCommand())
+                string query = "UPDATE MsUser SET Name = @Name, Email = @Email, Role = @RoleId,IsActivated = @IsActivated WHERE Id = @Id";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msUser.Name);
-                    command.Parameters.AddWithValue("@Email", msUser.Email);
-                    command.Parameters.AddWithValue("@Password", msUser.Password);
-                    command.Parameters.AddWithValue("@IsDeleted", msUser.IsDeleted);
-                    command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
-                    command.Parameters.AddWithValue("@RefreshToken", msUser.RefreshToken);
-                    command.Parameters.AddWithValue("@RefreshTokenExpires", msUser.RefreshTokenExpires);
-                    command.Parameters.AddWithValue("@Id", id);
+                        command.Parameters.AddWithValue("@Name", msUser.Name);
+                        command.Parameters.AddWithValue("@Email", msUser.Email);
+                        command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
+                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                        command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
+                        connection.Close();
+                    }
+                }
+            } else
+            {
+               string query = "UPDATE MsUser SET Name = @Name, Email = @Email, Role = @RoleId, Password = @Password, IsActivated = @IsActivated WHERE Id = @Id";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
+
+                        command.Parameters.AddWithValue("@Name", msUser.Name);
+                        command.Parameters.AddWithValue("@Email", msUser.Email);
+                        command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
+                        command.Parameters.AddWithValue("@Password", msUser.Password);
+                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                        command.Parameters.AddWithValue("@Id", id);
+
+                        command.Connection = connection;
+                        command.CommandText = query;
+
+                        connection.Open();
+
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+
+                        connection.Close();
+                    }
                 }
             }
 

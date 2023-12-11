@@ -1,4 +1,6 @@
 ﻿using fs_12_team_1_BE.DataAccess;
+using fs_12_team_1_BE.DataAccess.Admin;
+using fs_12_team_1_BE.DTO.Admin;
 using fs_12_team_1_BE.DTO.Admin.MsUserAdmin;
 using fs_12_team_1_BE.DTO.MsUser;
 using fs_12_team_1_BE.Email;
@@ -135,21 +137,49 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpPatch]
-        public IActionResult Update(Guid id, [FromBody] MsUserAdminDTO msUserDto)
+        [HttpPatch("Update")]
+        public IActionResult Update(Guid id, [FromBody] MsUserAdminCreateDTO msUserDto)
         {
             try
             {
                 if (msUserDto == null)
                     return BadRequest("Data should be inputed");
+                if (msUserDto.Password != msUserDto.ConfirmPassword)
+                    return BadRequest("Password does not match");
 
-                msUserDto.Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password);
+                if (msUserDto.Password != "")
+                    msUserDto.Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password);
 
                 bool result = _msUserData.Update(id, msUserDto);
 
                 if (result)
                 {
                     return StatusCode(201, "Edit user success");
+                }
+                else
+                {
+                    return StatusCode(500, "Error occured");
+                }
+            }
+            catch
+            {
+                return StatusCode(500, "Server Error occured");
+            }
+        }
+
+        [HttpPatch("ToggleActiveStatus")]
+        public IActionResult ToggleActiveStatus(Guid id, [FromBody] ToggleActiveStatusDTO msUser)
+        {
+            try
+            {
+                if (msUser == null)
+                    return BadRequest("Data should be inputed");
+
+                bool result = _msUserData.ToggleActiveStatus(id, msUser);
+
+                if (result)
+                {
+                    return StatusCode(201, "Toggle active status success");
                 }
                 else
                 {
@@ -277,7 +307,7 @@ namespace fs_12_team_1_BE.Controllers
 
 
         [HttpPost("Create")]
-        public IActionResult Create([FromBody] MsUserAdminDTO msUserDto)
+        public IActionResult Create([FromBody] MsUserAdminCreateDTO msUserDto)
         {
             try
             {
@@ -292,7 +322,9 @@ namespace fs_12_team_1_BE.Controllers
                 if (user != Guid.Empty)
                     return BadRequest("This email address is already used by another account");
 
-                msUserDto.Id = Guid.NewGuid();
+                if (msUserDto.Password != msUserDto.ConfirmPassword)
+                    return BadRequest("Password does not match");
+
                 msUserDto.Password = BCrypt.Net.BCrypt.HashPassword(msUserDto.Password);
 
                 bool result = _msUserData.Create(msUserDto);
