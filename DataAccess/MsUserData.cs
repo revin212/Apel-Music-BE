@@ -168,7 +168,7 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;
-            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (UUID(), @Name, @Email, @Password, DEFAULT, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (UUID(), @Name, @Email, @Password, DEFAULT, 0, @CreatedAt, DEFAULT, DEFAULT)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
