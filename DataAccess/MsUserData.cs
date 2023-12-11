@@ -16,37 +16,37 @@ namespace fs_12_team_1_BE.DataAccess
         }
 
 
-        public List<MsUserDTO> GetAll()
-        {
-            List<MsUserDTO> msUser = new List<MsUserDTO>();
+        //public List<MsUserDTO> GetAll()
+        //{
+        //    List<MsUserDTO> msUser = new List<MsUserDTO>();
 
-            string query = "SELECT * FROM MsUser WHERE IsDeleted = 0";
+        //    string query = "SELECT * FROM MsUser";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    connection.Open();
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            connection.Open();
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msUser.Add(new MsUserDTO
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Email = reader["Email"].ToString() ?? string.Empty,
-                            });
-                        }
-                    }
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msUser.Add(new MsUserDTO
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Email = reader["Email"].ToString() ?? string.Empty,
+        //                    });
+        //                }
+        //            }
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return msUser;
-        }
+        //    return msUser;
+        //}
 
         public List<MsUserGetMyClassListResDTO> GetMyClass(Guid userid)
         {
@@ -87,40 +87,40 @@ namespace fs_12_team_1_BE.DataAccess
             return myclass;
         }
 
-        public MsUserDTO? GetById(Guid id)
-        {
-            MsUserDTO? msUser = null;
+        //public MsUserDTO? GetById(Guid id)
+        //{
+        //    MsUserDTO? msUser = null;
 
-            string query = $"SELECT * FROM MsUser WHERE Id = @Id AND IsDeleted = 0";
+        //    string query = $"SELECT * FROM MsUser WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
+        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
+        //    {
+        //        using (MySqlCommand command = new MySqlCommand(query, connection))
+        //        {
+        //            command.Parameters.Clear();
+        //            command.Parameters.AddWithValue("@Id", id);
 
-                    connection.Open();
+        //            connection.Open();
 
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            msUser = new MsUserDTO
-                            {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Email = reader["Email"].ToString() ?? string.Empty,
-                            };
-                        }
-                    }
+        //            using (MySqlDataReader reader = command.ExecuteReader())
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    msUser = new MsUserDTO
+        //                    {
+        //                        Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+        //                        Name = reader["Name"].ToString() ?? string.Empty,
+        //                        Email = reader["Email"].ToString() ?? string.Empty,
+        //                    };
+        //                }
+        //            }
 
-                    connection.Close();
-                }
-            }
+        //            connection.Close();
+        //        }
+        //    }
 
-            return msUser;
-        }
+        //    return msUser;
+        //}
 
         public MsUser? CheckUser(string Email)
         {
@@ -131,7 +131,7 @@ namespace fs_12_team_1_BE.DataAccess
                 using (MySqlCommand command = new MySqlCommand())
                 {
                     command.Connection = connection;
-                    command.CommandText = "SELECT MsUser.Id AS UserId, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsActivated, IsDeleted From MsUser JOIN MsRole ON Role = MsRole.Id WHERE Email = @Email";
+                    command.CommandText = "SELECT MsUser.Id AS UserId, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsActivated From MsUser JOIN MsRole ON Role = MsRole.Id WHERE Email = @Email";
 
                     command.Parameters.Clear();
 
@@ -151,7 +151,7 @@ namespace fs_12_team_1_BE.DataAccess
                                 RoleId = int.Parse(reader["RoleId"].ToString() ?? string.Empty),
                                 RoleName = reader["RoleName"].ToString() ?? string.Empty,
                                 IsActivated = Convert.ToBoolean(reader["IsActivated"]),
-                                IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
+                               
                             };
                         }
                     }

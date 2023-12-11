@@ -43,40 +43,40 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpGet("GetAll")]
-        public IActionResult GetAll()
-        {
-            try
-            {
-                List<MsUserDTO> msUser = _msUserData.GetAll();
-                return Ok(msUser);
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //[HttpGet("GetAll")]
+        //public IActionResult GetAll()
+        //{
+        //    try
+        //    {
+        //        List<MsUserDTO> msUser = _msUserData.GetAll();
+        //        return Ok(msUser);
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
-        [HttpGet("GetById")]
-        [Authorize]
-        public IActionResult Get(Guid id)
-        {
-            try
-            {
-                MsUserDTO? msUser = _msUserData.GetById(id);
+        //[HttpGet("GetById")]
+        //[Authorize]
+        //public IActionResult Get(Guid id)
+        //{
+        //    try
+        //    {
+        //        MsUserDTO? msUser = _msUserData.GetById(id);
 
-                if (msUser == null)
-                {
-                    return NotFound("Data not found");
-                }
+        //        if (msUser == null)
+        //        {
+        //            return NotFound("Data not found");
+        //        }
 
-                return Ok(msUser);
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+        //        return Ok(msUser);
+        //    }
+        //    catch
+        //    {
+        //        return StatusCode(500, "Server Error occured");
+        //    }
+        //}
 
         [HttpPost("Login")]
         public IActionResult Login([FromBody] MsUserLoginDTO credential)
@@ -95,8 +95,6 @@ namespace fs_12_team_1_BE.Controllers
                     return Unauthorized("User doesn't exist");
                 else
                 {
-                    if (user.IsDeleted)
-                        return BadRequest("Account deleted");
 
                     bool isVerified = BCrypt.Net.BCrypt.Verify(credential.Password, user.Password);
 

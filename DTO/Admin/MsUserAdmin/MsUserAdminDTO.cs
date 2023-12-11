@@ -8,7 +8,6 @@
         public string Password { get; set; } = string.Empty;
         public int RoleId { get; set; }
         public string RoleName { get; set; } = string.Empty;
-        public bool IsDeleted { get; set; }
         public bool IsActivated { get; set; }
         public DateTime CreatedAt { get; set; }
         public string RefreshToken {  get; set; } = string.Empty;

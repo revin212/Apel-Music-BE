@@ -93,49 +93,7 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        [HttpDelete("SoftDelete")]
-        public IActionResult SoftDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
-
-                if (result)
-                {
-                    return StatusCode(201, "Account soft deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
-
-        [HttpDelete("HardDelete")]
-        public IActionResult HardDelete(Guid id)
-        {
-            try
-            {
-                bool result = _msUserData.SoftDelete(id);
-
-                if (result)
-                {
-                    return StatusCode(201, "Account deleted");
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch
-            {
-                return StatusCode(500, "Server Error occured");
-            }
-        }
+       
 
         [HttpPatch("Update")]
         public IActionResult Update(Guid id, [FromBody] MsUserAdminCreateDTO msUserDto)

@@ -25,7 +25,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsUserAdminDTO> msUser = new List<MsUserAdminDTO>();
 
-            string query = "SELECT MsUser.Id AS UserId, MsUser.Name AS UserName, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires FROM MsUser INNER JOIN MsRole ON MsUser.Role = MsRole.Id WHERE IsDeleted = 0";
+            string query = "SELECT MsUser.Id AS UserId, MsUser.Name AS UserName, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires FROM MsUser INNER JOIN MsRole ON MsUser.Role = MsRole.Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -45,7 +45,6 @@ namespace fs_12_team_1_BE.DataAccess
                                 Password = reader["Password"].ToString() ?? string.Empty,
                                 RoleId = int.Parse(reader["RoleId"].ToString() ?? string.Empty),
                                 RoleName = reader["RoleName"].ToString() ?? string.Empty,
-                                IsDeleted = bool.Parse(reader["IsDeleted"].ToString() ?? string.Empty),
                                 IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
                                 CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString() ?? string.Empty),
                                 RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
@@ -242,7 +241,7 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Create(MsUserAdminCreateDTO msUser)
         {
             bool result = false;
-            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsDeleted, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, @Role, 0, 0, @CreatedAt, DEFAULT, DEFAULT)";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, @Role, 0, @CreatedAt, DEFAULT, DEFAULT)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -471,57 +470,8 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        public bool SoftDelete(Guid id)
-        {
-            bool result = false;
+      
 
-            string query = $"UPDATE MsUser SET IsDeleted = 1 WHERE Id = @Id";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    command.Connection = connection;
-                    command.CommandText = query;
-
-                    connection.Open();
-
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
-
-                    connection.Close();
-                }
-            }
-
-            return result;
-        }
-
-        public bool HardDelete(Guid id)
-        {
-            bool result = false;
-            string query = "DELETE FROM MsUser WHERE Id = @Id";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    command.Connection = connection;
-                    command.CommandText = query;
-
-                    connection.Open();
-
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
-
-                    connection.Close();
-                }
-            }
-
-            return result;
-        }
+        
     }
 }
