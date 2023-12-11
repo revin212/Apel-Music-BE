@@ -9,7 +9,7 @@ using fs_12_team_1_BE.Utilities;
 namespace fs_12_team_1_BE.Controllers.Admin
 {
     [Authorize(Roles ="Admin")]
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     public class MsCourseAdminController : ControllerBase
     {

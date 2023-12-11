@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/admin/[controller]")]
     [ApiController]
     [Authorize(Roles = "Admin")]
     public class TsOrderDetailAdminController : ControllerBase
