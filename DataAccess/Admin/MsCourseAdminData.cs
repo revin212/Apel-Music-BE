@@ -20,7 +20,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
         {
             List<MsCourseAdminDTO> msCourse = new List<MsCourseAdminDTO>();
 
-            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName FROM MsCourse AS cs JOIN MsCategory ct ON cs.CategoryId = ct.Id";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName, cs.IsActivated FROM MsCourse AS cs JOIN MsCategory ct ON cs.CategoryId = ct.Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -90,7 +90,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
         {
             MsCourseAdminDTO msCourse = new MsCourseAdminDTO();
 
-            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName FROM MsCourse AS cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName, cs.IsActivated FROM MsCourse AS cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -129,7 +129,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             bool result = false;
 
             string query = $"INSERT INTO MsCourse(Id, Name, Description, Image, Price, CategoryId, IsActivated) " +
-                $"VALUES (DEFAULT, @Name, @Description, @Image, @Price, @CategoryId, @IsActivated)";
+                $"VALUES (@Id, @Name, @Description, @Image, @Price, @CategoryId, @IsActivated)";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -137,6 +137,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
                 {
                     command.Parameters.Clear();
 
+                    command.Parameters.AddWithValue("@Id", mscourse.Id);
                     command.Parameters.AddWithValue("@Name", mscourse.Name);
                     command.Parameters.AddWithValue("@Description", mscourse.Description);
                     command.Parameters.AddWithValue("@Image", mscourse.Image);
