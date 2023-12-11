@@ -35,11 +35,11 @@ namespace fs_12_team_1_BE.Controllers
         //}
 
         [HttpGet("GetAllInvoicesList")]
-        public IActionResult GetAllInvoicesList(Guid userid)
+        public IActionResult GetAllInvoicesList()
         {
             try
             {
-                List<TsOrderAdminGetAllInvoiceListResDTO> myInvoiceList = _tsOrderAdminData.GetAllInvoicesList(userid);
+                List<TsOrderAdminGetAllInvoiceListResDTO> myInvoiceList = _tsOrderAdminData.GetAllInvoicesList();
                 return Ok(myInvoiceList);
             }
             catch (Exception)

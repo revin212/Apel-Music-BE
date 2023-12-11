@@ -70,13 +70,13 @@ namespace fs_12_team_1_BE.DataAccess
         //    }
         //}
 
-        public List<TsOrderAdminGetAllInvoiceListResDTO> GetAllInvoicesList(Guid userid)
+        public List<TsOrderAdminGetAllInvoiceListResDTO> GetAllInvoicesList()
         {
             try
             {
                 List<TsOrderAdminGetAllInvoiceListResDTO> allInvoiceList = new List<TsOrderAdminGetAllInvoiceListResDTO>();
 
-                string query = "SELECT * FROM TsOrder JOIN MsPaymentMethod ON PaymentId = MsPaymentMethod.Id WHERE IsPaid = 1";
+                string query = "SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.IsPaid = 1";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -95,14 +95,12 @@ namespace fs_12_team_1_BE.DataAccess
                                 allInvoiceList.Add(new TsOrderAdminGetAllInvoiceListResDTO
                                 {
                                     Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                    PaymentId = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty),
-                                    PaymentName = reader["PaymentName"].ToString() ?? string.Empty,
-                                    course_count = int.Parse(reader["Course_count"].ToString() ?? string.Empty),
+                                    UserEmail = reader["Email"].ToString() ?? string.Empty,
                                     InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                     OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    course_count = int.Parse(reader["Course_count"].ToString() ?? string.Empty),
                                     TotalHarga = int.Parse(reader["TotalHarga"].ToString() ?? string.Empty),
-                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                                    PaymentName = reader["PaymentName"].ToString() ?? string.Empty,
                                 });
                             }
                         }
@@ -124,7 +122,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             TsOrderAdminGetInvoiceDetailHeaderRes tsOrder = new TsOrderAdminGetInvoiceDetailHeaderRes();
 
-            string query = $"SELECT * FROM TsOrder WHERE Id = @Id";
+            string query = $"SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -143,6 +141,8 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             tsOrder = new TsOrderAdminGetInvoiceDetailHeaderRes
                             {
+                                UserEmail = reader["Email"].ToString() ?? string.Empty,
+                                PaymentName = reader["PaymentName"].ToString() ?? string.Empty,
                                 InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
                                 OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
                                 TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
