@@ -132,6 +132,13 @@ namespace fs_12_team_1_BE.Controllers
                     Jadwal = tsorderdetailDto.Jadwal
                 };
 
+                bool available = _tsOrderDetailData.CheckJadwal(tsorderdetail);
+
+                if (!available)
+                {
+                    return Unauthorized("Jadwal tidak tersedia");
+                }
+
                 TsOrder tsOrder = _tsOrderData.GetCartInfo(tsorderdetailDto.UserId); 
 
                

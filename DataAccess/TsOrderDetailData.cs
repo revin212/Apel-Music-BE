@@ -199,6 +199,36 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
+        public bool CheckJadwal(TsOrderDetail tsorderdetail)
+        {
+            bool result = true;
+            
+            string query = $"SELECT COUNT(Id) FROM TsOrderDetail WHERE CourseId = @CourseId AND Jadwal = @Jadwal";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+                    
+                    command.Parameters.AddWithValue("@CourseId", tsorderdetail.CourseId);
+                    command.Parameters.AddWithValue("@Jadwal", tsorderdetail.Jadwal.ToString("yyyy-MM-dd"));
+
+
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    result = (long)command.ExecuteScalar() > 0 ? false : true;
+
+                    connection.Close();
+                }
+            }
+            return result;
+
+        }
+
         public bool Update(Guid id, TsOrderDetail tsorderdetail)
         {
             bool result = false;
