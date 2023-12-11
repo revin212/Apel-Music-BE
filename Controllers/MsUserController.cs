@@ -43,41 +43,6 @@ namespace fs_12_team_1_BE.Controllers
             }
         }
 
-        //[HttpGet("GetAll")]
-        //public IActionResult GetAll()
-        //{
-        //    try
-        //    {
-        //        List<MsUserDTO> msUser = _msUserData.GetAll();
-        //        return Ok(msUser);
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-        //[HttpGet("GetById")]
-        //[Authorize]
-        //public IActionResult Get(Guid id)
-        //{
-        //    try
-        //    {
-        //        MsUserDTO? msUser = _msUserData.GetById(id);
-
-        //        if (msUser == null)
-        //        {
-        //            return NotFound("Data not found");
-        //        }
-
-        //        return Ok(msUser);
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
         [HttpPost("Login")]
         public IActionResult Login([FromBody] MsUserLoginDTO credential)
         {
@@ -354,7 +319,7 @@ namespace fs_12_team_1_BE.Controllers
             if (string.IsNullOrEmpty(user.Email))
                 return false;
 
-            // send email
+           
             List<string> to = new List<string>();
             to.Add(user.Email);
 
@@ -366,7 +331,7 @@ namespace fs_12_team_1_BE.Controllers
 
             string callbackUrl = QueryHelpers.AddQueryString("http://localhost:5173/email-confirm", param);
 
-            //string body = "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>";
+            
             string body = _emailService.GetEmailTemplate(new EmailActivation
             {
                 Email = user.Email,
@@ -444,7 +409,7 @@ namespace fs_12_team_1_BE.Controllers
 
         private async Task<bool> SendEmailForgetPassword(string Id, string Email)
         {
-            // send email
+            
             List<string> to = new List<string>();
             to.Add(Email);
 
@@ -466,82 +431,5 @@ namespace fs_12_team_1_BE.Controllers
             return mailResult;
         }
 
-
-        //[HttpPut]
-        //public IActionResult Put(Guid id, [FromBody] MsUserRegisterDTO msUserDto)
-        //{
-        //    try
-        //    {
-        //        if (msUserDto == null)
-        //            return BadRequest("Data should be inputed");
-
-        //        MsUserRegisterDTO msUser = new MsUserRegisterDTO
-        //        {
-        //            Name = msUserDto.Name,
-        //            Email = msUserDto.Email,
-        //            Password = msUserDto.Password
-        //        };
-
-        //        bool result = _msUserData.Update(id, msUser);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, "Edit user success");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-
-        //[HttpDelete("SoftDelete")]
-        //public IActionResult SoftDelete(Guid id)
-        //{
-        //    try
-        //    {
-        //        bool result = _msUserData.SoftDelete(id);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, "Account soft deleted");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-        //[HttpDelete("HardDelete")]
-        //public IActionResult HardDelete(Guid id)
-        //{
-        //    try
-        //    {
-        //        bool result = _msUserData.SoftDelete(id);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, "Account deleted");
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
     }
 }

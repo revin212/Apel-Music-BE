@@ -138,7 +138,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
         {
             bool result = false;
 
-            string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage " +
+            string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage, IsActivated = @IsActivated " +
                 $"WHERE Id = @Id";
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -152,6 +152,7 @@ namespace fs_12_team_1_BE.DataAccess.Admin
                     command.Parameters.AddWithValue("@Description", msCategory.Description);
                     command.Parameters.AddWithValue("@Image", msCategory.Image);
                     command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+                    command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
                     command.Parameters.AddWithValue("@Id", id);
 
                     command.Connection = connection;

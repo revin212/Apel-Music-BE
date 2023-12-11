@@ -16,21 +16,6 @@ namespace fs_12_team_1_BE.Controllers
             _msCourseData = msCourseData;
         }
 
-
-        //[HttpGet("GetAll")]
-        //public IActionResult GetAll()
-        //{
-        //    try
-        //    {
-        //        List<MsCourseResponseDTO> msCourse = _msCourseData.GetAll();
-        //        return Ok(msCourse);
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
         [HttpGet("GetFavoriteList")]
         public IActionResult GetFavoriteList()
         {
@@ -65,26 +50,6 @@ namespace fs_12_team_1_BE.Controllers
                 return StatusCode(500, "Server Error occured");
             }
         }
-
-        //[HttpGet("GetByName")]
-        //public IActionResult GetByName(string name)
-        //{
-        //    try
-        //    {
-        //        MsCourseResponseDTO? msCourse = _msCourseData.GetByName(name);
-
-        //        if (msCourse == null)
-        //        {
-        //            return NotFound("Data not found");
-        //        }
-
-        //        return Ok(msCourse); //200
-        //    }
-        //    catch
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
 
         [HttpGet("GetByCategoryList")]
         public IActionResult GetByCategoryList(Guid id)
@@ -125,101 +90,5 @@ namespace fs_12_team_1_BE.Controllers
                 return StatusCode(500, "Server Error occured");
             }
         }
-        //[HttpPost]
-        //public IActionResult Post([FromBody] MsCourseDTO mscourseDto)
-        //{
-        //    try
-        //    {
-        //        if (mscourseDto == null)
-        //            return BadRequest("Data should be inputed");
-
-        //        MsCourse mscourse = new MsCourse
-        //        {
-        //            //Id = Guid.NewGuid(),
-        //            Name = mscourseDto.Name,
-        //            Description = mscourseDto.Description,
-        //            Image = mscourseDto.Image,
-        //            Price = mscourseDto.Price,
-        //            CategoryId = mscourseDto.CategoryId
-        //        };
-
-        //        bool result = _msCourseData.Insert(mscourse);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, mscourse.Id);
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-        //[HttpPut]
-        //public IActionResult Put(Guid id, [FromBody] MsCourseDTO mscourseDto)
-        //{
-        //    try
-        //    {
-        //        if (mscourseDto == null)
-        //            return BadRequest("Data should be inputed");
-
-        //        MsCourse mscourse = new MsCourse
-        //        {
-        //            Name = mscourseDto.Name,
-        //            Description = mscourseDto.Description,
-        //            Image = mscourseDto.Image,
-        //            Price = mscourseDto.Price,
-        //            CategoryId = mscourseDto.CategoryId
-
-
-        //        };
-
-        //        bool result = _msCourseData.Update(id, mscourse);
-
-        //        if (result)
-        //        {
-        //            return NoContent();//204
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-        //[HttpDelete]
-        //public IActionResult Delete(Guid id)
-        //{
-        //    try
-        //    {
-        //        bool result = _msCourseData.Delete(id);
-
-        //        if (result)
-        //        {
-        //            return NoContent();
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch
-        //    {
-
-        //        return StatusCode(500, "Server Error occured");
-        //    }
-        //}
-
-    }
+    }        
 }

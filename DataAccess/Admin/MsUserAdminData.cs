@@ -221,11 +221,6 @@ namespace fs_12_team_1_BE.DataAccess
                         while (reader.Read())
                         {
                             user = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
-                                //Email = reader["Email"].ToString() ?? string.Empty,
-                                //Password = reader["Password"].ToString() ?? string.Empty,
-                                //IsActivated = Convert.ToBoolean(reader["IsActivated"]),
-                                //IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
-                            
                         }
                     }
 
@@ -269,146 +264,6 @@ namespace fs_12_team_1_BE.DataAccess
             return result;
         }
 
-        //public bool UpdateRefreshToken(RefreshTokenDTO refreshToken)
-        //{
-        //    bool result = false;
-
-        //    string query = "UPDATE MsUser SET RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires " + "WHERE Email = @Email";
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.Parameters.Clear();
-
-        //            command.CommandText = query;
-
-        //            command.Parameters.AddWithValue("@RefreshToken", refreshToken.RefreshToken);
-        //            command.Parameters.AddWithValue("@RefreshTokenExpires", refreshToken.RefreshTokenExpires);
-        //            command.Parameters.AddWithValue("@Email", refreshToken.Email);
-
-        //            connection.Open();
-
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return result;
-        //}
-
-        //public RefreshTokenDTO GetRefreshToken(string Email)
-        //{
-        //    RefreshTokenDTO RefreshToken = new RefreshTokenDTO();
-
-        //    string query = $"SELECT * FROM MsUser WHERE Email = @Email";
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand(query, connection))
-        //        {
-        //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Email", Email);
-
-        //            connection.Open();
-
-        //            using (MySqlDataReader reader = command.ExecuteReader())
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    RefreshToken = new RefreshTokenDTO
-        //                    {
-        //                        Email = reader["Email"].ToString() ?? string.Empty,
-        //                        RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
-        //                        RefreshTokenExpires = reader.GetDateTime("RefreshTokenExpires")
-        //                    };
-        //                }
-        //            }
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return RefreshToken;
-        //}
-
-        //public bool Logout(string Email)
-        //{
-        //    bool result = false;
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        MySqlCommand command = new MySqlCommand();
-        //        command.Connection = connection;
-        //        command.Parameters.Clear();
-
-        //        command.CommandText = "UPDATE MsUser SET RefreshToken = @RefreshToken, RefreshTokenExpires = @RefreshTokenExpires WHERE Email = @Email";
-        //        command.Parameters.AddWithValue("@RefreshToken", string.Empty);
-        //        command.Parameters.AddWithValue("@RefreshTokenExpires", DateTime.Now.AddDays(-1));
-        //        command.Parameters.AddWithValue("@Email", Email);
-
-        //        connection.Open();
-        //        result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //        connection.Close();
-        //    }
-
-        //    return result;
-        //}
-
-        //public bool ActivateUser(string Email)
-        //{
-        //    bool result = false;
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        MySqlCommand command = new MySqlCommand();
-        //        command.Connection = connection;
-        //        command.Parameters.Clear();
-
-        //        command.CommandText = "UPDATE MsUser SET IsActivated = 1 WHERE Email = @Email";
-        //        command.Parameters.AddWithValue("@Email", Email);
-
-        //        connection.Open();
-        //        result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //        connection.Close();
-        //    }
-
-        //    return result;
-        //}
-
-        //public bool ResetPassword(string Id, string password)
-        //{
-        //    bool result = false;
-
-        //    string query = "UPDATE MsUser SET Password = @Password WHERE Id = @Id";
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Connection = connection;
-        //            command.Parameters.Clear();
-
-        //            command.CommandText = query;
-
-        //            command.Parameters.AddWithValue("@Id", Id);
-        //            command.Parameters.AddWithValue("@Password", password);
-
-        //            connection.Open();
-
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return result;
-        //}
-
         public bool Update(Guid id, MsUserAdminCreateDTO msUser)
         {
             bool result = false;
@@ -438,7 +293,8 @@ namespace fs_12_team_1_BE.DataAccess
                         connection.Close();
                     }
                 }
-            } else
+            } 
+            else
             {
                string query = "UPDATE MsUser SET Name = @Name, Email = @Email, Role = @RoleId, Password = @Password, IsActivated = @IsActivated WHERE Id = @Id";
 

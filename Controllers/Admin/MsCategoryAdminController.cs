@@ -26,21 +26,6 @@ namespace fs_12_team_1_BE.Controllers.Admin
             _imageSaver = imageSaver;
         }
 
-        //[HttpGet("GetCategoryClass")]
-        //public IActionResult GetCategoryClass(Guid userid)
-        //{
-        //    try
-        //    {
-        //        List<MsUserAdminGetUserClassListResDTO> myclass = _msCategoryAdminData.GetUserClass(userid);
-        //        return Ok(myclass);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500, "Server Error occured");
-
-        //    }
-        //}
-
         [HttpGet("GetAll")]
         public IActionResult GetAll()
         {

@@ -2,7 +2,6 @@
 {
     public class TsOrderGetInvoiceDetailHeaderRes
     { 
-    
         public string InvoiceNo { get; set; } = string.Empty;
         public DateTime? OrderDate { get; set; }
         public double TotalHarga { get; set; }

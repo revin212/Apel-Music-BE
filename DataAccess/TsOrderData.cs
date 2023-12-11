@@ -184,7 +184,7 @@ namespace fs_12_team_1_BE.DataAccess
                             {
                                 break;
                             }
-                            //var test = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty);
+
                             tsOrder = new TsOrder
                             {
                                 Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
@@ -369,120 +369,6 @@ namespace fs_12_team_1_BE.DataAccess
 
                     command.ExecuteNonQuery();
                     result = int.Parse( command.LastInsertedId.ToString() ?? string.Empty);
-
-                    connection.Close();
-                }
-            }
-
-            return result;
-        }
-        
-        //public bool Update(TsOrder tsorder)
-        //{
-        //    bool result = false;
-
-        //    string query = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, OrderDate = @OrderDate, IsPaid = @IsPaid " +
-        //        $"WHERE Id = @Id";
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        using (MySqlCommand command = new MySqlCommand())
-        //        {
-        //            command.Parameters.Clear();
-        //            command.Parameters.AddWithValue("@Id", tsorder.Id);
-        //            command.Parameters.AddWithValue("@UserId", tsorder.UserId);
-        //            command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
-        //            command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
-        //            command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
-        //            command.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
-        //            command.Connection = connection;
-        //            command.CommandText = query;
-
-        //            connection.Open();
-
-        //            result = command.ExecuteNonQuery() > 0 ? true : false;
-
-        //            connection.Close();
-        //        }
-        //    }
-
-        //    return result;
-        //}
-        //public bool Checkout(TsOrder tsorder)
-        //{
-        //    //use transaction
-            
-        //    bool result = false;
-
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        MySqlTransaction transaction = connection.BeginTransaction();
-
-        //        try
-        //        {
-        //            MySqlCommand command1 = new MySqlCommand();
-        //            command1.Connection = connection;
-        //            command1.Transaction = transaction;
-        //            command1.Parameters.Clear();
-        //            command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, OrderDate = @OrderDate, IsPaid = @IsPaid " +
-        //            $"WHERE Id = @Id";
-        //            command1.Parameters.AddWithValue("@Id", tsorder.Id);
-        //            command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
-        //            command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
-        //            command1.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
-        //            command1.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
-        //            command1.Parameters.AddWithValue("@IsPaid", tsorder.IsPaid);
-
-
-        //            MySqlCommand command2 = new MySqlCommand();
-        //            command2.Connection = connection;
-        //            command2.Transaction = transaction;
-        //            command2.Parameters.Clear();
-        //            command2.CommandText = $"UPDATE TsOrderDetail SET IsActivated = 1 " +
-        //            $"WHERE OrderId = @Id";
-        //            command2.Parameters.AddWithValue("@Id", tsorder.Id);
-        //            var result1 = command1.ExecuteNonQuery();
-        //            var result2 = command2.ExecuteNonQuery();
-
-        //            transaction.Commit();
-
-        //            result = true;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            transaction.Rollback();
-        //            Console.WriteLine(ex);
-        //        }
-        //        finally
-        //        {
-        //            connection.Close();
-        //        }
-
-
-        //    }
-
-        //    return result;
-        //}
-
-        public bool Delete(Guid id)
-        {
-            bool result = false;
-
-            string query = $"DELETE FROM TsOrder WHERE Id = @id";
-
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                using (MySqlCommand command = new MySqlCommand())
-                {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-                    command.Connection = connection;
-                    command.CommandText = query;
-
-                    connection.Open();
-
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
                     connection.Close();
                 }
