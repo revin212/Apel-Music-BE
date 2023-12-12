@@ -4,6 +4,7 @@ using fs_12_team_1_BE.DTO.Admin;
 using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
 using fs_12_team_1_BE.DTO.Admin.MsUserAdmin;
 using fs_12_team_1_BE.Email;
+using fs_12_team_1_BE.Model;
 using fs_12_team_1_BE.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -123,6 +124,13 @@ namespace fs_12_team_1_BE.Controllers.Admin
             {
                 if (MsCategoryAdminDTO == null)
                     return BadRequest("Data should be inputed");
+
+                bool available = _msCategoryAdminData.CheckCategory(MsCategoryAdminDTO.Name);
+
+                if (!available)
+                {
+                    return Unauthorized("Please use another category name");
+                }
 
                 MsCategoryAdminDTO.Id = Guid.NewGuid();
                 MsCategoryAdminDTO.Image = _imageSaver.SaveImageToFile(MsCategoryAdminDTO.Image, MsCategoryAdminDTO.Id);

@@ -124,6 +124,36 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             return msCourse;
         }
+        public bool CheckCourse(string name)
+        {
+            bool result = true;
+
+            string query = $"SELECT COUNT(Id) FROM MsCourse WHERE Name = @Name";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", name);
+
+
+
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    result = (long)command.ExecuteScalar() > 0 ? false : true;
+
+                    connection.Close();
+                }
+            }
+            return result;
+
+        }
+
         public bool Create(MsCourseAdminDTO mscourse)
         {
             bool result = false;

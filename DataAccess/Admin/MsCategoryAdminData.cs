@@ -1,6 +1,7 @@
 ﻿using fs_12_team_1_BE.DTO.Admin;
 using fs_12_team_1_BE.DTO.Admin.MsCategoryAdmin;
 using fs_12_team_1_BE.DTO.MsCategory;
+using fs_12_team_1_BE.Model;
 using MySql.Data.MySqlClient;
 
 namespace fs_12_team_1_BE.DataAccess.Admin
@@ -99,6 +100,35 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             }
 
             return msCategory;
+        }
+        public bool CheckCategory(string name)
+        {
+            bool result = true;
+
+            string query = $"SELECT COUNT(Id) FROM MsCategory WHERE Name = @Name";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", name);
+                    
+
+
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    result = (long)command.ExecuteScalar() > 0 ? false : true;
+
+                    connection.Close();
+                }
+            }
+            return result;
+
         }
         public bool CreateCategory(MsCategoryAdminCreateDTO msCategory)
         {

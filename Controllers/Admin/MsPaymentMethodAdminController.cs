@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using fs_12_team_1_BE.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using fs_12_team_1_BE.DTO.Admin;
+using fs_12_team_1_BE.DTO.Admin.MsCourseAdmin;
 
 namespace fs_12_team_1_BE.Controllers.Admin
 {
@@ -66,6 +67,13 @@ namespace fs_12_team_1_BE.Controllers.Admin
             {
                 if (MsPaymentMethodAdminCreate == null)
                     return BadRequest("Data should be inputed");
+
+                bool available = _msPaymentMethodAdminData.CheckPaymentMethod(MsPaymentMethodAdminCreate.Name);
+
+                if (!available)
+                {
+                    return Unauthorized("Please use another payment method name");
+                }
 
                 MsPaymentMethodAdminCreate.Id = Guid.NewGuid();
                 MsPaymentMethodAdminCreate.Image = _imageSaver.SaveImageToFile(MsPaymentMethodAdminCreate.Image, MsPaymentMethodAdminCreate.Id);

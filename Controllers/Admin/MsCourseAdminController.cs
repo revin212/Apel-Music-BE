@@ -130,6 +130,13 @@ namespace fs_12_team_1_BE.Controllers.Admin
                 if (MsCourseAdminDTO == null)
                     return BadRequest("Data should be inputed");
 
+                bool available = _msCourseAdminData.CheckCourse(MsCourseAdminDTO.Name);
+
+                if (!available)
+                {
+                    return Unauthorized("Please use another course name");
+                }
+
                 MsCourseAdminDTO.Id = Guid.NewGuid();
                 MsCourseAdminDTO.Image = _imageSaver.SaveImageToFile(MsCourseAdminDTO.Image, MsCourseAdminDTO.Id);
                 bool result = _msCourseAdminData.Create(MsCourseAdminDTO);

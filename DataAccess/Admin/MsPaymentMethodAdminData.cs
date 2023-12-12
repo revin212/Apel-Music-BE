@@ -84,7 +84,35 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             return msPaymentMethod;
         }
+        public bool CheckPaymentMethod(string name)
+        {
+            bool result = true;
 
+            string query = $"SELECT COUNT(Id) FROM MsPaymentMethod WHERE Name = @Name";
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand())
+                {
+                    command.Parameters.Clear();
+
+                    command.Parameters.AddWithValue("@Name", name);
+
+
+
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    result = (long)command.ExecuteScalar() > 0 ? false : true;
+
+                    connection.Close();
+                }
+            }
+            return result;
+
+        }
         public bool CreatePaymentMethod(MsPaymentMethodAdminDTO msPaymentMethod)
         {
             bool result = false;
