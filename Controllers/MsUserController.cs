@@ -125,7 +125,7 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("Logout")]
-        public IActionResult Logout()
+        public IActionResult Logout([FromBody] string Email)
         {
             try
             {
@@ -134,18 +134,18 @@ namespace fs_12_team_1_BE.Controllers
 
                 if (cookieCount > 0)
                 {
-                    string Email = Request.Cookies["email"] ?? String.Empty;
+                    //string Email = Request.Cookies["email"] ?? String.Empty;
                     isLoggedOut = _msUserData.Logout(Email);
 
-                    var expiredCookieOption = new CookieOptions
-                    {
-                        HttpOnly = true,
-                        SameSite = SameSiteMode.None,
-                        Secure = true,
-                        Expires = DateTime.Now.AddDays(-1),
-                    };
-                    Response.Cookies.Append("refreshToken", string.Empty, expiredCookieOption);
-                    Response.Cookies.Append("email", string.Empty, expiredCookieOption);
+                    //var expiredCookieOption = new CookieOptions
+                    //{
+                    //    HttpOnly = true,
+                    //    SameSite = SameSiteMode.None,
+                    //    Secure = false,
+                    //    Expires = DateTime.Now.AddDays(-1),
+                    //};
+                    //Response.Cookies.Append("refreshToken", string.Empty, expiredCookieOption);
+                    //Response.Cookies.Append("email", string.Empty, expiredCookieOption);
                 }
 
                 if(isLoggedOut)
