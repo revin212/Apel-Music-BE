@@ -18,17 +18,19 @@ namespace fs_12_team_1_BE.DataAccess
 
         public List<TsOrderAdminGetAllInvoiceListResDTO> GetAllInvoicesList()
         {
+
+            List<TsOrderAdminGetAllInvoiceListResDTO> allInvoiceList = new List<TsOrderAdminGetAllInvoiceListResDTO>();
+
+            string query = "SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.IsPaid = 1";
+
+
             try
             {
-                List<TsOrderAdminGetAllInvoiceListResDTO> allInvoiceList = new List<TsOrderAdminGetAllInvoiceListResDTO>();
-
-                string query = "SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.IsPaid = 1";
-
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     using (MySqlCommand command = new MySqlCommand())
                     {
-                       
+
                         command.Connection = connection;
                         command.CommandText = query;
                         connection.Open();
@@ -37,7 +39,7 @@ namespace fs_12_team_1_BE.DataAccess
                         {
                             while (reader.Read())
                             {
-                                
+
                                 allInvoiceList.Add(new TsOrderAdminGetAllInvoiceListResDTO
                                 {
                                     Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
@@ -53,53 +55,62 @@ namespace fs_12_team_1_BE.DataAccess
 
                         connection.Close();
                     }
+
                 }
 
-                return allInvoiceList;
             }
-            catch (Exception)
+            catch (MySqlException e)
             {
-
+                Console.WriteLine(e);
                 throw;
             }
+            return allInvoiceList;
         }
-
         public TsOrderAdminGetInvoiceDetailHeaderRes GetInvoiceDetailHeader(int id)
         {
             TsOrderAdminGetInvoiceDetailHeaderRes tsOrder = new TsOrderAdminGetInvoiceDetailHeaderRes();
 
             string query = $"SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-                    command.Connection = connection;
-                    command.CommandText = query;
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", id);
+                        command.Connection = connection;
+                        command.CommandText = query;
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            tsOrder = new TsOrderAdminGetInvoiceDetailHeaderRes
+                            while (reader.Read())
                             {
-                                UserEmail = reader["Email"].ToString() ?? string.Empty,
-                                PaymentName = reader["PaymentName"].ToString() ?? string.Empty,
-                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
-                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
-                                TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
-                            };
+                                tsOrder = new TsOrderAdminGetInvoiceDetailHeaderRes
+                                {
+                                    UserEmail = reader["Email"].ToString() ?? string.Empty,
+                                    PaymentName = reader["PaymentName"].ToString() ?? string.Empty,
+                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                    TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
+                                };
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return tsOrder;
         }
     }

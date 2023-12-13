@@ -52,9 +52,9 @@ namespace fs_12_team_1_BE.DataAccess.Admin
                         }
                     }
                     catch (MySqlException e)
-                    {
-
+                    { 
                         Console.WriteLine(e);
+                        throw;
                     }
 
                     connection.Close();
@@ -107,25 +107,33 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             string query = $"SELECT COUNT(Id) FROM MsCategory WHERE Name = @Name";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", name);
-                    
+                        command.Parameters.AddWithValue("@Name", name);
 
 
-                    command.Connection = connection;
-                    command.CommandText = query;
 
-                    connection.Open();
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    result = (long)command.ExecuteScalar() > 0 ? false : true;
+                        connection.Open();
 
-                    connection.Close();
+                        result = (long)command.ExecuteScalar() > 0 ? false : true;
+
+                        connection.Close();
+                    }
                 }
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
             return result;
 
@@ -137,28 +145,37 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             string query = $"INSERT INTO MsCategory(Id, Name, Title, Description, Image, HeaderImage, IsActivated) " +
                 $"VALUES (@Id, @Name, @Title, @Description, @Image, @HeaderImage, @IsActivated)";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", msCategory.Id);
-                    command.Parameters.AddWithValue("@Name", msCategory.Name);
-                    command.Parameters.AddWithValue("@Title", msCategory.Title);
-                    command.Parameters.AddWithValue("@Description", msCategory.Description);
-                    command.Parameters.AddWithValue("@Image", msCategory.Image);
-                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
-                    command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", msCategory.Id);
+                        command.Parameters.AddWithValue("@Name", msCategory.Name);
+                        command.Parameters.AddWithValue("@Title", msCategory.Title);
+                        command.Parameters.AddWithValue("@Description", msCategory.Description);
+                        command.Parameters.AddWithValue("@Image", msCategory.Image);
+                        command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+                        command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
-                    connection.Close();
+
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                        connection.Close();
+                    }
                 }
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
 
             return result;
@@ -171,31 +188,40 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             string query = $"UPDATE MsCategory SET Name = @Name, Title = @Title, Description = @Description, Image = @Image, HeaderImage = @HeaderImage, IsActivated = @IsActivated " +
                 $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@Name", msCategory.Name);
-                    command.Parameters.AddWithValue("@Title", msCategory.Title);
-                    command.Parameters.AddWithValue("@Description", msCategory.Description);
-                    command.Parameters.AddWithValue("@Image", msCategory.Image);
-                    command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
-                    command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
-                    command.Parameters.AddWithValue("@Id", id);
+                        command.Parameters.AddWithValue("@Name", msCategory.Name);
+                        command.Parameters.AddWithValue("@Title", msCategory.Title);
+                        command.Parameters.AddWithValue("@Description", msCategory.Description);
+                        command.Parameters.AddWithValue("@Image", msCategory.Image);
+                        command.Parameters.AddWithValue("@HeaderImage", msCategory.HeaderImage);
+                        command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
+                        command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
+                        connection.Close();
+                    }
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return result;
         }
 
@@ -206,26 +232,35 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             string query = $"UPDATE MsCategory SET IsActivated = @IsActivated " +
                 $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
-                    command.Parameters.AddWithValue("@Id", id);
+                        command.Parameters.AddWithValue("@IsActivated", msCategory.IsActivated);
+                        command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
+                        connection.Close();
+                    }
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return result;
         }
     }

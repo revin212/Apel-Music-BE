@@ -21,31 +21,40 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse co WHERE co.IsActivated = 1 ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id ";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msCourse.Add(new MsCourseGetFavoriteListResDTO
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
-                            });
+                                msCourse.Add(new MsCourseGetFavoriteListResDTO
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Image = reader["Image"].ToString() ?? string.Empty,
+                                    Price = Convert.ToDouble(reader["Price"]),
+                                    CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msCourse;
         }
 
@@ -55,37 +64,46 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id As CategoryId, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE cs.Id = @Id AND cs.IsActivated = 1";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", id);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msCourse = new MsCourseGetDetailResDTO
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Description = reader["Description"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
-                                
-                            };
+                                msCourse = new MsCourseGetDetailResDTO
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Description = reader["Description"].ToString() ?? string.Empty,
+                                    Image = reader["Image"].ToString() ?? string.Empty,
+                                    Price = Convert.ToDouble(reader["Price"]),
+                                    CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
+                                    CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+
+                                };
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msCourse;
         }
 
@@ -97,34 +115,43 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse cs JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Id = @Id AND cs.IsActivated = 1";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", Id);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", Id);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msCourse.Add(new MsCourseGetByCategoryListResDTO
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
-                            });
+                                msCourse.Add(new MsCourseGetByCategoryListResDTO
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Image = reader["Image"].ToString() ?? string.Empty,
+                                    Price = Convert.ToDouble(reader["Price"]),
+                                    CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msCourse;
         }
 
@@ -135,36 +162,45 @@ namespace fs_12_team_1_BE.DataAccess
             string query = $"SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Id AS CategoryId, ct.Name AS CategoryName FROM MsCourse cs " +
                 $"JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.Id = @CategoryId AND NOT cs.Id = @CourseId AND cs.IsActivated = 1 ORDER BY RAND() LIMIT 3";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@CourseId", courseid);
-                    command.Parameters.AddWithValue("@CategoryId", categoryid);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@CourseId", courseid);
+                        command.Parameters.AddWithValue("@CategoryId", categoryid);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msCourse.Add(new MsCourseGetOtherListRes
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Image = reader["Image"].ToString() ?? string.Empty,
-                                Price = Convert.ToDouble(reader["Price"]),
-                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
-                            });
+                                msCourse.Add(new MsCourseGetOtherListRes
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Image = reader["Image"].ToString() ?? string.Empty,
+                                    Price = Convert.ToDouble(reader["Price"]),
+                                    CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
+                                    CategoryName = reader["CategoryName"].ToString() ?? string.Empty,
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msCourse;
         }
 

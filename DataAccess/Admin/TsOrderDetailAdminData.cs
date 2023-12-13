@@ -24,39 +24,48 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT invdetail.Id AS InvId, invdetail.OrderId AS OrderId, invdetail.CourseId AS CourseId, course.Name AS CourseName, course.CategoryId AS CourseCategoryId, cat.Name AS CourseCategoryName, Jadwal, Harga, invdetail.IsActivated FROM TsOrderDetail AS invdetail INNER JOIN MsCourse AS course ON invdetail.CourseId = course.Id INNER JOIN MsCategory AS cat ON course.CategoryId = cat.Id WHERE OrderId = @id AND invdetail.IsActivated = 1";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", orderid);
-                    command.Connection = connection;
-                    command.CommandText = query;
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", orderid);
+                        command.Connection = connection;
+                        command.CommandText = query;
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            tsOrderDetail.Add(new TsOrderDetailAdminGetAllInvoiceDetailListResDTO
+                            while (reader.Read())
                             {
-                                Id = int.Parse(reader["InvId"].ToString() ?? string.Empty),
-                                OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
-                                CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                CourseName = reader["CourseName"].ToString() ?? string.Empty,
-                                CourseCategoryId = Guid.Parse(reader["CourseCategoryId"].ToString() ?? string.Empty),
-                                CourseCategoryName = reader["CourseCategoryName"].ToString() ?? string.Empty,
-                                Jadwal = DateTime.Parse((reader["Jadwal"].ToString() ?? string.Empty)),
-                                Harga = double.Parse(reader["Harga"].ToString() ?? string.Empty),
-                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
-                            });
+                                tsOrderDetail.Add(new TsOrderDetailAdminGetAllInvoiceDetailListResDTO
+                                {
+                                    Id = int.Parse(reader["InvId"].ToString() ?? string.Empty),
+                                    OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
+                                    CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
+                                    CourseName = reader["CourseName"].ToString() ?? string.Empty,
+                                    CourseCategoryId = Guid.Parse(reader["CourseCategoryId"].ToString() ?? string.Empty),
+                                    CourseCategoryName = reader["CourseCategoryName"].ToString() ?? string.Empty,
+                                    Jadwal = DateTime.Parse((reader["Jadwal"].ToString() ?? string.Empty)),
+                                    Harga = double.Parse(reader["Harga"].ToString() ?? string.Empty),
+                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return tsOrderDetail;
         }
     }
