@@ -87,12 +87,12 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        public ActionResult RefreshToken()
+        public ActionResult RefreshToken([FromBody] string refreshToken, string Email)
         {
             try
             {
-                string refreshToken = Request.Cookies["refreshToken"] ?? string.Empty;
-                string Email = Request.Cookies["email"] ?? string.Empty;
+                //string refreshToken = Request.Cookies["refreshToken"] ?? string.Empty;
+                //string Email = Request.Cookies["email"] ?? string.Empty;
 
                 RefreshTokenDTO? dbRefreshToken = _msUserData.GetRefreshToken(Email);
 
