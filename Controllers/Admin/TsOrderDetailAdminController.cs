@@ -29,7 +29,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
 

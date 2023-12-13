@@ -19,38 +19,29 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = "SELECT * FROM MsPaymentMethod WHERE IsActivated = 1";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            msPaymentMethod.Add(new MsPaymentMethod
                             {
-                                msPaymentMethod.Add(new MsPaymentMethod
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Image = reader["Image"].ToString() ?? string.Empty
-                                });
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty
+                            });
                         }
-
-                        connection.Close();
                     }
-                }
 
+                    connection.Close();
+                }
             }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
             return msPaymentMethod;
         }
 

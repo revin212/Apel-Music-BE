@@ -31,7 +31,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
 
@@ -51,7 +52,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
         [HttpGet("GetCartInfo")]
@@ -73,7 +75,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
 
@@ -96,7 +99,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
 
@@ -122,7 +126,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
     }

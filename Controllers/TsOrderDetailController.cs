@@ -31,7 +31,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
 
@@ -70,7 +71,7 @@ namespace fs_12_team_1_BE.Controllers
                     Jadwal = tsorderdetailDto.Jadwal
                 };
 
-                bool available = _tsOrderDetailData.CheckJadwal(tsorderdetailDto.UserId, tsorderdetail);
+                bool available = _tsOrderDetailData.CheckJadwal(tsorderdetail);
 
                 if (!available)
                 {
@@ -109,7 +110,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
         [HttpPost("DeleteFromCart")]
@@ -131,7 +133,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
         [HttpPost("ClearCart")]
@@ -153,7 +156,8 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "Server Error occured");
+
+                throw;
             }
         }
        

@@ -22,39 +22,30 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             string query = "SELECT * FROM MsPaymentMethod";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            msPaymentMethod.Add(new MsPaymentMethodAdminDTO
                             {
-                                msPaymentMethod.Add(new MsPaymentMethodAdminDTO
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Image = reader["Image"].ToString() ?? string.Empty,
-                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
-                                });
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                            });
                         }
-
-                        connection.Close();
                     }
-                }
 
+                    connection.Close();
+                }
             }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
             return msPaymentMethod;
         }
 
@@ -64,42 +55,33 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             string query = "SELECT * FROM MsPaymentMethod WHERE Id = @Id";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@Id", id);
-
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            msPaymentMethod = new MsPaymentMethodAdminDTO
                             {
-                                msPaymentMethod = new MsPaymentMethodAdminDTO
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Image = reader["Image"].ToString() ?? string.Empty,
-                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
-                                };
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                            };
                         }
-
-                        connection.Close();
                     }
-                }
 
+                    connection.Close();
+                }
             }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
             return msPaymentMethod;
         }
         public bool CheckPaymentMethod(string name)
@@ -108,35 +90,25 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             string query = $"SELECT COUNT(Id) FROM MsPaymentMethod WHERE Name = @Name";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
-                    {
-                        command.Parameters.Clear();
+                    command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@Name", name);
+                    command.Parameters.AddWithValue("@Name", name);
 
 
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-                        connection.Open();
+                    connection.Open();
 
-                        result = (long)command.ExecuteScalar() > 0 ? false : true;
+                    result = (long)command.ExecuteScalar() > 0 ? false : true;
 
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
-
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
             return result;
 
@@ -148,37 +120,28 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             string query = $"INSERT INTO MsPaymentMethod(Id, Name, Image, IsActivated) " +
                 $"VALUES (@Id, @Name, @Image, @IsActivated)";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
-                    {
-                        command.Parameters.Clear();
+                    command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@Id", msPaymentMethod.Id);
-                        command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
-                        command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
-                        command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
+                    command.Parameters.AddWithValue("@Id", msPaymentMethod.Id);
+                    command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
+                    command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
+                    command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-                        connection.Open();
+                    connection.Open();
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
+            }
 
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
             return result;
         }
 
@@ -188,37 +151,28 @@ namespace fs_12_team_1_BE.DataAccess.Admin
 
             string query = "UPDATE MsPaymentMethod SET Name = @Name, Image = @Image, IsActivated = @IsActivated WHERE Id = @Id";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
-                    {
-                        command.Parameters.Clear();
+                    command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
-                        command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
-                        command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
-                        command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@Name", msPaymentMethod.Name);
+                    command.Parameters.AddWithValue("@Image", msPaymentMethod.Image);
+                    command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
+                    command.Parameters.AddWithValue("@Id", id);
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-                        connection.Open();
+                    connection.Open();
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
+            }
 
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
             return result;
         }
 
@@ -229,35 +183,26 @@ namespace fs_12_team_1_BE.DataAccess.Admin
             string query = $"UPDATE MsPaymentMethod SET IsActivated = @IsActivated " +
                 $"WHERE Id = @Id";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
-                    {
-                        command.Parameters.Clear();
+                    command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
-                        command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@IsActivated", msPaymentMethod.IsActivated);
+                    command.Parameters.AddWithValue("@Id", id);
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-                        connection.Open();
+                    connection.Open();
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                    result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
+            }
 
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
             return result;
         }
     }

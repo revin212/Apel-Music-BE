@@ -18,14 +18,12 @@ namespace fs_12_team_1_BE.DataAccess
 
         public List<TsOrder> GetAll()
         {
-            
-            List<TsOrder> tsOrder = new List<TsOrder>();
-
-            string query = "SELECT * FROM TsOrder";
-
-
             try
             {
+                List<TsOrder> tsOrder = new List<TsOrder>();
+
+                string query = "SELECT * FROM TsOrder";
+
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     using (MySqlCommand command = new MySqlCommand(query, connection))
@@ -42,11 +40,11 @@ namespace fs_12_team_1_BE.DataAccess
                                     paymentid = Guid.Empty;
 
                                 }
-                                else
+                                else 
                                 {
                                     paymentid = Guid.Parse(reader["PaymentId"].ToString() ?? string.Empty);
                                 }
-
+                                
                                 tsOrder.Add(new TsOrder
                                 {
                                     Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
@@ -62,27 +60,24 @@ namespace fs_12_team_1_BE.DataAccess
                         connection.Close();
                     }
                 }
+
+                return tsOrder;
             }
-            catch (MySqlException e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+
                 throw;
             }
-
-            return tsOrder;
-           
         }
 
         public List<TsOrderGetMyInvoiceListResDTO> GetMyInvoicesList(Guid userid)
         {
-            
-            List<TsOrderGetMyInvoiceListResDTO> myInvoiceList = new List<TsOrderGetMyInvoiceListResDTO>();
-
-            string query = "SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 1";
-
-
             try
             {
+                List<TsOrderGetMyInvoiceListResDTO> myInvoiceList = new List<TsOrderGetMyInvoiceListResDTO>();
+
+                string query = "SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 1";
+
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     using (MySqlCommand command = new MySqlCommand())
@@ -111,18 +106,18 @@ namespace fs_12_team_1_BE.DataAccess
                                 });
                             }
                         }
+
+                        connection.Close();
                     }
-                    connection.Close();
                 }
+
+                return myInvoiceList;
             }
-            catch (MySqlException e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+
                 throw;
             }
-
-            return myInvoiceList;
-            
         }
 
         public TsOrderGetInvoiceDetailHeaderRes GetInvoiceDetailHeader(int id)
@@ -131,41 +126,32 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT * FROM TsOrder WHERE Id = @Id";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@Id", id);
-                        command.Connection = connection;
-                        command.CommandText = query;
-
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            tsOrder = new TsOrderGetInvoiceDetailHeaderRes
                             {
-                                tsOrder = new TsOrderGetInvoiceDetailHeaderRes
-                                {
-                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
-                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
-                                    TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
-                                };
-                            }
+                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty)
+                            };
                         }
-
-                        connection.Close();
                     }
+
+                    connection.Close();
                 }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
 
             return tsOrder;
@@ -179,49 +165,40 @@ namespace fs_12_team_1_BE.DataAccess
                 $"(SELECT IFNULL(SUM(Price),0) FROM TsOrderDetail INNER JOIN MsCourse ON CourseId = mscourse.Id WHERE OrderId = cart.Id AND IsSelected = 1) AS TotalHarga," +
                 $" OrderDate, IsPaid FROM TsOrder AS cart WHERE UserId = @UserId AND IsPaid = 0 LIMIT 1;";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@UserId", userid);
+                    command.Connection = connection;
+                    command.CommandText = query;
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@UserId", userid);
-                        command.Connection = connection;
-                        command.CommandText = query;
-
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (reader.IsDBNull(0))
                             {
-                                if (reader.IsDBNull(0))
-                                {
-                                    break;
-                                }
-
-                                tsOrder = new TsOrder
-                                {
-                                    Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                    InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
-                                    TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty),
-                                    OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
-                                    IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
-                                };
+                                break;
                             }
-                        }
 
-                        connection.Close();
+                            tsOrder = new TsOrder
+                            {
+                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                UserId = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                InvoiceNo = reader["InvoiceNo"].ToString() ?? string.Empty,
+                                TotalHarga = double.Parse(reader["TotalHarga"].ToString() ?? string.Empty),
+                                OrderDate = DateTime.Parse(reader["OrderDate"].ToString() ?? string.Empty),
+                                IsPaid = bool.Parse(reader["IsPaid"].ToString() ?? string.Empty)
+                            };
+                        }
                     }
+
+                    connection.Close();
                 }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
 
             return tsOrder;
@@ -229,19 +206,17 @@ namespace fs_12_team_1_BE.DataAccess
 
         public List<TsOrderDetailGetCartListResDTO> GetCart(Guid userid)
         {
-            
-                
-            List<TsOrderDetailGetCartListResDTO> tsOrderDetail = new List<TsOrderDetailGetCartListResDTO>();
-
-            string query = "SELECT cartitem.Id, cartitem.OrderId, cartitem.CourseId, course.Image, cat.Name AS catname, course.Name AS coursename, cartitem.Jadwal, course.Price, cartitem.IsActivated, cartitem.IsSelected " +
-                "FROM TsOrderDetail AS cartitem INNER JOIN TsOrder AS cart ON cartitem.OrderId = cart.Id " +
-                "INNER JOIN mscourse AS course ON cartitem.CourseId = course.Id " +
-                "INNER JOIN mscategory AS cat ON course.CategoryId = cat.ID " +
-                "WHERE cart.IsPaid = 0 AND cart.UserId = @id AND cartitem.IsActivated = 0;";
-
-
             try
             {
+                
+                List<TsOrderDetailGetCartListResDTO> tsOrderDetail = new List<TsOrderDetailGetCartListResDTO>();
+
+                string query = "SELECT cartitem.Id, cartitem.OrderId, cartitem.CourseId, course.Image, cat.Name AS catname, course.Name AS coursename, cartitem.Jadwal, course.Price, cartitem.IsActivated, cartitem.IsSelected " +
+                    "FROM TsOrderDetail AS cartitem INNER JOIN TsOrder AS cart ON cartitem.OrderId = cart.Id " +
+                    "INNER JOIN mscourse AS course ON cartitem.CourseId = course.Id " +
+                    "INNER JOIN mscategory AS cat ON course.CategoryId = cat.ID " +
+                    "WHERE cart.IsPaid = 0 AND cart.UserId = @id AND cartitem.IsActivated = 0;";
+
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     using (MySqlCommand command = new MySqlCommand())
@@ -257,7 +232,7 @@ namespace fs_12_team_1_BE.DataAccess
                             while (reader.Read())
                             {
 
-                                tsOrderDetail.Add(new TsOrderDetailGetCartListResDTO
+                                tsOrderDetail.Add( new TsOrderDetailGetCartListResDTO
                                 {
                                     Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
                                     OrderId = int.Parse(reader["OrderId"].ToString() ?? string.Empty),
@@ -276,106 +251,95 @@ namespace fs_12_team_1_BE.DataAccess
                         connection.Close();
                     }
                 }
+                return tsOrderDetail;
             }
-            catch (MySqlException e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
+
                 throw;
             }
-
-            return tsOrderDetail;
-            
         }
         public bool CheckoutCart(TsOrderDTOCheckout tsorder)
         {
 
             bool result = false;
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                connection.Open();
+                MySqlTransaction transaction = connection.BeginTransaction();
+
+                try
                 {
-                    connection.Open();
-                    MySqlTransaction transaction = connection.BeginTransaction();
+                    string InvoiceNo = $"APM{tsorder.Id.ToString("D5")}";
 
-                    try
-                    {
-                        string InvoiceNo = $"APM{tsorder.Id.ToString("D5")}";
+                    MySqlCommand command1 = new MySqlCommand();
+                    command1.Connection = connection;
+                    command1.Transaction = transaction;
+                    command1.Parameters.Clear();
+                    command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, " +
+                        $"Course_count = (SELECT IFNULL(COUNT(Id),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
+                        $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
+                        $"OrderDate = DEFAULT, IsPaid = 1 " +
+                        $"WHERE Id = @Id";
+                    command1.Parameters.AddWithValue("@Id", tsorder.Id);
+                    command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command1.Parameters.AddWithValue("@InvoiceNo", InvoiceNo);
+                   
+                    MySqlCommand command2 = new MySqlCommand();
+                    command2.Connection = connection;
+                    command2.Transaction = transaction;
+                    command2.Parameters.Clear();
+                    command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), cartitem.IsActivated = 1 " +
+                    $"WHERE UserId = @UserId AND IsSelected = 1";
+                    command2.Parameters.AddWithValue("@UserId", tsorder.UserId);
 
-                        MySqlCommand command1 = new MySqlCommand();
-                        command1.Connection = connection;
-                        command1.Transaction = transaction;
-                        command1.Parameters.Clear();
-                        command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, " +
-                            $"Course_count = (SELECT IFNULL(COUNT(Id),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
-                            $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
-                            $"OrderDate = DEFAULT, IsPaid = 1 " +
-                            $"WHERE Id = @Id";
-                        command1.Parameters.AddWithValue("@Id", tsorder.Id);
-                        command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
-                        command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
-                        command1.Parameters.AddWithValue("@InvoiceNo", InvoiceNo);
+                    var result2 = command2.ExecuteNonQuery();
+                    
+                    var result1 = command1.ExecuteNonQuery();
+                  
+                    MySqlCommand command3 = new MySqlCommand();
+                    command3.Connection = connection;
+                    command3.Transaction = transaction;
+                    command3.Parameters.Clear();
+                    command3.CommandText = $"INSERT INTO TsOrder(UserId) " +
+                                            $"SELECT UserId FROM TsOrderDetail JOIN TsOrder ON OrderId = TsOrder.Id " +
+                                            $"WHERE TsOrder.UserId = @UserId AND IsSelected = 0 AND TsOrderDetail.IsActivated = 0 LIMIT 1";
+                                            
 
-                        MySqlCommand command2 = new MySqlCommand();
-                        command2.Connection = connection;
-                        command2.Transaction = transaction;
-                        command2.Parameters.Clear();
-                        command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), cartitem.IsActivated = 1 " +
-                        $"WHERE UserId = @UserId AND IsSelected = 1";
-                        command2.Parameters.AddWithValue("@UserId", tsorder.UserId);
-
-                        var result2 = command2.ExecuteNonQuery();
-
-                        var result1 = command1.ExecuteNonQuery();
-
-                        MySqlCommand command3 = new MySqlCommand();
-                        command3.Connection = connection;
-                        command3.Transaction = transaction;
-                        command3.Parameters.Clear();
-                        command3.CommandText = $"INSERT INTO TsOrder(UserId) " +
-                                                $"SELECT UserId FROM TsOrderDetail JOIN TsOrder ON OrderId = TsOrder.Id " +
-                                                $"WHERE TsOrder.UserId = @UserId AND IsSelected = 0 AND TsOrderDetail.IsActivated = 0 LIMIT 1";
-
-
-                        command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
-                        var result3 = command3.ExecuteNonQuery();
+                    command3.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    var result3 = command3.ExecuteNonQuery();
 
 
-                        int cartid = int.Parse(command3.LastInsertedId.ToString() ?? string.Empty);
+                    int cartid = int.Parse(command3.LastInsertedId.ToString() ?? string.Empty);
 
-                        MySqlCommand command4 = new MySqlCommand();
-                        command4.Connection = connection;
-                        command4.Transaction = transaction;
-                        command4.Parameters.Clear();
-                        command4.CommandText = $"UPDATE TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id " +
-                                                $"SET TsOrderDetail.OrderId = @OrderId " +
-                                                $"WHERE IsSelected = 0 AND TsOrderDetail.IsActivated = 0 AND TsOrder.UserId = @UserId";
-                        command4.Parameters.AddWithValue("@OrderId", cartid);
-                        command4.Parameters.AddWithValue("@UserId", tsorder.UserId);
-                        var result4 = command4.ExecuteNonQuery();
+                    MySqlCommand command4 = new MySqlCommand();
+                    command4.Connection = connection;
+                    command4.Transaction = transaction;
+                    command4.Parameters.Clear();
+                    command4.CommandText = $"UPDATE TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id " +
+                                            $"SET TsOrderDetail.OrderId = @OrderId " +
+                                            $"WHERE IsSelected = 0 AND TsOrderDetail.IsActivated = 0 AND TsOrder.UserId = @UserId";
+                    command4.Parameters.AddWithValue("@OrderId", cartid);
+                    command4.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    var result4 = command4.ExecuteNonQuery();
 
-                        transaction.Commit();
+                    transaction.Commit();
 
-                        result = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        Console.WriteLine(ex);
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-
-
+                    result = true;
                 }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    Console.WriteLine(ex);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+
+
             }
 
             return result;
@@ -387,36 +351,27 @@ namespace fs_12_team_1_BE.DataAccess
             string query = $"INSERT INTO TsOrder(Id, UserId, PaymentId, InvoiceNo, TotalHarga, OrderDate, IsPaid) " +
                 $"VALUES (DEFAULT, @UserId, @PaymentId, @InvoiceNo, DEFAULT, @OrderDate, 0)";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand())
                 {
-                    using (MySqlCommand command = new MySqlCommand())
-                    {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@UserId", tsorder.UserId);
-                        command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
-                        command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
-                        command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@UserId", tsorder.UserId);
+                    command.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                    command.Parameters.AddWithValue("@InvoiceNo", tsorder.InvoiceNo);
+                    command.Parameters.AddWithValue("@OrderDate", tsorder.OrderDate);
+                   
 
+                    command.Connection = connection;
+                    command.CommandText = query;
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                    connection.Open();
 
-                        connection.Open();
+                    command.ExecuteNonQuery();
+                    result = int.Parse( command.LastInsertedId.ToString() ?? string.Empty);
 
-                        command.ExecuteNonQuery();
-                        result = int.Parse(command.LastInsertedId.ToString() ?? string.Empty);
-
-                        connection.Close();
-                    }
+                    connection.Close();
                 }
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
 
             return result;

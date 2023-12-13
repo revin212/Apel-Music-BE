@@ -20,38 +20,29 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = "SELECT * FROM MsCategory WHERE IsActivated = 1";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            msCategory.Add(new MsCategoryShortListResDTO
                             {
-                                msCategory.Add(new MsCategoryShortListResDTO
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Image = reader["Image"].ToString() ?? string.Empty
-                                });
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty
+                            });
                         }
-
-                        connection.Close();
                     }
-                }
 
+                    connection.Close();
+                }
             }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
             return msCategory;
         }
 
@@ -61,44 +52,35 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT * FROM MsCategory WHERE Id = @Id";
 
-
-            try
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.Clear();
-                        command.Parameters.AddWithValue("@Id", id);
-
-                        connection.Open();
-
-                        using (MySqlDataReader reader = command.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            msCategory = new MsCategoryDetailResDTO
                             {
-                                msCategory = new MsCategoryDetailResDTO
-                                {
-                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                    Name = reader["Name"].ToString() ?? string.Empty,
-                                    Title = reader["Title"].ToString() ?? string.Empty,
-                                    Description = reader["Description"].ToString() ?? string.Empty,
-                                    Image = reader["Image"].ToString() ?? string.Empty,
-                                    HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
-                                };
-                            }
+                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                Name = reader["Name"].ToString() ?? string.Empty,
+                                Title = reader["Title"].ToString() ?? string.Empty,
+                                Description = reader["Description"].ToString() ?? string.Empty,
+                                Image = reader["Image"].ToString() ?? string.Empty,
+                                HeaderImage = reader["HeaderImage"].ToString() ?? string.Empty,
+                            };
                         }
-
-                        connection.Close();
                     }
-                }
 
+                    connection.Close();
+                }
             }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
             return msCategory;
         }
 
