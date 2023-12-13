@@ -74,10 +74,10 @@ namespace fs_12_team_1_BE.Controllers
                     string token = GenerateToken(user.Email, user.RoleName);
                     DateTime TokenExpires = DateTime.UtcNow.AddMinutes(15);
                     RefreshTokenDTO refreshToken = GenerateRefreshToken(credential.Email, user.RoleName);
-                    SetRefreshTokenCookies(refreshToken);
+                    //SetRefreshTokenCookies(refreshToken);
                     _msUserData.UpdateRefreshToken(refreshToken);
 
-                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty, RoleName = RoleNameEncoder(user.RoleName) });
+                    return Ok(new LoginResponseDTO { Token = token, TokenExpires = TokenExpires, UserId =  user.Id.ToString() ?? string.Empty, RoleName = RoleNameEncoder(user.RoleName), RefreshToken = refreshToken });
                 }
             }
             catch
@@ -113,10 +113,10 @@ namespace fs_12_team_1_BE.Controllers
                 string newToken = GenerateToken(Email, dbRefreshToken.RoleName);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
                 RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email, dbRefreshToken.RoleName);
-                SetRefreshTokenCookies(newRefreshToken);
+                //SetRefreshTokenCookies(newRefreshToken);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
-                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = dbRefreshToken.UserId, RoleName = RoleNameEncoder(dbRefreshToken.RoleName) });
+                return Ok(new LoginResponseDTO { Token = newToken, TokenExpires = newTokenExpires, UserId = dbRefreshToken.UserId, RoleName = RoleNameEncoder(dbRefreshToken.RoleName), RefreshToken = newRefreshToken });
             }
             catch
             {
@@ -247,18 +247,18 @@ namespace fs_12_team_1_BE.Controllers
             return refreshToken;
         }
 
-        private void SetRefreshTokenCookies(RefreshTokenDTO newRefreshToken)
-        {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true,
-                SameSite = SameSiteMode.Unspecified,
-                Secure = false,
-                Expires = newRefreshToken.RefreshTokenExpires
-            };
-            Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
-            Response.Cookies.Append("email", newRefreshToken.Email, cookieOptions);
-        }
+        //private void SetRefreshTokenCookies(RefreshTokenDTO newRefreshToken)
+        //{
+        //    var cookieOptions = new CookieOptions
+        //    {
+        //        HttpOnly = true,
+        //        SameSite = SameSiteMode.Unspecified,
+        //        Secure = false,
+        //        Expires = newRefreshToken.RefreshTokenExpires
+        //    };
+        //    Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);
+        //    Response.Cookies.Append("email", newRefreshToken.Email, cookieOptions);
+        //}
 
         private string RoleNameEncoder(string RoleName)
         {

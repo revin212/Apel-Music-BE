@@ -9,5 +9,6 @@ namespace fs_12_team_1_BE.DTO.MsUser
         public DateTime? TokenExpires { get; set; }
         public string UserId { get; set; } = string.Empty;
         public string RoleName { get; set; } = string.Empty;
+        public RefreshTokenDTO? RefreshToken { get; set; }
     }
 }
