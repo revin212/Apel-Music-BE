@@ -328,8 +328,8 @@ namespace fs_12_team_1_BE.Controllers
                     {
                         {"email", user.Email }
                     };
-
-            string callbackUrl = QueryHelpers.AddQueryString("http://localhost:5173/email-confirm", param);
+            string frontendUrl = _configuration["AllowedUrls:FrontEnd1"];
+            string callbackUrl = QueryHelpers.AddQueryString(frontendUrl+"/email-confirm", param);
 
             
             string body = _emailService.GetEmailTemplate(new EmailActivation

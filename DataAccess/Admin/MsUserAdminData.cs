@@ -27,36 +27,45 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = "SELECT MsUser.Id AS UserId, MsUser.Name AS UserName, Email, Password, MsRole.Id AS RoleId, MsRole.Name AS RoleName, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires FROM MsUser INNER JOIN MsRole ON MsUser.Role = MsRole.Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msUser.Add(new MsUserAdminDTO
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
-                                Name = reader["UserName"].ToString() ?? string.Empty,
-                                Email = reader["Email"].ToString() ?? string.Empty,
-                                Password = reader["Password"].ToString() ?? string.Empty,
-                                RoleId = int.Parse(reader["RoleId"].ToString() ?? string.Empty),
-                                RoleName = reader["RoleName"].ToString() ?? string.Empty,
-                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
-                                CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString() ?? string.Empty),
-                                RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
-                                RefreshTokenExpires = reader["RefreshTokenExpires"].ToString() ?? string.Empty,
-                            }) ;
+                                msUser.Add(new MsUserAdminDTO
+                                {
+                                    Id = Guid.Parse(reader["UserId"].ToString() ?? string.Empty),
+                                    Name = reader["UserName"].ToString() ?? string.Empty,
+                                    Email = reader["Email"].ToString() ?? string.Empty,
+                                    Password = reader["Password"].ToString() ?? string.Empty,
+                                    RoleId = int.Parse(reader["RoleId"].ToString() ?? string.Empty),
+                                    RoleName = reader["RoleName"].ToString() ?? string.Empty,
+                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty),
+                                    CreatedAt = DateTime.Parse(reader["CreatedAt"].ToString() ?? string.Empty),
+                                    RefreshToken = reader["RefreshToken"].ToString() ?? string.Empty,
+                                    RefreshTokenExpires = reader["RefreshTokenExpires"].ToString() ?? string.Empty,
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msUser;
         }
         public MsUserAdminDTO GetById(Guid id)
@@ -65,34 +74,43 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT Id, Name, Email, Role, IsActivated FROM MsUser WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", id);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", id);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msUser = new MsUserAdminDTO
+                            while (reader.Read())
                             {
-                                Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                Email = reader["Email"].ToString() ?? string.Empty,
-                                RoleId = int.Parse(reader["Role"].ToString() ?? string.Empty),
-                                IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)                   
-                            };
+                                msUser = new MsUserAdminDTO
+                                {
+                                    Id = Guid.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+                                    Email = reader["Email"].ToString() ?? string.Empty,
+                                    RoleId = int.Parse(reader["Role"].ToString() ?? string.Empty),
+                                    IsActivated = bool.Parse(reader["IsActivated"].ToString() ?? string.Empty)
+                                };
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msUser;
         }
         public bool ToggleActiveStatus(Guid id, ToggleActiveStatusDTO msUser)
@@ -102,26 +120,35 @@ namespace fs_12_team_1_BE.DataAccess
             string query = $"UPDATE MsUser SET IsActivated = @IsActivated " +
                 $"WHERE Id = @Id";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
 
-                    command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
-                    command.Parameters.AddWithValue("@Id", id);
+                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                        command.Parameters.AddWithValue("@Id", id);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
+                        connection.Close();
+                    }
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return result;
         }
         public List<MsRoleAdminDTO> GetRoles()
@@ -130,31 +157,40 @@ namespace fs_12_team_1_BE.DataAccess
 
             string query = $"SELECT * FROM MsRole";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand(query, connection))
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        command.Parameters.Clear();
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            msRole.Add( new MsRoleAdminDTO
+                            while (reader.Read())
                             {
-                                Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
-                                Name = reader["Name"].ToString() ?? string.Empty,
-                                
-                            });
+                                msRole.Add(new MsRoleAdminDTO
+                                {
+                                    Id = int.Parse(reader["Id"].ToString() ?? string.Empty),
+                                    Name = reader["Name"].ToString() ?? string.Empty,
+
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return msRole;
         }
 
@@ -162,38 +198,47 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsUserAdminGetUserClassListResDTO> myclass = new List<MsUserAdminGetUserClassListResDTO>();
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Connection = connection;
-                    command.Parameters.Clear();
-                    command.CommandText = "SELECT CourseId, MsCourse.Name AS CourseName, MsCourse.Image AS CourseImage, Jadwal, CategoryId, MsCategory.Name AS CategoryName FROM TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id INNER JOIN MsCourse ON TsOrderDetail.CourseId = MsCourse.Id INNER JOIN MsCategory ON MsCourse.CategoryId = MsCategory.Id WHERE TsOrder.UserId = @UserId AND IsActivated = 1";
-                    command.Parameters.AddWithValue("@UserId", userid);
-
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        command.Connection = connection;
+                        command.Parameters.Clear();
+                        command.CommandText = "SELECT CourseId, MsCourse.Name AS CourseName, MsCourse.Image AS CourseImage, Jadwal, CategoryId, MsCategory.Name AS CategoryName FROM TsOrderDetail INNER JOIN TsOrder ON TsOrderDetail.OrderId = TsOrder.Id INNER JOIN MsCourse ON TsOrderDetail.CourseId = MsCourse.Id INNER JOIN MsCategory ON MsCourse.CategoryId = MsCategory.Id WHERE TsOrder.UserId = @UserId AND IsActivated = 1";
+                        command.Parameters.AddWithValue("@UserId", userid);
+
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            myclass.Add(new MsUserAdminGetUserClassListResDTO
+                            while (reader.Read())
                             {
-                                CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
-                                Name = reader["CourseName"].ToString() ?? string.Empty,
-                                Image = reader["CourseImage"].ToString() ?? string.Empty,
-                                Jadwal = DateTime.Parse(reader["Jadwal"].ToString() ?? string.Empty),
-                                CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
-                                CategoryName = reader["CategoryName"].ToString() ?? string.Empty
-                            });
+                                myclass.Add(new MsUserAdminGetUserClassListResDTO
+                                {
+                                    CourseId = Guid.Parse(reader["CourseId"].ToString() ?? string.Empty),
+                                    Name = reader["CourseName"].ToString() ?? string.Empty,
+                                    Image = reader["CourseImage"].ToString() ?? string.Empty,
+                                    Jadwal = DateTime.Parse(reader["Jadwal"].ToString() ?? string.Empty),
+                                    CategoryId = Guid.Parse(reader["CategoryId"].ToString() ?? string.Empty),
+                                    CategoryName = reader["CategoryName"].ToString() ?? string.Empty
+                                });
+                            }
                         }
+
+                        connection.Close();
                     }
-
-                    connection.Close();
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return myclass;
         }
 
@@ -203,32 +248,41 @@ namespace fs_12_team_1_BE.DataAccess
         {
             Guid user = Guid.Empty;
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Connection = connection;
-                    command.CommandText = "SELECT * From MsUser WHERE Email = @Email";
-
-                    command.Parameters.Clear();
-
-                    command.Parameters.AddWithValue("@Email", Email);
-
-                    connection.Open();
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    using (MySqlCommand command = new MySqlCommand())
                     {
-                        while (reader.Read())
+                        command.Connection = connection;
+                        command.CommandText = "SELECT * From MsUser WHERE Email = @Email";
+
+                        command.Parameters.Clear();
+
+                        command.Parameters.AddWithValue("@Email", Email);
+
+                        connection.Open();
+
+                        using (MySqlDataReader reader = command.ExecuteReader())
                         {
-                            user = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
+                            while (reader.Read())
+                            {
+                                user = Guid.Parse(reader["Id"].ToString() ?? string.Empty);
+                            }
                         }
+
+                        connection.Close();
+
                     }
-
-                    connection.Close();
-
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return user;
         }
 
@@ -236,31 +290,41 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Create(MsUserAdminCreateDTO msUser)
         {
             bool result = false;
-            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, @Role, 0, @CreatedAt, DEFAULT, DEFAULT)";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, @Role, @IsActivated, @CreatedAt, DEFAULT, DEFAULT)";
 
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+            try
             {
-                using (MySqlCommand command = new MySqlCommand())
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@Id", Guid.NewGuid());
-                    command.Parameters.AddWithValue("@Name", msUser.Name);
-                    command.Parameters.AddWithValue("@Email", msUser.Email);
-                    command.Parameters.AddWithValue("@Password", msUser.Password);
-                    command.Parameters.AddWithValue("@Role", msUser.RoleId);
-                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+                    using (MySqlCommand command = new MySqlCommand())
+                    {
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@Id", Guid.NewGuid());
+                        command.Parameters.AddWithValue("@Name", msUser.Name);
+                        command.Parameters.AddWithValue("@Email", msUser.Email);
+                        command.Parameters.AddWithValue("@Password", msUser.Password);
+                        command.Parameters.AddWithValue("@Role", msUser.RoleId);
+                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                        command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
 
-                    command.Connection = connection;
-                    command.CommandText = query;
+                        command.Connection = connection;
+                        command.CommandText = query;
 
-                    connection.Open();
+                        connection.Open();
 
-                    result = command.ExecuteNonQuery() > 0 ? true : false;
+                        result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                    connection.Close();
+                        connection.Close();
+                    }
                 }
-            }
 
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             return result;
         }
 
@@ -271,55 +335,75 @@ namespace fs_12_team_1_BE.DataAccess
             {
                 string query = "UPDATE MsUser SET Name = @Name, Email = @Email, Role = @RoleId,IsActivated = @IsActivated WHERE Id = @Id";
 
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+                try
                 {
-                    using (MySqlCommand command = new MySqlCommand())
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
-                        command.Parameters.Clear();
+                        using (MySqlCommand command = new MySqlCommand())
+                        {
+                            command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@Name", msUser.Name);
-                        command.Parameters.AddWithValue("@Email", msUser.Email);
-                        command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
-                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
-                        command.Parameters.AddWithValue("@Id", id);
+                            command.Parameters.AddWithValue("@Name", msUser.Name);
+                            command.Parameters.AddWithValue("@Email", msUser.Email);
+                            command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
+                            command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                            command.Parameters.AddWithValue("@Id", id);
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                            command.Connection = connection;
+                            command.CommandText = query;
 
-                        connection.Open();
+                            connection.Open();
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Close();
+                            connection.Close();
+                        }
                     }
+
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
             } 
             else
             {
                string query = "UPDATE MsUser SET Name = @Name, Email = @Email, Role = @RoleId, Password = @Password, IsActivated = @IsActivated WHERE Id = @Id";
 
-                using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+                try
                 {
-                    using (MySqlCommand command = new MySqlCommand())
+                    using (MySqlConnection connection = new MySqlConnection(connectionString))
                     {
-                        command.Parameters.Clear();
+                        using (MySqlCommand command = new MySqlCommand())
+                        {
+                            command.Parameters.Clear();
 
-                        command.Parameters.AddWithValue("@Name", msUser.Name);
-                        command.Parameters.AddWithValue("@Email", msUser.Email);
-                        command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
-                        command.Parameters.AddWithValue("@Password", msUser.Password);
-                        command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
-                        command.Parameters.AddWithValue("@Id", id);
+                            command.Parameters.AddWithValue("@Name", msUser.Name);
+                            command.Parameters.AddWithValue("@Email", msUser.Email);
+                            command.Parameters.AddWithValue("@RoleId", msUser.RoleId);
+                            command.Parameters.AddWithValue("@Password", msUser.Password);
+                            command.Parameters.AddWithValue("@IsActivated", msUser.IsActivated);
+                            command.Parameters.AddWithValue("@Id", id);
 
-                        command.Connection = connection;
-                        command.CommandText = query;
+                            command.Connection = connection;
+                            command.CommandText = query;
 
-                        connection.Open();
+                            connection.Open();
 
-                        result = command.ExecuteNonQuery() > 0 ? true : false;
+                            result = command.ExecuteNonQuery() > 0 ? true : false;
 
-                        connection.Close();
+                            connection.Close();
+                        }
                     }
+
+                }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine(e);
+                    throw;
                 }
             }
 
