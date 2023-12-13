@@ -405,7 +405,8 @@ namespace fs_12_team_1_BE.Controllers
                         { "Id", Id },
                     };
 
-            string callbackUrl = QueryHelpers.AddQueryString("http://localhost:5173/new-password", param);
+            string frontendUrl = _configuration["AllowedUrls:FrontEnd1"];
+            string callbackUrl = QueryHelpers.AddQueryString(frontendUrl + "/new-password", param);
 
             string body = "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>";
 
