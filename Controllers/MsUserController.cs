@@ -87,21 +87,21 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("RefreshToken")]
-        public ActionResult RefreshToken([FromBody] string refreshToken, string Email)
+        public ActionResult RefreshToken([FromBody] RefreshTokenDTO refreshToken)
         {
             try
             {
                 //string refreshToken = Request.Cookies["refreshToken"] ?? string.Empty;
                 //string Email = Request.Cookies["email"] ?? string.Empty;
 
-                RefreshTokenDTO? dbRefreshToken = _msUserData.GetRefreshToken(Email);
+                RefreshTokenDTO? dbRefreshToken = _msUserData.GetRefreshToken(refreshToken.Email);
 
                 if (dbRefreshToken == null)
                 {
                     return Unauthorized("User does not exist");
                 }
 
-                if (!dbRefreshToken.RefreshToken.Equals(refreshToken))
+                if (!dbRefreshToken.RefreshToken.Equals(refreshToken.RefreshToken))
                 {
                     return Unauthorized("Invalid Refresh Token.");
                 }
@@ -110,9 +110,9 @@ namespace fs_12_team_1_BE.Controllers
                     return Unauthorized("Token expired.");
                 }
 
-                string newToken = GenerateToken(Email, dbRefreshToken.RoleName);
+                string newToken = GenerateToken(refreshToken.Email, dbRefreshToken.RoleName);
                 DateTime newTokenExpires = DateTime.UtcNow.AddMinutes(15);
-                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(Email, dbRefreshToken.RoleName);
+                RefreshTokenDTO newRefreshToken = GenerateRefreshToken(refreshToken.Email, dbRefreshToken.RoleName);
                 //SetRefreshTokenCookies(newRefreshToken);
                 _msUserData.UpdateRefreshToken(newRefreshToken);
 
@@ -125,28 +125,13 @@ namespace fs_12_team_1_BE.Controllers
         }
 
         [HttpPost("Logout")]
-        public IActionResult Logout([FromBody] string Email)
+        public IActionResult Logout([FromBody] MsUserLogoutDTO LogoutDTO)
         {
             try
             {
                 bool isLoggedOut = false;
-                int cookieCount = Request.Cookies.Count;
-
-                if (cookieCount > 0)
-                {
-                    //string Email = Request.Cookies["email"] ?? String.Empty;
-                    isLoggedOut = _msUserData.Logout(Email);
-
-                    //var expiredCookieOption = new CookieOptions
-                    //{
-                    //    HttpOnly = true,
-                    //    SameSite = SameSiteMode.None,
-                    //    Secure = false,
-                    //    Expires = DateTime.Now.AddDays(-1),
-                    //};
-                    //Response.Cookies.Append("refreshToken", string.Empty, expiredCookieOption);
-                    //Response.Cookies.Append("email", string.Empty, expiredCookieOption);
-                }
+                
+                isLoggedOut = _msUserData.Logout(LogoutDTO.Email);
 
                 if(isLoggedOut)
                     return StatusCode(204);
