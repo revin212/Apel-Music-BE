@@ -252,8 +252,8 @@ namespace fs_12_team_1_BE.Controllers
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.None,
-                Secure = true,
+                SameSite = SameSiteMode.Unspecified,
+                Secure = false,
                 Expires = newRefreshToken.RefreshTokenExpires
             };
             Response.Cookies.Append("refreshToken", newRefreshToken.RefreshToken, cookieOptions);

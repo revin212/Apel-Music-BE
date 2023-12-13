@@ -118,7 +118,7 @@ namespace fs_12_team_1_BE.DataAccess
         public bool Register(MsUserRegisterDTO msUser)
         {
             bool result = false;
-            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (UUID(), @Name, @Email, @Password, DEFAULT, 0, @CreatedAt, DEFAULT, DEFAULT)";
+            string query = "INSERT INTO MsUser(Id, Name, Email, Password, Role, IsActivated, CreatedAt, RefreshToken, RefreshTokenExpires)  VALUES (@Id, @Name, @Email, @Password, DEFAULT, 0, @CreatedAt, DEFAULT, DEFAULT)";
 
 
             try
@@ -128,7 +128,7 @@ namespace fs_12_team_1_BE.DataAccess
                     using (MySqlCommand command = new MySqlCommand())
                     {
                         command.Parameters.Clear();
-
+                        command.Parameters.AddWithValue("@Id", Guid.NewGuid());
                         command.Parameters.AddWithValue("@Name", msUser.Name);
                         command.Parameters.AddWithValue("@Email", msUser.Email);
                         command.Parameters.AddWithValue("@Password", msUser.Password);
