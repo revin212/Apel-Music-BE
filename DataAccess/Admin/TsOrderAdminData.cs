@@ -21,7 +21,7 @@ namespace fs_12_team_1_BE.DataAccess
 
             List<TsOrderAdminGetAllInvoiceListResDTO> allInvoiceList = new List<TsOrderAdminGetAllInvoiceListResDTO>();
 
-            string query = "SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.IsPaid = 1";
+            string query = "SELECT TsOrder.Id, MsUser.Email, TsOrder.InvoiceNo, TsOrder.OrderDate, TsOrder.Course_count, TsOrder.TotalHarga, MsPaymentMethod.Name AS PaymentName FROM TsOrder JOIN MsPaymentMethod ON TsOrder.PaymentId = MsPaymentMethod.Id JOIN MsUser ON TsOrder.UserId = MsUser.Id WHERE TsOrder.IsPaid = 1 ORDER BY TsOrder.OrderDate DESC";
 
 
             try

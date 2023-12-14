@@ -78,7 +78,7 @@ namespace fs_12_team_1_BE.DataAccess
             
             List<TsOrderGetMyInvoiceListResDTO> myInvoiceList = new List<TsOrderGetMyInvoiceListResDTO>();
 
-            string query = "SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 1";
+            string query = "SELECT * FROM TsOrder WHERE UserId = @UserId AND IsPaid = 1 ORDER BY TsOrder.OrderDate DESC";
 
 
             try
