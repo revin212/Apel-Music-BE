@@ -95,6 +95,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/api/", () => "API Server Online");
+app.MapGet("/api", () => "API Server Online");
 
 app.Run();

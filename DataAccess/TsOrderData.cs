@@ -310,18 +310,22 @@ namespace fs_12_team_1_BE.DataAccess
                         command1.CommandText = $"UPDATE TsOrder SET UserId = @UserId, PaymentId = @PaymentId, InvoiceNo = @InvoiceNo, " +
                             $"Course_count = (SELECT IFNULL(COUNT(Id),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
                             $"TotalHarga = (SELECT IFNULL(SUM(Harga),0) FROM TsOrderDetail WHERE OrderId = @Id AND TsOrderDetail.IsActivated = 1), " +
-                            $"OrderDate = DEFAULT, IsPaid = 1 " +
+                            $"OrderDate = @OrderDate, IsPaid = 1 " +
                             $"WHERE Id = @Id";
                         command1.Parameters.AddWithValue("@Id", tsorder.Id);
                         command1.Parameters.AddWithValue("@UserId", tsorder.UserId);
                         command1.Parameters.AddWithValue("@PaymentId", tsorder.PaymentId);
+                        command1.Parameters.AddWithValue("@OrderDate", DateTime.Now);
                         command1.Parameters.AddWithValue("@InvoiceNo", InvoiceNo);
 
                         MySqlCommand command2 = new MySqlCommand();
                         command2.Connection = connection;
                         command2.Transaction = transaction;
                         command2.Parameters.Clear();
-                        command2.CommandText = $"UPDATE TsOrderDetail AS cartitem INNER JOIN TsOrder ON OrderId = TsOrder.Id SET Harga = (SELECT IFNULL(Price,0) FROM TsOrderDetail AS cartprice INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = cartitem.Id), cartitem.IsActivated = 1 " +
+                        command2.CommandText = $"UPDATE TsOrderDetail INNER JOIN TsOrder ON OrderId = TsOrder.Id " +
+                            $"SET Harga = (SELECT IFNULL(Price,0) " +
+                            $"FROM (SELECT * FROM TsOrderDetail) AS cartprice " +
+                            $"INNER JOIN MsCourse ON CourseId = MsCourse.Id WHERE cartprice.Id = TsOrderDetail.Id), TsOrderDetail.IsActivated = 1 " +
                         $"WHERE UserId = @UserId AND IsSelected = 1";
                         command2.Parameters.AddWithValue("@UserId", tsorder.UserId);
 
@@ -359,7 +363,7 @@ namespace fs_12_team_1_BE.DataAccess
 
                         result = true;
                     }
-                    catch (Exception ex)
+                    catch (MySqlException ex)
                     {
                         transaction.Rollback();
                         Console.WriteLine(ex);

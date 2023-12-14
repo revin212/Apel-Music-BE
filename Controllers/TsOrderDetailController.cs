@@ -92,7 +92,7 @@ namespace fs_12_team_1_BE.Controllers
                         UserId = tsorderdetailDto.UserId,
                         InvoiceNo = string.Empty,
                         IsPaid = false,
-                        OrderDate = DateTime.MinValue
+                        OrderDate = DateTime.Now
                     };
                     int new_cartid = _tsOrderData.NewCart(tsOrderNew);
                     tsorderdetail.OrderId = new_cartid;
