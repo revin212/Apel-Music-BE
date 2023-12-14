@@ -19,7 +19,7 @@ namespace fs_12_team_1_BE.DataAccess
         {
             List<MsCourseGetFavoriteListResDTO> msCourse = new List<MsCourseGetFavoriteListResDTO>();
 
-            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN (SELECT Id FROM MsCourse co WHERE co.IsActivated = 1 ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id JOIN MsCategory ct ON cs.CategoryId = ct.Id WHERE ct.IsActivated = 1";
+            string query = "SELECT cs.Id, cs.Name, cs.Description,cs.Image, cs.Price, ct.Name AS CategoryName FROM MsCourse AS cs JOIN MsCategory ct ON cs.CategoryId = ct.Id JOIN (SELECT co.Id FROM MsCourse co JOIN MsCategory cto ON co.CategoryId = cto.Id WHERE co.IsActivated = 1 AND cto.IsActivated = 1 ORDER BY RAND() LIMIT 6) as t2 ON cs.Id=t2.Id ";
 
 
             try
