@@ -4,6 +4,6 @@
     {
         public Guid UserId { get; set; }
         public Guid CourseId { get; set; }
-        public DateOnly Jadwal { get; set; }
+        public DateTime Jadwal { get; set; }
     }
 }

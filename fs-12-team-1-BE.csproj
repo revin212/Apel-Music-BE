@@ -16,11 +16,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
     <PackageReference Include="MySql.Data" Version="8.2.0" />
     <PackageReference Include="RazorEngineCore" Version="2021.7.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="DatabaseMySQL\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

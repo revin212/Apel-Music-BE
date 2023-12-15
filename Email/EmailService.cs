@@ -86,8 +86,9 @@ namespace fs_12_team_1_BE.Email
                 return true;
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 throw;
             }
             finally

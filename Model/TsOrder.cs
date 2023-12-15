@@ -7,6 +7,8 @@
         public Guid? PaymentId { get; set; }
         public string InvoiceNo { get; set; } = string.Empty;
         public DateTime? OrderDate { get; set; }
+        public int Course_Count { get; set; }
+        public double TotalHarga { get; set; }
         public bool? IsPaid{ get; set; }
         
     }

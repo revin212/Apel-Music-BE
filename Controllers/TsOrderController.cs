@@ -1,12 +1,15 @@
 ﻿using fs_12_team_1_BE.DataAccess;
 using fs_12_team_1_BE.DTO.TsOrder;
+using fs_12_team_1_BE.DTO.TsOrderDetail;
 using fs_12_team_1_BE.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace fs_12_team_1_BE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles ="Admin, User")]
     public class TsOrderController : ControllerBase
     {
         private readonly TsOrderData _tsOrderData;
@@ -16,41 +19,28 @@ namespace fs_12_team_1_BE.Controllers
         }
 
 
-        [HttpGet("GetAll")]
-        public IActionResult GetAll()
+
+        [HttpGet("GetMyInvoicesList")]
+        [Authorize]
+        public IActionResult GetMyInvoicesList(Guid userid)
         {
             try
             {
-                List<TsOrder> tsOrder = _tsOrderData.GetAll();
-                return Ok(tsOrder);
+                List<TsOrderGetMyInvoiceListResDTO> myInvoiceList = _tsOrderData.GetMyInvoicesList(userid);
+                return Ok(myInvoiceList);
             }
             catch (Exception)
             {
-
-                throw;
-            }
-        }
-        [HttpGet("OrderRecords")]
-        public IActionResult GetOrderRecords(Guid userid)
-        {
-            try
-            {
-                List<TsOrder> tsOrder = _tsOrderData.GetAllPaidByUserId(userid);
-                return Ok(tsOrder);
-            }
-            catch (Exception)
-            {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
-        [HttpGet("GetById")]
-        public IActionResult Get(Guid id)
+        [HttpGet("GetInvoiceDetailHeader")]
+        public IActionResult GetInvoiceDetailHeader(int id)
         {
             try
             {
-                TsOrder? tsOrder = _tsOrderData.GetById(id);
+                 TsOrderGetInvoiceDetailHeaderRes tsOrder = _tsOrderData.GetInvoiceDetailHeader(id);
 
                 if (tsOrder == null)
                 {
@@ -61,16 +51,16 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
         [HttpGet("GetCartInfo")]
+        [Authorize]
         public IActionResult GetCartInfo(Guid userid)
         {
             try
             {
-                TsOrder? tsOrder = _tsOrderData.GetCartInfo(userid);
+                TsOrder tsOrder = _tsOrderData.GetCartInfo(userid);
 
                 if (tsOrder == null)
                 {
@@ -83,16 +73,17 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
+
         [HttpGet("GetCart")]
+        [Authorize]
         public IActionResult GetCart(Guid userid)
         {
             try
             {
-                List<TsOrderDetail?> tsorderdetail = _tsOrderData.GetCart(userid);
+                List<TsOrderDetailGetCartListResDTO> tsorderdetail = _tsOrderData.GetCart(userid);
 
                 if (tsorderdetail == null)
                 {
@@ -105,115 +96,24 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
 
-        //[HttpPost("Checkout")]
-        //public IActionResult Checkout([FromBody] TsOrderDTOCheckout tsorderDtoCheckout)
-        //{
-        //    //{
-        //    //    "id": "c12e14c7-41e7-4aa1-a16a-4504e57e5e88",
-        //    //  "userId": "a6203aed-8920-11ee-a057-5c96db8712c6",
-        //    //  "paymentId": "3e544b7c-884a-11ee-b59a-3c5282e16d0b",
-        //    //  "orderDate": "2023-11-26T03:50:42.941Z"
-        //    //}
-        //    try 
-        //    {
-        //        if (tsorderDtoCheckout == null)
-        //            return BadRequest("Data should be inputed");
-
-        //        DateTime now = DateTime.Now;
-        //        string inv = $"INV/{now.ToString("yyyyMMdd")}/{tsorderDtoCheckout.Id.ToString("N")}";
-
-        //        TsOrder tsorder = new TsOrder
-        //        {
-        //            Id = tsorderDtoCheckout.Id,
-        //            UserId = tsorderDtoCheckout.UserId,
-        //            PaymentId = tsorderDtoCheckout.PaymentId,
-        //            InvoiceNo = inv,
-        //            OrderDate = DateTime.UtcNow,
-        //            IsPaid = true
-        //        };
-
-        //        bool result = _tsOrderData.Checkout(tsorder);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, result);
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-        [HttpPost]
-        //public IActionResult Post([FromBody] TsOrderDTO tsorderDto)
-        //{
-        //    try
-        //    {
-        //        if (tsorderDto == null)
-        //            return BadRequest("Data should be inputed");
-
-        //        TsOrder tsorder = new TsOrder
-        //        {
-        //            //Id = Guid.NewGuid(),
-        //            UserId = tsorderDto.UserId,
-        //            PaymentId = tsorderDto.PaymentId,
-        //            InvoiceNo = tsorderDto.InvoiceNo,
-        //            OrderDate = tsorderDto.OrderDate,
-        //            IsPaid = tsorderDto.IsPaid
-        //        };
-
-        //        bool result = _tsOrderData.Insert(tsorder);
-
-        //        if (result)
-        //        {
-        //            return StatusCode(201, tsorder.Id);
-        //        }
-        //        else
-        //        {
-        //            return StatusCode(500, "Error occured");
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        throw;
-        //    }
-        //}
-
-        [HttpPut]
-        public IActionResult Put(Guid id, [FromBody] TsOrderDTO tsorderDto)
+        [HttpPost("CheckoutCart")]
+        [Authorize]
+        public IActionResult CheckoutCart(TsOrderDTOCheckout tsorderdtocheckout)
         {
             try
             {
-                if (tsorderDto == null)
+                if (tsorderdtocheckout == null)
                     return BadRequest("Data should be inputed");
 
-                TsOrder tsorder = new TsOrder
-                {
-                    UserId = tsorderDto.UserId,
-                    PaymentId = tsorderDto.PaymentId,
-                    InvoiceNo = tsorderDto.InvoiceNo,
-                    OrderDate = tsorderDto.OrderDate,
-                    IsPaid = tsorderDto.IsPaid
-
-
-                };
-
-                bool result = _tsOrderData.Update(tsorder);
+                bool result = _tsOrderData.CheckoutCart(tsorderdtocheckout);
 
                 if (result)
                 {
-                    return NoContent();//204
+                    return StatusCode(201, result);
                 }
                 else
                 {
@@ -222,31 +122,7 @@ namespace fs_12_team_1_BE.Controllers
             }
             catch (Exception)
             {
-
-                throw;
-            }
-        }
-
-        [HttpDelete]
-        public IActionResult Delete(Guid id)
-        {
-            try
-            {
-                bool result = _tsOrderData.Delete(id);
-
-                if (result)
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return StatusCode(500, "Error occured");
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
+                return StatusCode(500, "Server Error occured");
             }
         }
     }
